@@ -10,16 +10,16 @@ import matplotlib
 from matplotlib import pyplot as plt
 import math
 
-def setup_camera(b):
+def setup_camera(FotoNumber):
     
-    # instellen picamera
+    #instellen picamera
     camera = PiCamera()
     camera.resolution = (1024, 768)
     
     #shutterspeed hoog, dit voorkomt bewogen plastic op de loopband
     camera.shutter_speed = 10000
     
-    # beste instelling voor belichting op loopband
+    #beste instelling voor belichting op loopband
     camera.awb_mode ='auto'
     camera.brightness = 60
     camera.exposure_mode = 'auto'
@@ -27,44 +27,44 @@ def setup_camera(b):
    
     camera.start_preview()
     
-    # foto nemen
-    camera.capture('/media/pi/9E401DB5401D94DD/RGB/image_%i.png'%b)
+    #foto nemen
+    camera.capture('/media/pi/9E401DB5401D94DD/RGB/image_%i.png'%FotoNumber)
     camera.close()
- 
+    #2.05 is de totale tijd die de lopendeband nodig heeft om nieuw plastic onder de camera te leggen
     sleep(2.05)
     
-def object_detection(b):
-    print('start object detection')
+
+
+def object_detection(FotoNumber):
+    print('start background detection')
     #inlezen fotos
-    image = cv2.imread('/media/pi/9E401DB5401D94DD/RGB/image_%i.png'%b)
+    image = cv2.imread('/media/pi/9E401DB5401D94DD/RGB/image_%i.png'%FotoNumber)
+    #deel van de foto is niet op van lopende band, deze moet weggeknipt worden
     image = image[55:768, 0:1024]
-    cv2.imwrite('/media/pi/9E401DB5401D94DD/image.png',image)
     
     height, width, channels = image.shape
-    for y in range(height):
-        for x in range(width):
-            BGR_array = image[y,x]
+
+    for LoopVariableY in range(height):
+        for LoopVariableX in range(width):
+
+            BGR_array = image[LoopVariableY,LoopVariableY]
             if (((BGR_array[0]**2) + (BGR_array[1]**2) + (BGR_array[2]**2)) < 155**2):
-                image[m, n] = [0,0,0]
+                image[LoopVariableY, LoopVariableX] = [0,0,0]
                 
     LAB_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
     
-    print('done with background detection')
-    print('preparing color detection')
-    
-    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
-    print('start color detection''\n')
+    print('Background detected''\n')
+    print('start color detection')
     
     zwart = 0
     kleur = 0
     wit = 0
     pixels_totaal = 0
     
-    for (y) in range(height):
-        for(x) in range(width):
+    for (LoopVariableY) in range(height):
+        for(LoopVariableX) in range(width):
             
-            if (contour_image[y,x] != 0,0,0):
+            if (contour_image[LoopVariableY,LoopVariableY] != 0,0,0):
     
                 LAB_array = LAB_image[y,x]
 
@@ -72,21 +72,22 @@ def object_detection(b):
                 LAB_array[0] = (LAB_array[0] * 0.392)
                 if (LAB_array[0] == 0):
                     pass
-                if ((LAB_array[0] > 0) & (LAB_array[0] < 21)):
+                elif ((LAB_array[0] > 0) & (LAB_array[0] < 21)):
                     zwart = zwart + 1
-                if ((LAB_array[0] > 20) & (LAB_array[0] < 70)):
+                elif ((LAB_array[0] > 20) & (LAB_array[0] < 70)):
                    kleur = kleur + 1
-                if ( LAB_array[0] >= 70 ):
+                elif ( LAB_array[0] >= 70 ):
                     wit = wit + 1
                     
     pixels_totaal = wit + zwart + kleur
-            
-    if (pixels_totaal != 0):  #wanneer het voorkomt dat er geen plastic op de band ligt, zijn er geen pixels, dus zal er door nul gedeeld worden, dit moet voorkomen worden
-        proc_wit = (wit / pixels_totaal) * 100
+     #wanneer het voorkomt dat er geen plastic op de band ligt, zijn er geen pixels, dus zal er door nul gedeeld worden, dit moet voorkomen worden
+               
+    if (pixels_totaal != 0): 
         proc_zwart = (zwart / pixels_totaal) * 100
         proc_kleur = (kleur / pixels_totaal) * 100
+        proc_wit = (wit / pixels_totaal) * 100 
         
-        print('foto %i'%b )
+        print('foto %i'%FotoNumber )
         print(proc_wit)
         print('procent is wit''\n')
         print(proc_kleur)
@@ -94,13 +95,14 @@ def object_detection(b):
         print(proc_zwart)
         print('procent is zwart''\n')
     else:
-        print('er ligt geen plastic op de band bij foto %i'%b)
-                                
-a = 1
+        print('er ligt geen plastic op de band bij foto %i'%FotoNumber)
 
-for b in range(a):
-    setup_camera(b)
+                               
+FotoNumber = 1
+
+for b in range(FotoNumber):
+    setup_camera(FotoNumber)
     
 #foto's doorlopen die gemaakt zijn in setup_camera functie
-for b in range(a):
-    object_detection(b)
+for b in range(FotoNumber):
+    object_detection(FotoNumber)
