@@ -25,14 +25,12 @@ def setup_camera(b):
     camera.exposure_mode = 'auto'
     camera.raw_format = 'rgb'
    
-   
     camera.start_preview()
     
     # foto nemen
     camera.capture('/media/pi/9E401DB5401D94DD/RGB/image_%i.png'%b)
     camera.close()
  
-    #wachten op nieuw plasic. snelheid band is 0,057 m/s. foto is 16cm breed dus 2,768 secondes wachten
     sleep(2.05)
     
 def object_detection(b):
@@ -43,9 +41,9 @@ def object_detection(b):
     cv2.imwrite('/media/pi/9E401DB5401D94DD/image.png',image)
     
     height, width, channels = image.shape
-    for m in range(height):
-        for n in range(width):
-            BGR_array = image[m,n]
+    for y in range(height):
+        for x in range(width):
+            BGR_array = image[y,x]
             if (((BGR_array[0]**2) + (BGR_array[1]**2) + (BGR_array[2]**2)) < 155**2):
                 image[m, n] = [0,0,0]
                 
@@ -56,13 +54,6 @@ def object_detection(b):
     
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
-    (_, contours, _) = cv2.findContours(gray_image, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
-    #zwart wit image maken met 1 pixel brede contours
-    black_image = np.zeros((height, width, 3),np.uint8)
-    cv2.imwrite('/media/pi/9E401DB5401D94DD/black_image.png',black_image)
-    contour_image = cv2.drawContours(black_image, contours, -1, (255,255,255), -1)
-    cv2.imwrite('/media/pi/9E401DB5401D94DD/contour_image.png',contour_image)
-    #over contour_image heen loopen, wanneer er een contour gedetecteerd is, worden de coordinaten opgeslagen
     print('start color detection''\n')
     
     zwart = 0
@@ -73,7 +64,7 @@ def object_detection(b):
     for (y) in range(height):
         for(x) in range(width):
             
-            if (contour_image[y,x] == 255,255,255 ):
+            if (contour_image[y,x] != 0,0,0):
     
                 LAB_array = LAB_image[y,x]
 
@@ -104,8 +95,7 @@ def object_detection(b):
         print('procent is zwart''\n')
     else:
         print('er ligt geen plastic op de band bij foto %i'%b)
-                
-                
+                                
 a = 1
 
 for b in range(a):
