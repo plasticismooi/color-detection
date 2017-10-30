@@ -109,49 +109,10 @@ def object_detection(b):
                                 f = f + 2
 
                     #array is even
-                    
-                        
 
-
-
-
-               
-
-
-
-
-
-
-
-
-                    
-
-                        
-
-
-
-
-                
 
         cv2.imwrite('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fotos\\plastic_4_test.png',image)
-         
-
-
-
-        
-
-        
-
-       
-
-        
-
-
-
-            
-
-
-   
+  
     print('start color detection''\n')
     
     zwart = 0
@@ -191,11 +152,9 @@ def object_detection(b):
         print('er ligt geen plastic op de band bij foto %i'%b)
                 
            
-     
+
 a = 1
 
-
-    
 #foto's doorlopen die gemaakt zijn in setup_camera functie
 for b in range(a):
     object_detection(b)
