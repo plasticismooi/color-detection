@@ -1,6 +1,6 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 13-10-2017
+# date : 31-10-2017
 
 import numpy as np
 import cv2
@@ -22,11 +22,6 @@ def setup_camera(FotoNumber):
     #beste instelling voor belichting op loopband
     camera.awb_mode ='auto'
     camera.brightness = 60
-    camera.exposure_mode = 'auto'
-    camera.raw_format = 'rgb'
-   
-    camera.start_preview()
-    
     #foto nemen
     camera.capture('/media/pi/9E401DB5401D94DD/RGB/image_%i.png'%FotoNumber)
     camera.close()
@@ -35,7 +30,7 @@ def setup_camera(FotoNumber):
     
 
 
-def object_detection(FotoNumber):
+def color_detection(FotoNumber):
     print('start background detection')
     #inlezen fotos
     image = cv2.imread('/media/pi/9E401DB5401D94DD/RGB/image_%i.png'%FotoNumber)
@@ -105,4 +100,4 @@ for b in range(FotoNumber):
     
 #foto's doorlopen die gemaakt zijn in setup_camera functie
 for b in range(FotoNumber):
-    object_detection(FotoNumber)
+    color_detection(FotoNumber)
