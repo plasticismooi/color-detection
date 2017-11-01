@@ -4,7 +4,7 @@
 
 import numpy as np
 import cv2
-from picamera import PiCamera
+#from picamera import PiCamera
 from time import sleep
 import matplotlib
 from matplotlib import pyplot as plt
@@ -28,52 +28,39 @@ def setup_camera(FotoNumber):
     #2.05 is de totale tijd die de lopendeband nodig heeft om nieuw plastic onder de camera te leggen
     sleep(2.05)
     
-
-
 def color_detection(FotoNumber):
-    print('start background detection')
-    #inlezen fotos
-    image = cv2.imread('/media/pi/9E401DB5401D94DD/RGB/image_%i.png'%FotoNumber)
-    #deel van de foto is niet op van lopende band, deze moet weggeknipt worden
-    image = image[55:768, 0:1024]
-    
-    height, width, channels = image.shape
-
-    for LoopVariableY in range(height):
-        for LoopVariableX in range(width):
-
-            BGR_array = image[LoopVariableY,LoopVariableY]
-            if (((BGR_array[0]**2) + (BGR_array[1]**2) + (BGR_array[2]**2)) < 155**2):
-                image[LoopVariableY, LoopVariableX] = [0,0,0]
-                
-    LAB_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
-    
-    print('Background detected''\n')
     print('start color detection')
-    
+    #inlezen fotos
+    image = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fotos\\plastic_4.png')
+    LAB_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+    #deel van de foto is niet op van lopende band, deze moet weggeknipt worden
+    #image = image[55:768, 0:1024]
+
     zwart = 0
     kleur = 0
     wit = 0
     pixels_totaal = 0
     
-    for (LoopVariableY) in range(height):
-        for(LoopVariableX) in range(width):
-            
-            if (contour_image[LoopVariableY,LoopVariableY] != 0,0,0):
-    
-                LAB_array = LAB_image[y,x]
+    height, width, channels = image.shape
+
+    for LoopVariableY in range(height - 1):
+        for LoopVariableX in range(width - 1):
+
+            BGR_array = image[LoopVariableY,LoopVariableX]
+            if (((BGR_array[0]**2) + (BGR_array[1]**2) + (BGR_array[2]**2)) > 155**2):
+          
+                LAB_array = LAB_image[LoopVariableY,LoopVariableX]
 
                 #assenstelsel aanpassen naar 0-100
                 LAB_array[0] = (LAB_array[0] * 0.392)
-                if (LAB_array[0] == 0):
-                    pass
-                elif ((LAB_array[0] > 0) & (LAB_array[0] < 21)):
-                    zwart = zwart + 1
+
+                if ( LAB_array[0] < 21):
+                    zwart += 1
                 elif ((LAB_array[0] > 20) & (LAB_array[0] < 70)):
-                   kleur = kleur + 1
+                   kleur += 1
                 elif ( LAB_array[0] >= 70 ):
-                    wit = wit + 1
-                    
+                    wit += 1
+                  
     pixels_totaal = wit + zwart + kleur
      #wanneer het voorkomt dat er geen plastic op de band ligt, zijn er geen pixels, dus zal er door nul gedeeld worden, dit moet voorkomen worden
                
@@ -95,8 +82,8 @@ def color_detection(FotoNumber):
                                
 FotoNumber = 1
 
-for b in range(FotoNumber):
-    setup_camera(FotoNumber)
+#for b in range(FotoNumber):
+#   setup_camera(FotoNumber)
     
 #foto's doorlopen die gemaakt zijn in setup_camera functie
 for b in range(FotoNumber):
