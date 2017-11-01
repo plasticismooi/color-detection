@@ -34,13 +34,14 @@ image1 = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fo
 image2 = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fotos\\plastic_6.png')
 
 #image_1 instellen als object
-image_1 = color_detection(image1, 155)
+image_1 = color_detection(image1)
 image_1.Detect()
 image_1.PrintTotalPixels()
 image_1.PrintBoundary()
 image_1.PrintPercentages()
 
-image_2 = color_detection(image2, 154)
+image_2 = color_detection(image2)
+image_2.SetBoundary(154)
 image_2.Detect()
 image_2.PrintTotalPixels()
 image_2.PrintBoundary()

@@ -1,16 +1,22 @@
+#OOP approach for color detection
+# Tom Landzaat student @ EE THUAS
+# student ID : 14073595
+# date : 1-11-2017
+
 import cv2
 
 class color_detection:
 
     TotalPixels = 0
+    #standard boundary is 155, adjust with SetBoundary() if needed
     boundary = 155
     zwart = 0
     wit = 0
     kleur = 0 
 
-    def __init__(self, image, boundary):
+    def __init__(self, image):
         self.image = image
-        self.boundary = boundary
+        
         #detection in RGB or CIELAB?
 
     def Detect(self):
@@ -37,7 +43,11 @@ class color_detection:
                         self.wit += 1
         
         TotalPixels = self.wit + self.kleur + self.zwart
-        color_detection.TotalPixels = TotalPixels
+        self.TotalPixels = TotalPixels
+
+    def CombineAllImages(self, ):
+        #loop all instances and add wit, zwart, kleur accordingly
+
 
 
     def PrintTotalPixels(self):
