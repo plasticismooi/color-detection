@@ -10,7 +10,7 @@ import matplotlib
 from matplotlib import pyplot as plt
 import math
 #project .py files
-from color_detection import AddColor
+from AddColor import AddColor
 from color_detection import color_detection
 
 
@@ -38,7 +38,7 @@ image2 = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fo
 
 height, width, channels = image1.shape
 
-#image_1 instellen als object
+#set images as objects
 image_1 = color_detection(image1)
 image_2 = color_detection(image2)
 
@@ -46,35 +46,18 @@ image_2 = color_detection(image2)
 yellow = AddColor(90, 60)
 orange = AddColor(30, 50)
 
-for LoopVariableY in range(height):
-    for LoopVariableX in range(width):
+#loop over all image object of the class color_detection
+for image in color_detection._registery:
 
-        BGR_array = image1[LoopVariableY, LoopVariableX]
-        if(((BGR_array[0]**2) + (BGR_array[1]**2) + (BGR_array[2]**2)) > image_1.boundary**2):
+    for loopvariableY in range(height):
+        for loopvariableX in range(width):
 
-            image_1.detect(LoopVariableY, LoopVariableX, yellow)
-            image_1.detect(LoopVariableY, LoopVariableX, orange)
+            bgr_array = image1[loopvariableY, loopvariableX]
+            if(((bgr_array[0]**2) + (bgr_array[1]**2) + (bgr_array[2]**2)) > image_1.boundary**2):
 
-
-
-
-
+                image.detect(loopvariableY, loopvariableX, yellow)
+                image.detect(loopvariableY, loopvariableX, orange)
 
 
 
-
-          
-            
-
-
-
-
-
-
-
-
-
-
-
-    
 
