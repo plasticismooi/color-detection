@@ -9,7 +9,10 @@ from time import sleep
 import matplotlib
 from matplotlib import pyplot as plt
 import math
+#project .py files
+from color_detection import AddColor
 from color_detection import color_detection
+
 
 def setup_camera(FotoNumber):
     
@@ -33,19 +36,37 @@ def setup_camera(FotoNumber):
 image1 = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fotos\\plastic_4.png')
 image2 = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fotos\\plastic_6.png')
 
+height, width, channels = image1.shape
+
 #image_1 instellen als object
 image_1 = color_detection(image1)
-image_1.Detect()
-image_1.PrintTotalPixels()
-image_1.PrintBoundary()
-image_1.PrintPercentages()
-
 image_2 = color_detection(image2)
-image_2.SetBoundary(154)
-image_2.Detect()
-image_2.PrintTotalPixels()
-image_2.PrintBoundary()
-image_2.PrintPercentages()
+
+#color definitions
+yellow = AddColor(90, 60)
+orange = AddColor(30, 50)
+
+for LoopVariableY in range(height):
+    for LoopVariableX in range(width):
+
+        BGR_array = image1[LoopVariableY, LoopVariableX]
+        if(((BGR_array[0]**2) + (BGR_array[1]**2) + (BGR_array[2]**2)) > image_1.boundary**2):
+
+            image_1.detect(LoopVariableY, LoopVariableX, yellow)
+            image_1.detect(LoopVariableY, LoopVariableX, orange)
+
+
+
+
+
+
+
+
+
+          
+            
+
+
 
 
 

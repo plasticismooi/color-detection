@@ -22,6 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="colors.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="color_detection.py">
       <SubType>Code</SubType>
     </Compile>
