@@ -16,7 +16,7 @@ class color_detection:
 
     def __init__(self, image):
         self.image = image
-        color_detection.__AddToAllImages(self)
+        self.__AddToAllImages()
         
         #detection in RGB or CIELAB?
     def __AddToAllImages(self):
@@ -49,7 +49,7 @@ class color_detection:
         #loop all colors
         for CurrentColor in Color.AllColors:
             #check if pixel is a color
-            print(CurrentColor)
+            Color.PrintAllColors()
 
             
 
@@ -67,6 +67,8 @@ class color_detection:
 
     def PrintBoundary(self):
         print('boundary is', self.boundary, '\n')
+
+
 
 
 

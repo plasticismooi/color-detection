@@ -11,8 +11,9 @@ from matplotlib import pyplot as plt
 import math
 
 #project .py files
-from Color import Color
+
 from color_detection import color_detection
+from Color import Color
 
 
 def TakePictures(FotoNumber):
@@ -44,6 +45,9 @@ image1 = color_detection(image)
 yellow = Color(90, 60)
 orange = Color(30, 50)
 blue = Color(3, 5)
+
+
+Color.PrintHorizontalAngle(yellow)
 
 #loop over all image objects of the class color_detection
 for image in color_detection.AllImages:
