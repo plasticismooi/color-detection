@@ -37,27 +37,23 @@ def TakePictures(FotoNumber):
 #FotoNumber = 1
 #TakePictures(FotoNumber)
 
+
+image = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fotos\\plastic_4.png')
+image1 = color_detection(image)
 #color definitions
 yellow = Color(90, 60)
 orange = Color(30, 50)
 blue = Color(3, 5)
 
-print(yellow.__dict__)
-Color.PrintHorizontalAngle
-Color.PrintAllColors
+#loop over all image objects of the class color_detection
+for image in color_detection.AllImages:
+    image.detect()
+
+    
 
 
-#loop over all image object of the class color_detection
-for image in color_detection._registery:
 
-    color_detection.SetBoundary(155)
-    height, width, channels = image.shape
 
-    for loopvariableY in range(height):
-        for loopvariableX in range(width):
 
-            bgr_array = image[loopvariableY, loopvariableX]
-            if(((bgr_array[0]**2) + (bgr_array[1]**2) + (bgr_array[2]**2)) > image.boundary**2):
-
-                #image.detect
-                pass
+                
+               
