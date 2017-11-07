@@ -1,10 +1,9 @@
 class Color:
     AllColors = []
     
-
-    def __init__(self, HorizontalAngle, VerticalAngle):
-        self.HorizontalAngle = HorizontalAngle
-        self.VerticalAngle = VerticalAngle
+    def __init__(self, LeftAngle, RightAngle):
+        self.LeftAngle = LeftAngle
+        self.RightAngle = RightAngle
         self.PixelCount = 0
         self.__AddColorToAllColors()
 
@@ -15,11 +14,11 @@ class Color:
     def PrintAllColors():
         print(Color.AllColors)
 
-    def PrintHorizontalAngle(self):
-        print('HorizontalAngle is :', self.HorizontalAngle)
+    def PrintLeftAngle(self):
+        print('LeftAngle is :', self.LeftAngle)
 
-    def PrintVerticalAngle(self):
-        print('VerticalAngle is : ', self.VerticalAngle)
+    def PrintRightAngle(self):
+        print('RightAngle is : ', self.RightAngle)
 
 
 
