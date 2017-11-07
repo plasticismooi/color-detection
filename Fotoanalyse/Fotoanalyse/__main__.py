@@ -10,6 +10,7 @@ import matplotlib
 from matplotlib import pyplot as plt
 import math
 
+
 #project .py files
 
 from color_detection import color_detection
@@ -24,12 +25,16 @@ def TakePictures(FotoNumber):
     #camera.shutter_speed = 10000
     #camera.awb_mode ='auto'
     #camera.brightness = 60
-
+    
     #take picture
     #image = camera.capture
-    image = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fotos\\plastic_4.png')
+    image = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fotos\\download.png')/255
     #convert image to LAB_image
-    LAB_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+    temp_image = image.astype(np.float32)
+    LAB_image = cv2.cvtColor(temp_image, cv2.COLOR_BGR2LAB)
+
+    image = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fotos\\download.png')
+
 
     FotoNumber = color_detection(image, LAB_image)
     #camera.close()
@@ -42,21 +47,24 @@ FotoNumber = 1
 TakePictures(FotoNumber)
 
 
-
-
 #color definitions
-yellow = Color(90, 60)
-orange = Color(30, 50)
-blue = Color(3, 5)
 
-
-Color.PrintLeftAngle(yellow)
+test1 = Color(1, 90)
+test2 = Color(91, 180)
+test3 = Color(181, 270)
+test4 = Color(271, 360)
 
 #loop over all image objects of the class color_detection
 for image in color_detection.AllImages:
     image.detect()
 
-color_detection.PrintTotalPixels(image1)
+Color.PrintPixelCount(test1)
+Color.PrintPixelCount(test1)
+Color.PrintPixelCount(test3)
+Color.PrintPixelCount(test4)
+
+
+
 
     
 

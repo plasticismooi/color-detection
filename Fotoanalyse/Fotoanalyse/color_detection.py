@@ -62,7 +62,8 @@ class color_detection:
         elif LAB_array[0] <= color_detection.BlackBoundary:
             color_detection.BlackPixels += 1
         else:
-
+            if (angle == None):
+                return
             for CurrentColor in Color.AllColors:
                 
                 if CurrentColor.LeftAngle > angle:
@@ -71,12 +72,14 @@ class color_detection:
                         CurrentColor.PixelCount += 1
                        
         
-
     def ConvertToAngles(self, loopvariableY, loopvariableX):
         CIELAB_array = self.LAB_image[loopvariableY, loopvariableX]
 
         a = CIELAB_array[1] 
         b = CIELAB_array[2] 
+
+        if (a == 0) | (b == 0):
+            return
 
         QuadrantAngle = self.__ReturnQuadrantAngle(a, b)
 
