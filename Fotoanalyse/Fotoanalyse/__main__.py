@@ -28,12 +28,12 @@ def TakePictures(FotoNumber):
     
     #take picture
     #image = camera.capture
-    image = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fotos\\download.png')/255
+    image = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fotos\\butterfly.png')/255
     #convert image to LAB_image
     temp_image = image.astype(np.float32)
     LAB_image = cv2.cvtColor(temp_image, cv2.COLOR_BGR2LAB)
 
-    image = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fotos\\download.png')
+    image = cv2.imread('C:\\Users\\tom_l\\Desktop\\School\\HHS\\Jaar_3\\Stage_1\\fotos\\butterfly.png')
 
 
     FotoNumber = color_detection(image, LAB_image)
@@ -49,7 +49,7 @@ TakePictures(FotoNumber)
 
 #color definitions
 
-test1 = Color(1, 90)
+test1 = Color(0, 90)
 test2 = Color(91, 180)
 test3 = Color(181, 270)
 test4 = Color(271, 360)
@@ -59,9 +59,14 @@ for image in color_detection.AllImages:
     image.detect()
 
 Color.PrintPixelCount(test1)
-Color.PrintPixelCount(test1)
+Color.PrintPixelCount(test2)
 Color.PrintPixelCount(test3)
 Color.PrintPixelCount(test4)
+
+color_detection.PrintTotalPixels(FotoNumber)
+
+color_detection.PrintTotalBlackPixels(FotoNumber)
+color_detection.PrintTotalWhitePixels(FotoNumber)
 
 
 

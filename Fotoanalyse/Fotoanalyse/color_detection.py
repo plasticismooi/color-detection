@@ -42,6 +42,7 @@ class color_detection:
             for loopvariableX in range(width):
 
                 if self.DetectFlakes(loopvariableY, loopvariableX) == True:
+                    color_detection.TotalPixels += 1
                     self.DetectColor(loopvariableY, loopvariableX)
                 
 
@@ -49,27 +50,29 @@ class color_detection:
         #check if pixel is plastic or not
         bgr_array = self.image[loopvariableY, loopvariableX]
         if(((bgr_array[0]**2) + (bgr_array[1]**2) + (bgr_array[2]**2)) > self.boundary**2):      
-            self.TotalPixels += 1
+
             return True
                
 
     def DetectColor(self, loopvariableY, loopvariableX):       
-        angle = self.ConvertToAngles(loopvariableY, loopvariableX)
-
+        
         LAB_array = self.LAB_image[loopvariableY, loopvariableX]
         if LAB_array[0] >= color_detection.WhiteBoundary:
             color_detection.WhitePixels += 1
         elif LAB_array[0] <= color_detection.BlackBoundary:
             color_detection.BlackPixels += 1
         else:
+            angle = self.ConvertToAngles(loopvariableY, loopvariableX)
+
             if (angle == None):
                 return
             for CurrentColor in Color.AllColors:
                 
-                if CurrentColor.LeftAngle > angle:
-                    if CurrentColor.RightAngle < angle:
+                if CurrentColor.LeftAngle >= angle:
+                    if CurrentColor.RightAngle <= angle:
 
                         CurrentColor.PixelCount += 1
+                        return
                        
         
     def ConvertToAngles(self, loopvariableY, loopvariableX):
@@ -78,8 +81,12 @@ class color_detection:
         a = CIELAB_array[1] 
         b = CIELAB_array[2] 
 
-        if (a == 0) | (b == 0):
-            return
+        a = round(a, None)
+        b = round(b, None)
+        
+        if b == 0.0:
+            return self.__ReturnAngleIfBIsNull(a,b)
+
 
         QuadrantAngle = self.__ReturnQuadrantAngle(a, b)
 
@@ -93,7 +100,6 @@ class color_detection:
 
         return angle
 
-
     def __ReturnQuadrantAngle(self, a, b):
         if (b < 0) & (a > 0):
             QuadrantAngle = 0
@@ -105,6 +111,13 @@ class color_detection:
             QuadrantAngle = 270
         return QuadrantAngle
 
+    def __ReturnAngleIfBIsNull(self, a, b):
+        if a > 0:
+            angle = 180
+            return angle
+        else:
+            angle = 0 
+            return angle
 
     def CalcPercentages(self):
 
@@ -113,7 +126,7 @@ class color_detection:
             pass
 
     def PrintTotalPixels(self):
-        print('the amount of pixels in', self.TotalPixels, '\n')
+        print('the amount of pixels in', color_detection.TotalPixels, '\n')
 
     #set and print boundary
     def SetBoundary(self, boundary):
@@ -129,12 +142,21 @@ class color_detection:
     def PrintWhiteBoundary(self):
         print('white boundary is', self.WhiteBoundary, '\n')
 
+    def PrintTotalWhitePixels(self):    
+        print('total white pixels', color_detection.WhitePixels, '\n')
+
     #set and print black boundary
     def SetBlackBoundary(self):
         self.BlackBoundary = BlackBoundary
 
     def PrintBlackBoundary(self):
         print('black boundary is', self.BlackBoundary, '\n')
+
+    def PrintTotalBlackPixels(self):    
+        print('total black pixels', color_detection.BlackPixels, '\n')
+        
+
+        
 
 
 
