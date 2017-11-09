@@ -27,8 +27,6 @@ class color_detection:
         self.LAB_image = LAB_image
         self.__AddToAllImages()
 
-        
-        
     def __AddToAllImages(self):
         color_detection.AllImages.append(self)
 
@@ -41,20 +39,18 @@ class color_detection:
         for loopvariableY in range(height):
             for loopvariableX in range(width):
 
-                if self.DetectFlakes(loopvariableY, loopvariableX) == True:
+                if self.__DetectFlakes(loopvariableY, loopvariableX) == True:
                     color_detection.TotalPixels += 1
-                    self.DetectColor(loopvariableY, loopvariableX)
+                    self.__DetectColor(loopvariableY, loopvariableX)
                 
-
-    def DetectFlakes(self, loopvariableY, loopvariableX):
+    def __DetectFlakes(self, loopvariableY, loopvariableX):
         #check if pixel is plastic or not
         bgr_array = self.image[loopvariableY, loopvariableX]
         if(((bgr_array[0]**2) + (bgr_array[1]**2) + (bgr_array[2]**2)) > self.boundary**2):      
 
             return True
-               
-
-    def DetectColor(self, loopvariableY, loopvariableX):       
+              
+    def __DetectColor(self, loopvariableY, loopvariableX):       
         
         LAB_array = self.LAB_image[loopvariableY, loopvariableX]
         if LAB_array[0] >= color_detection.WhiteBoundary:
@@ -62,20 +58,37 @@ class color_detection:
         elif LAB_array[0] <= color_detection.BlackBoundary:
             color_detection.BlackPixels += 1
         else:
-            angle = self.ConvertToAngles(loopvariableY, loopvariableX)
+            angle = self.__ConvertToAngles(loopvariableY, loopvariableX)
 
             if (angle == None):
                 return
-            for CurrentColor in Color.AllColors:
-                
+            self.__DetectIndividualColors(angle)
+
+
+    def __DetectIndividualColors(self, angle):
+        for CurrentColor in Color.AllColors:
+
+            if self.__CheckIfAnglesCross0(CurrentColor) == True:
+
+                if (CurrentColor.LeftAngle >= angle) | (CurrentColor.RightAngle <= angle):
+                    CurrentColor.PixelCount += 1
+                    return
+            else:
                 if CurrentColor.LeftAngle >= angle:
                     if CurrentColor.RightAngle <= angle:
-
                         CurrentColor.PixelCount += 1
                         return
-                       
-        
-    def ConvertToAngles(self, loopvariableY, loopvariableX):
+
+
+
+
+    def __CheckIfAnglesCross0(self, CurrentColor):
+        if CurrentColor.LeftAngle < CurrentColor.RightAngle:
+            return True
+        else:
+            return False
+
+    def __ConvertToAngles(self, loopvariableY, loopvariableX):
         CIELAB_array = self.LAB_image[loopvariableY, loopvariableX]
 
         a = CIELAB_array[1] 
@@ -119,12 +132,34 @@ class color_detection:
             angle = 0 
             return angle
 
-    def CalcPercentages(self):
+    def PrintAllPercentages(self):
+
+        WhitePercentage = self.__CalcWhitePercentage()
+        BlackPercentage = self.__CalcBlackPercentage()
+
+        print(BlackPercentage, '% is black')
+        print(WhitePercentage, '% is white')
 
         for CurrentColor in Color.AllColors:
-        #loop all Color instances and calculate percantages
-            pass
+            
+            percentage = self.__CalcPercentages(CurrentColor)
+            print(percentage, '% is', CurrentColor.name)
 
+    def __CalcWhitePercentage(self):
+        return ((color_detection.WhitePixels / color_detection.TotalPixels) * 100)
+
+    def __CalcBlackPercentage(self):
+        return ((color_detection.BlackPixels / color_detection.TotalPixels) * 100)
+        
+
+    def __CalcPercentages(self, CurrentColor):
+
+        return ((CurrentColor.PixelCount / color_detection.TotalPixels) * 100)
+
+        
+        
+
+ 
     def PrintTotalPixels(self):
         print('the amount of pixels in', color_detection.TotalPixels, '\n')
 

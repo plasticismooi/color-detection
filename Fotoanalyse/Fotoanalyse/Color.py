@@ -1,7 +1,8 @@
 class Color:
     AllColors = []
     
-    def __init__(self, RightAngle, LeftAngle):
+    def __init__(self, name, RightAngle, LeftAngle):
+        self.name = name
         self.LeftAngle = LeftAngle
         self.RightAngle = RightAngle
         self.PixelCount = 0
@@ -22,6 +23,7 @@ class Color:
 
     def PrintRightAngle(self):
         print('RightAngle is : ', self.RightAngle)
+
 
 
 
