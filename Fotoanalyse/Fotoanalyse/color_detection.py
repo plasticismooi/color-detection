@@ -132,27 +132,27 @@ class color_detection:
             angle = 0 
             return angle
 
-    def PrintAllPercentages(self):
+    def PrintAllPercentages():
 
-        WhitePercentage = self.__CalcWhitePercentage()
-        BlackPercentage = self.__CalcBlackPercentage()
+        WhitePercentage = color_detection.__CalcWhitePercentage()
+        BlackPercentage = color_detection.__CalcBlackPercentage()
 
         print(BlackPercentage, '% is black')
         print(WhitePercentage, '% is white')
 
         for CurrentColor in Color.AllColors:
             
-            percentage = self.__CalcPercentages(CurrentColor)
+            percentage = color_detection.__CalcPercentages(CurrentColor)
             print(percentage, '% is', CurrentColor.name)
 
-    def __CalcWhitePercentage(self):
+    def __CalcWhitePercentage():
         return ((color_detection.WhitePixels / color_detection.TotalPixels) * 100)
 
-    def __CalcBlackPercentage(self):
+    def __CalcBlackPercentage():
         return ((color_detection.BlackPixels / color_detection.TotalPixels) * 100)
         
 
-    def __CalcPercentages(self, CurrentColor):
+    def __CalcPercentages(CurrentColor):
 
         return ((CurrentColor.PixelCount / color_detection.TotalPixels) * 100)
 
@@ -160,29 +160,29 @@ class color_detection:
         
 
  
-    def PrintTotalPixels(self):
-        print('the amount of pixels in', color_detection.TotalPixels, '\n')
+    def PrintTotalPixels():
+        print('the amount of pixels is', color_detection.TotalPixels, '\n')
 
     #set and print boundary
-    def SetBoundary(self, boundary):
-        self.boundary = boundary
+    def SetBoundary(boundary):
+        color_detection.boundary = boundary
 
     def PrintBoundary(self):
         print('boundary is', self.boundary, '\n')
 
     #set and print white boundary
-    def SetWhiteBoundary(self, WhiteBoundary):
-        self.WhiteBoundary = WhiteBoundary
+    def SetWhiteBoundary(WhiteBoundary):
+        color_detection.WhiteBoundary = WhiteBoundary
 
     def PrintWhiteBoundary(self):
         print('white boundary is', self.WhiteBoundary, '\n')
 
-    def PrintTotalWhitePixels(self):    
+    def PrintTotalWhitePixels():    
         print('total white pixels', color_detection.WhitePixels, '\n')
 
     #set and print black boundary
-    def SetBlackBoundary(self):
-        self.BlackBoundary = BlackBoundary
+    def SetBlackBoundary(BlackBoundary):
+        color_detection.BlackBoundary = BlackBoundary
 
     def PrintBlackBoundary(self):
         print('black boundary is', self.BlackBoundary, '\n')
