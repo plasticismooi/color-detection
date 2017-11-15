@@ -53,6 +53,8 @@ Color('yellow', 157.7, 202.5)
 Color('green', 247.5, 292.5)
 Color('blue', 337.5, 22.5)
 
+color_detection.SetLowestWhiteValue(99)
+
 #loop over all image objects of the class color_detection
 for image in color_detection.ListOfAllImages:
     image.StartColorDetection()

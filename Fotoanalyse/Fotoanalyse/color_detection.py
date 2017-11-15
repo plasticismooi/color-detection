@@ -11,7 +11,7 @@ import math
 class color_detection:
     
     ListOfAllImages = []
-    TotalPixelsOfAllImages = 0
+    TotalPlasticPixelsOfAllImages = 0
     
     BeltColorRadius = 155
 
@@ -33,13 +33,13 @@ class color_detection:
     def StartColorDetection(self):
    
         height, width, channels = self.image.shape
-        #loop each pixel
+        #Looping must become its own function
         for loopvariableY in range(height):
             for loopvariableX in range(width):
-      
+       
                 if self.__CheckIfPixelIsPlastic(loopvariableY, loopvariableX) == True:
-                    color_detection.TotalPixelsOfAllImages += 1
-                    self.__AddColorToPixelCount(loopvariableY, loopvariableX)
+                    color_detection.TotalPlasticPixelsOfAllImages += 1
+                    self.__AddPixelToCorrectPixelCount(loopvariableY, loopvariableX)
                 
     def __CheckIfPixelIsPlastic(self, loopvariableY, loopvariableX):
         #check if pixel is plastic or not
@@ -49,63 +49,81 @@ class color_detection:
         else: 
             return False
               
-    def __AddColorToPixelCount(self, loopvariableY, loopvariableX):   
+    def __AddPixelToCorrectPixelCount(self, loopvariableY, loopvariableX):   
 
         if self.__CheckIfPixelIsWhite(loopvariableY, loopvariableX) == True:
             self.__AddWhitePixelToWhitePixelCount()
         elif self.__CheckIfPixelIsBlack(loopvariableY, loopvariableX) == True:
             self.__AddBlackPixelToBlackPixelCount()
         else:
-            self.__AddRemainingColorsToCorrectPixelCount()
+            self.__AddPixelToCorrectColor(loopvariableY, loopvariableX)
 
-        def __AddRemainingColorsToCorrectPixelCount(loopvariableY, loopvariableX):
-            angle = self.__ReturnAngleFromLoopvariable(loopvariableY, loopvariableX)
+    def __AddPixelToCorrectColor(self, loopvariableY, loopvariableX):
+            angle = self.__CalculateAngleFromLoopvariable(loopvariableY, loopvariableX)
+
+            if self.__CheckIfCalculatedAngleSucceeded(angle) == True:
+                self.__AddPixelToCorrectPixelCountUsingAngle(angle)
+
+    def __CheckIfCalculatedAngleSucceeded(self, angle):
             if (angle == None):
-                return 
-            self.__AddPixelToCorrectPixelCount(angle)
+                return False
+            else:
+                return True
 
-
-        def __CheckIfPixelIsWhite(self, loopvariableY, loopvariableX):
+    def __CheckIfPixelIsWhite(self, loopvariableY, loopvariableX):
             LAB_array = self.LAB_image[loopvariableY, loopvariableX]
             if LAB_array[0] >= color_detection.LowestWhiteValue:
                 return True
             else:
                 return False
-        def __CheckIfPixelIsBlack(self, loopvariableY, loopvariableX):
+
+    def __CheckIfPixelIsBlack(self, loopvariableY, loopvariableX):
             LAB_array = self.LAB_image[loopvariableY, loopvariableX]
             if LAB_array[0] <= color_detection.HighestBlackValue:
                 return True
             else:
                 return False
 
-        def __AddWhitePixelToWhitePixelCount():
+    def __AddWhitePixelToWhitePixelCount(self):
+
             color_detection.TotalAmountWhitePixels += 1
 
-        def __AddBlackPixelToBlackPixelCount():
+    def __AddBlackPixelToBlackPixelCount(self):
+
             color_detection.TotalAmountBlackPixels += 1
 
+    def __AddPixelToCorrectPixelCountUsingAngle(self, angle):
 
-    def __AddPixelToCorrectPixelCount(self, angle):
         for CurrentColor in Color.AllColors:
 
-            if self.__CheckIfAnglesCross0(CurrentColor) == True:
-
-                if (CurrentColor.LeftAngle >= angle) | (CurrentColor.RightAngle <= angle):
-                    CurrentColor.PixelCount += 1
-                    return
+            if self.__CheckIfAnglesCrossBAxis(CurrentColor) == True:
+                self.__AddPixelToCorrectColorIfAnglesCrossBAxis(CurrentColor, angle)
             else:
-                if CurrentColor.LeftAngle >= angle:
-                    if CurrentColor.RightAngle <= angle:
-                        CurrentColor.PixelCount += 1
-                        return
+                #function __AddPixelToCurrentColor returns true when the pixels matches a color
+                 if self.__AddPixelToCurrentColor(CurrentColor, angle) == True:
+                     return
 
-    def __CheckIfAnglesCross0(self, CurrentColor):
+    def __AddPixelToCurrentColor(self, CurrentColor, angle):
+        if CurrentColor.LeftAngle >= angle:
+            if CurrentColor.RightAngle <= angle:
+                CurrentColor.PixelCount += 1
+                return True
+            else:
+                return False
+
+    def __AddPixelToCorrectColorIfAnglesCrossBAxis(self, CurrentColor, angle):
+
+        if (CurrentColor.LeftAngle >= angle) | (CurrentColor.RightAngle <= angle):
+            CurrentColor.PixelCount += 1
+            return
+
+    def __CheckIfAnglesCrossBAxis(self, CurrentColor):
         if CurrentColor.LeftAngle < CurrentColor.RightAngle:
             return True
         else:
             return False
 
-    def __ReturnAngleFromLoopvariable(self, loopvariableY, loopvariableX):
+    def __CalculateAngleFromLoopvariable(self, loopvariableY, loopvariableX):
         CIELAB_array = self.LAB_image[loopvariableY, loopvariableX]
 
         a = CIELAB_array[1] 
@@ -150,58 +168,62 @@ class color_detection:
 
     def PrintAllPercentages():
 
-        WhitePercentage = color_detection.__CalcWhitePercentage()
-        BlackPercentage = color_detection.__CalcBlackPercentage()
-
-        print(BlackPercentage, '% is black')
-        print(WhitePercentage, '% is white')
+        print(color_detection.__CalcBlackPercentage(), '% is black')
+        print(color_detection.__CalcWhitePercentage(), '% is white')
 
         for CurrentColor in Color.AllColors:
             
             percentage = color_detection.__CalcPercentages(CurrentColor)
             print(percentage, '% is', CurrentColor.name)
 
-
     def __CalcWhitePercentage():
-        return ((color_detection.TotalAmountWhitePixels / color_detection.TotalPixelsOfAllImages) * 100)
+
+        return ((color_detection.TotalAmountWhitePixels / color_detection.TotalPlasticPixelsOfAllImages) * 100)
 
     def __CalcBlackPercentage():
-        return ((color_detection.TotalAmountBlackPixels / color_detection.TotalPixelsOfAllImages) * 100)
-        
 
+        return ((color_detection.TotalAmountBlackPixels / color_detection.TotalPlasticPixelsOfAllImages) * 100)
+        
     def __CalcPercentages(CurrentColor):
 
-        return ((CurrentColor.PixelCount / color_detection.TotalPixelsOfAllImages) * 100)
+        return ((CurrentColor.PixelCount / color_detection.TotalPlasticPixelsOfAllImages) * 100)
 
-       
-    def PrintTotalPixelsOfAllImages():
-        print('the amount of pixels is', color_detection.TotalPixelsOfAllImages, '\n')
+    def PrintTotalPlasticPixelsOfAllImages():
 
-    #set and print boundary
+        print('the amount of pixels is', color_detection.TotalPlasticPixelsOfAllImages, '\n')
+
     def SetBeltColorRadius(BeltColorRadius):
+
         color_detection.BeltColorRadius = BeltColorRadius
 
     def PrintBoundary(self):
+
         print('boundary is', self.boundary, '\n')
 
     #set and print white boundary
     def SetLowestWhiteValue(LowestWhiteValue):
+
         color_detection.LowestWhiteValue = LowestWhiteValue
 
     def PrintLowestWhiteValue(self):
+
         print('white boundary is', self.LowestWhiteValue, '\n')
 
-    def PrintTotalTotalAmountWhitePixels():    
+    def PrintTotalTotalAmountWhitePixels():   
+         
         print('total white pixels', color_detection.TotalAmountWhitePixels, '\n')
 
     #set and print black boundary
     def SetHighestBlackValue(HighestBlackValue):
+
         color_detection.HighestBlackValue = HighestBlackValue
 
     def PrintHighestBlackValue(self):
+
         print('black boundary is', self.HighestBlackValue, '\n')
 
-    def PrintTotalTotalAmountBlackPixels(self):    
+    def PrintTotalTotalAmountBlackPixels(self): 
+           
         print('total black pixels', color_detection.TotalAmountBlackPixels, '\n')
         
 
