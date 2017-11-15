@@ -28,6 +28,7 @@ class color_detection:
         self.__AddToListOfAllImages()
 
     def __AddToListOfAllImages(self):
+
         color_detection.ListOfAllImages.append(self)
 
     def StartColorDetection(self):
@@ -39,7 +40,8 @@ class color_detection:
        
                 if self.__CheckIfPixelIsPlastic(loopvariableY, loopvariableX) == True:
                     color_detection.TotalPlasticPixelsOfAllImages += 1
-                    self.__AddPixelToCorrectPixelCount(loopvariableY, loopvariableX)
+                    #raise AmountOfDetectedPixel by 1 if colors match
+                    self.__AddPixelToCorrespondingColor(loopvariableY, loopvariableX) 
                 
     def __CheckIfPixelIsPlastic(self, loopvariableY, loopvariableX):
         #check if pixel is plastic or not
@@ -170,6 +172,8 @@ class color_detection:
 
         print(color_detection.__CalcBlackPercentage(), '% is black')
         print(color_detection.__CalcWhitePercentage(), '% is white')
+
+        print()
 
         for CurrentColor in Color.AllColors:
             

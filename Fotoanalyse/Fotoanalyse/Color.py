@@ -5,7 +5,7 @@ class Color:
         self.name = name
         self.LeftAngle = LeftAngle
         self.RightAngle = RightAngle
-        self.PixelCount = 0
+        self.AmountOfDetectedPixels = 0
         self.__AddColorToAllColors()
 
     #private

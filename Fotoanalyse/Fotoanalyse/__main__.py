@@ -48,12 +48,15 @@ TakePictures(FotoNumber)
 
 #color definitions
 
-Color('red', 67.5, 112.5)
-Color('yellow', 157.7, 202.5)
-Color('green', 247.5, 292.5)
-Color('blue', 337.5, 22.5)
+Color('1st quadrant', 0, 90)
+Color('2nd quadrant', 91, 180)
+Color('3rd qudarant', 181, 270)
+Color('4th quadrant', 271, 360)
 
-color_detection.SetLowestWhiteValue(99)
+#initialze values
+
+color_detection.SetBeltColorRadius(1)
+color_detection.SetLowestWhiteValue(70)
 
 #loop over all image objects of the class color_detection
 for image in color_detection.ListOfAllImages:
