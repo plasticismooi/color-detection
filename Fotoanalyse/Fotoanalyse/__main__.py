@@ -53,14 +53,20 @@ Color('2nd quadrant', 91, 180)
 Color('3rd qudarant', 181, 270)
 Color('4th quadrant', 271, 360)
 
-#initialze values
+#initialize values
 
-color_detection.SetBeltColorRadius(1)
-color_detection.SetLowestWhiteValue(70)
+color_detection.SetBeltColorRadius(0)
+
+color_detection.SetLowestWhiteValue(85)
+color_detection.SetHighestBlackValue(20)
+color_detection.SetLongestGreyRadius(10)
+
 
 #loop over all image objects of the class color_detection
 for image in color_detection.ListOfAllImages:
     image.StartColorDetection()
+
+color_detection.PrintTotalPlasticPixelsOfAllImages()
 
 color_detection.PrintAllPercentages()
 
