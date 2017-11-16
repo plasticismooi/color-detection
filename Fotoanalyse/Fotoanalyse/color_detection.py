@@ -12,6 +12,8 @@ class color_detection:
     
     ListOfAllImages = []
     TotalPlasticPixelsOfAllImages = 0
+
+    NumberOfDecimals = 2
     
     BeltColorRadius = 155
 
@@ -192,14 +194,14 @@ class color_detection:
 
     def PrintAllPercentages():
 
-        print(color_detection.__CalcBlackPercentage(), '% is black')
-        print(color_detection.__CalcWhitePercentage(), '% is white')
-        print(color_detection.__CalcGreyPercentage(), '% is grey ','\n')
+        print(round(color_detection.__CalcBlackPercentage(), color_detection.NumberOfDecimals), '% is black')
+        print(round(color_detection.__CalcWhitePercentage(), color_detection.NumberOfDecimals),'% is white')
+        print(round(color_detection.__CalcGreyPercentage(), color_detection.NumberOfDecimals), '% is grey ','\n')
 
         for CurrentColor in Color.AllColors:
             
             percentage = color_detection.__CalcPercentages(CurrentColor)
-            print(percentage, '% is', CurrentColor.name)
+            print(round(percentage, color_detection.NumberOfDecimals), '% is', CurrentColor.name)
 
     def __CalcWhitePercentage():
 
@@ -263,6 +265,9 @@ class color_detection:
     def SetLongestGreyRadius(LongestGreyRadius):
 
         color_detection.LongestGreyRadius = LongestGreyRadius
+
+    def SetNumberOfDecimals(NumberOfDecimals):
+        color_detection.NumberOfDecimals = NumberOfDecimals
 
 
 

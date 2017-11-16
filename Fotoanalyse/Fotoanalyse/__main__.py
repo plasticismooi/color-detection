@@ -55,7 +55,8 @@ Color('4th quadrant', 271, 360)
 
 #initialize values
 
-color_detection.SetBeltColorRadius(0)
+color_detection.SetNumberOfDecimals(1) #max 14
+color_detection.SetBeltColorRadius(70) # if 0 all colors are detected, including the conveyerbelt
 
 color_detection.SetLowestWhiteValue(85)
 color_detection.SetHighestBlackValue(20)

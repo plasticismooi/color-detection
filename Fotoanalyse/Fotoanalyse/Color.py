@@ -16,7 +16,7 @@ class Color:
         print(Color.AllColors)
 
     def PrintAmountOfDetectedPixels(self):
-        print('total PixelCount is', self.AmountOfDetectedPixels)
+        print('The amount of detected pixels is', self.AmountOfDetectedPixels)
 
     def PrintLeftAngle(self):
         print('LeftAngle is :', self.LeftAngle)
