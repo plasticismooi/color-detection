@@ -1,12 +1,13 @@
 #OOP approach for color detection
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 6-11-2017
+# date : 17-11-2017
 
 import cv2
 from Color import Color
 import math
-
+import numpy.ma as ma
+import numpy as np
 #object in this class is a picture
 class color_detection:
     
@@ -24,10 +25,10 @@ class color_detection:
     TotalAmountWhitePixels = 0
     TotalAmountBlackPixels = 0
     TotalAmountGreyPixels = 0
+   
 
-
-    def __init__(self, image, LAB_image):
-        self.image = image
+    def __init__(self, RGB_image, LAB_image):
+        self.image = RGB_image
         self.LAB_image = LAB_image
         self.__AddToListOfAllImages()
 
@@ -36,24 +37,39 @@ class color_detection:
         color_detection.ListOfAllImages.append(self)
 
     def StartColorDetection(self):
+        self.__GetArrayDetectedPixels()
+        print('done')
+
+    def __GetArrayDetectedPixels(self):
+
+        BinaryImage = self.__ReturnImageWithDetectedPixels()
+        #mask image
+
+        height, width, channels = self.LAB_image.shape
+        masked_image = ma.masked_array((self.LAB_image), mask = BinaryImage)
+        ArrayWithDetectedPixels = np.reshape(masked_image, ((height * width), 3))
+
+        return ArrayWithDetectedPixels
+
+
+    def __ReturnImageWithDetectedPixels(self):
+        
+        #create temporary image copy with sqrt(R^2+B^2+G^2)
+        temp_image = np.array(self.image, dtype = 'uint32')**2
+        temp_image = np.sum(temp_image, axis = 2)
+
+        #create bitmask with detected pixels as True and the conveyerbelt as False
+        BinaryImageMap = temp_image <= color_detection.BeltColorRadius**2
+
+        print(BinaryImageMap.shape)
+        BinaryImageMap = np.repeat(BinaryImageMap[:, :, np.newaxis], 3, axis=2)
+        
+        print(BinaryImageMap.shape)
+
+        return BinaryImageMap
    
-        height, width, channels = self.image.shape
-        #Looping must become its own function
-        for loopvariableY in range(height):
-            for loopvariableX in range(width):
-       
-                if self.__CheckIfPixelIsPlastic(loopvariableY, loopvariableX) == True:
-                    color_detection.TotalPlasticPixelsOfAllImages += 1
-                    #raise AmountOfDetectedPixel by 1 if colors match
-                    self.__AddPixelToCorrespondingColor(loopvariableY, loopvariableX) 
-                
-    def __CheckIfPixelIsPlastic(self, loopvariableY, loopvariableX):
-        #check if pixel is plastic or not
-        BGR_array = self.image[loopvariableY, loopvariableX]
-        if(((BGR_array[0]**2) + (BGR_array[1]**2) + (BGR_array[2]**2)) >= self.BeltColorRadius**2):      
-            return True
-        else: 
-            return False
+
+
               
     def __AddPixelToCorrespondingColor(self, loopvariableY, loopvariableX):   
 

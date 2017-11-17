@@ -1,6 +1,6 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 10-11-2017
+# date : 17-11-2017
 
 import numpy as np
 import cv2
@@ -9,6 +9,7 @@ from time import sleep
 import matplotlib
 from matplotlib import pyplot as plt
 import math
+import numpy.ma as ma
 
 
 #project .py files
@@ -28,24 +29,27 @@ def TakePictures(FotoNumber):
     
     #take picture
     #image = camera.capture
-    image = cv2.imread('C://Users//tom_l//OneDrive//HHS//Jaar_3//stage 2//test_image.png')/255
-    #convert image to LAB_image
-    temp_image = image.astype(np.float32)
-    LAB_image = cv2.cvtColor(temp_image, cv2.COLOR_BGR2LAB)
-    
-    image = cv2.imread('C://Users//tom_l//OneDrive//HHS//Jaar_3//stage 2//test_image.png')
+
 
     #camera.close()
     FotoNumber = color_detection(image, LAB_image)
     #Time needed to wait between pictures
     sleep(2.05)
 
-#number of foto's that is going to de taken
-FotoNumber = 1
-TakePictures(FotoNumber)
+    image = cv2.imread('C://Users//tom_l//OneDrive//HHS//Jaar_3//stage 2//test_image.png')/255
+    #convert image to LAB_image
+    temp_image = image.astype(np.float32)
+    LAB_image = cv2.cvtColor(temp_image, cv2.COLOR_BGR2LAB)
+    
 
+RGB_image = cv2.imread('C://Users//tom_l//OneDrive//HHS//Jaar_3//stage 2//test_image.png')/255
+#convert image to LAB_image
+temp_image = RGB_image.astype(np.float32)
+LAB_image = cv2.cvtColor(temp_image, cv2.COLOR_BGR2LAB)
 
+RGB_image = cv2.imread('C://Users//tom_l//OneDrive//HHS//Jaar_3//stage 2//test_image.png')
 
+test_image = color_detection(RGB_image, LAB_image)
 #color definitions
 
 Color('1st quadrant', 0, 90)
@@ -54,22 +58,28 @@ Color('3rd qudarant', 181, 270)
 Color('4th quadrant', 271, 360)
 
 #initialize values
+height, width, channels = test_image.image.shape
 
 color_detection.SetNumberOfDecimals(1) #max 14
-color_detection.SetBeltColorRadius(70) # if 0 all colors are detected, including the conveyerbelt
+color_detection.SetBeltColorRadius(80) # if 0 all colors are detected, including the conveyerbelt
 
-color_detection.SetLowestWhiteValue(85)
-color_detection.SetHighestBlackValue(20)
-color_detection.SetLongestGreyRadius(10)
+test_image.StartColorDetection()
 
 
-#loop over all image objects of the class color_detection
-for image in color_detection.ListOfAllImages:
-    image.StartColorDetection()
 
-color_detection.PrintTotalPlasticPixelsOfAllImages()
 
-color_detection.PrintAllPercentages()
+
+
+
+
+
+##loop over all image objects of the class color_detection
+#for image in color_detection.ListOfAllImages:
+#    image.StartColorDetection()
+
+#color_detection.PrintTotalPlasticPixelsOfAllImages()
+
+#color_detection.PrintAllPercentages()
 
 
 

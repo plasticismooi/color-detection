@@ -1,3 +1,8 @@
+# Tom Landzaat student @ EE THUAS
+# student ID : 14073595
+# date : 17-11-2017
+
+
 class Color:
     AllColors = []
     
