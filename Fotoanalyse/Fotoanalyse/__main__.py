@@ -27,33 +27,21 @@ def TakePictures(FotoNumber):
     camera.brightness = 60
     
     #take picture
-    image = camera.capture
+    RGB_image = camera.capture
 
     camera.close()
-    FotoNumber = color_detection(image, LAB_image)
-    #Time needed to wait between pictures
-    sleep()
-
-    image = cv2.imread('C://Users//tom_l//OneDrive//HHS//Jaar_3//stage 2//test_image.png')/255
+    RGB_image = RGB_image/255
     #convert image to LAB_image
-    temp_image = image.astype(np.float32)
+    temp_image = RGB_image.astype(np.float32)
     LAB_image = cv2.cvtColor(temp_image, cv2.COLOR_BGR2LAB)
 
-    
+    FotoNumber = color_detection(RGB_image, LAB_image)
+
+    sleep(WaitingTime.PictureInterval)
+   
 
 
-x = WaitingTime.CalculateWaitingTime()
-print (x)
-    
 
-RGB_image = cv2.imread('C://Users//tom_l//OneDrive//HHS//Jaar_3//stage 2//test_image.png')/255
-#convert image to LAB_image
-temp_image = RGB_image.astype(np.float32)
-LAB_image = cv2.cvtColor(temp_image, cv2.COLOR_BGR2LAB)
-
-RGB_image = cv2.imread('C://Users//tom_l//OneDrive//HHS//Jaar_3//stage 2//test_image.png')
-
-test_image = color_detection(RGB_image, LAB_image)
 #color definitions
 
 Color('1st quadrant', 0, 90)
@@ -67,7 +55,9 @@ Color('4th quadrant', 271, 360)
 color_detection.SetNumberOfDecimals(2) #max 14
 color_detection.SetBeltColorRadius(80) # if 0 all colors are detected, including the conveyerbelt
 
-test_image.StartColorDetection()
+for image in color_detection.ListOfAllImages:
+
+    image.StartColorDetection()
 
 color_detection.PrintAllPercentages()
 
@@ -79,13 +69,6 @@ color_detection.PrintAllPercentages()
 
 
 
-##loop over all image objects of the class color_detection
-#for image in color_detection.ListOfAllImages:
-#    image.StartColorDetection()
-
-#color_detection.PrintTotalPlasticPixelsOfAllImages()
-
-#color_detection.PrintAllPercentages()
 
 
 
