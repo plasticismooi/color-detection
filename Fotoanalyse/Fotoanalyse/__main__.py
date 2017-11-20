@@ -58,12 +58,14 @@ Color('3rd qudarant', 181, 270)
 Color('4th quadrant', 271, 360)
 
 #initialize values
-height, width, channels = test_image.image.shape
+
 
 color_detection.SetNumberOfDecimals(1) #max 14
 color_detection.SetBeltColorRadius(80) # if 0 all colors are detected, including the conveyerbelt
 
 test_image.StartColorDetection()
+
+color_detection.PrintAllPercentages()
 
 
 

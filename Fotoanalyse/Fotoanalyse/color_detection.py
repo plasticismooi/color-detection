@@ -9,10 +9,11 @@ import math
 import numpy.ma as ma
 import numpy as np
 #object in this class is a picture
+
 class color_detection:
     
     ListOfAllImages = []
-    TotalPlasticPixelsOfAllImages = 0
+    TotalPlasticPixels = 0
 
     NumberOfDecimals = 2
     
@@ -37,22 +38,30 @@ class color_detection:
         color_detection.ListOfAllImages.append(self)
 
     def StartColorDetection(self):
-        self.__GetArrayDetectedPixels()
-        print('done')
 
-    def __GetArrayDetectedPixels(self):
+        ArrayWithPlasticPixels = self.__GetArrayWithPlasticPixels()
+        color_detection.TotalPlasticPixels = len(ArrayWithPlasticPixels)
 
-        BinaryImage = self.__ReturnImageWithDetectedPixels()
-        #mask image
+        for PixelData in ArrayWithPlasticPixels:
+
+            self.__AddPixelToCorrespondingColor(PixelData)
+           
+
+    def __GetArrayWithPlasticPixels(self):
+
+        BinaryImage = self.__GetArrayWithDetectedPixels()
+        
 
         height, width, channels = self.LAB_image.shape
         masked_image = ma.masked_array((self.LAB_image), mask = BinaryImage)
         ArrayWithDetectedPixels = np.reshape(masked_image, ((height * width), 3))
 
+        #delete [-- -- --] from ArrayWithDetectedPixels
+        ArrayWithDetectedPixels = ma.compress_rows(ArrayWithDetectedPixels)
+        
         return ArrayWithDetectedPixels
 
-
-    def __ReturnImageWithDetectedPixels(self):
+    def __GetArrayWithDetectedPixels(self):
         
         #create temporary image copy with sqrt(R^2+B^2+G^2)
         temp_image = np.array(self.image, dtype = 'uint32')**2
@@ -60,67 +69,52 @@ class color_detection:
 
         #create bitmask with detected pixels as True and the conveyerbelt as False
         BinaryImageMap = temp_image <= color_detection.BeltColorRadius**2
-
-        print(BinaryImageMap.shape)
         BinaryImageMap = np.repeat(BinaryImageMap[:, :, np.newaxis], 3, axis=2)
-        
-        print(BinaryImageMap.shape)
 
         return BinaryImageMap
    
+    def __AddPixelToCorrespondingColor(self, PixelData):   
 
-
-              
-    def __AddPixelToCorrespondingColor(self, loopvariableY, loopvariableX):   
-
-        if self.__CheckIfPixelIsWhite(loopvariableY, loopvariableX) == True:
+        if self.__CheckIfPixelIsWhite(PixelData) == True:
             self.__AddWhitePixelToAmountOfWhitePixels()
-        elif self.__CheckIfPixelIsBlack(loopvariableY, loopvariableX) == True:
+        elif self.__CheckIfPixelIsBlack(PixelData) == True:
             self.__AddBlackPixelToAmountOfBlackPixels()
-        elif self.__CheckIfPixelIsGrey(loopvariableY, loopvariableX) == True:
+        elif self.__CheckIfPixelIsGrey(PixelData) == True:
             self.__AddGreyPixelToAmountOfGreyPixels()
         else:
-            self.__AddPixelToCorrectColor(loopvariableY, loopvariableX)
+            self.__AddPixelToCorrectColor(PixelData)
 
-    def __AddPixelToCorrectColor(self, loopvariableY, loopvariableX):
-            angle = self.__CalculateAngleFromLoopvariable(loopvariableY, loopvariableX)
+    def __AddPixelToCorrectColor(self, PixelData):
+            angle = self.__CalculateAngle(PixelData)
 
-            if self.__CheckIfCalculatedAngleSucceeded(angle) == True:
-                self.__AddPixelToCorrectColorUsingAngle(angle)
+            self.__AddPixelToCorrectColorUsingAngle(angle)
 
-    def __CheckIfCalculatedAngleSucceeded(self, angle):
-            if (angle == None):
-                return False
-            else:
-                return True
-
-    def __CheckIfPixelIsWhite(self, loopvariableY, loopvariableX):
-            LAB_array = self.LAB_image[loopvariableY, loopvariableX]
-            if LAB_array[0] >= color_detection.LowestWhiteValue:
+    def __CheckIfPixelIsWhite(self, PixelData):
+            
+            if PixelData[0] >= color_detection.LowestWhiteValue:
                 return True
             else:
                 return False
 
-    def __CheckIfPixelIsBlack(self, loopvariableY, loopvariableX):
-            LAB_array = self.LAB_image[loopvariableY, loopvariableX]
-            if LAB_array[0] <= color_detection.HighestBlackValue:
+    def __CheckIfPixelIsBlack(self, PixelData):
+            
+            if PixelData[0] <= color_detection.HighestBlackValue:
                 return True
             else:
                 return False
 
-    def __CheckIfPixelIsGrey(self, loopvariableY, loopvariableX):
+    def __CheckIfPixelIsGrey(self, PixelData):
 
-        GreyRadius = self.__CalculateRadius(loopvariableY, loopvariableX)
+        GreyRadius = self.__CalculateRadius(PixelData)
 
         if color_detection.LongestGreyRadius >= GreyRadius :
             return True
         else: 
             return False
 
-    def __CalculateRadius(self, loopvariableY, loopvariableX):
+    def __CalculateRadius(self, PixelData):
 
-        LAB_array = self.LAB_image[loopvariableY, loopvariableX]
-        return math.sqrt(LAB_array[1]**2 + LAB_array[2]**2)
+        return math.sqrt(PixelData[1]**2 + PixelData[2]**2)
 
     def __AddGreyPixelToAmountOfGreyPixels(self):
 
@@ -165,14 +159,10 @@ class color_detection:
         else:
             return False
 
-    def __CalculateAngleFromLoopvariable(self, loopvariableY, loopvariableX):
-        CIELAB_array = self.LAB_image[loopvariableY, loopvariableX]
+    def __CalculateAngle(self, PixelData):
 
-        a = CIELAB_array[1] 
-        b = CIELAB_array[2] 
-
-        a = round(a, None)
-        b = round(b, None)
+        a = PixelData[1] 
+        b = PixelData[2] 
         
         if b == 0.0:
             return self.__ReturnAngleIfBIsNull(a)
@@ -221,23 +211,23 @@ class color_detection:
 
     def __CalcWhitePercentage():
 
-        return ((color_detection.TotalAmountWhitePixels / color_detection.TotalPlasticPixelsOfAllImages) * 100)
+        return ((color_detection.TotalAmountWhitePixels / color_detection.TotalPlasticPixels) * 100)
 
     def __CalcBlackPercentage():
 
-        return ((color_detection.TotalAmountBlackPixels / color_detection.TotalPlasticPixelsOfAllImages) * 100)
+        return ((color_detection.TotalAmountBlackPixels / color_detection.TotalPlasticPixels) * 100)
 
     def __CalcGreyPercentage():
 
-        return ((color_detection.TotalAmountGreyPixels / color_detection.TotalPlasticPixelsOfAllImages) * 100)
+        return ((color_detection.TotalAmountGreyPixels / color_detection.TotalPlasticPixels) * 100)
         
     def __CalcPercentages(CurrentColor):
 
-        return ((CurrentColor.AmountOfDetectedPixels / color_detection.TotalPlasticPixelsOfAllImages) * 100)
+        return ((CurrentColor.AmountOfDetectedPixels / color_detection.TotalPlasticPixels) * 100)
 
-    def PrintTotalPlasticPixelsOfAllImages():
+    def PrintTotalPlasticPixels():
 
-        print('the amount of pixels is', color_detection.TotalPlasticPixelsOfAllImages, '\n')
+        print('the amount of pixels is', color_detection.TotalPlasticPixels, '\n')
 
     def SetBeltColorRadius(BeltColorRadius):
         # 0 means ignore the belt and detect everything
