@@ -1,7 +1,7 @@
 #OOP approach for color detection
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 17-11-2017
+# date : 20-11-2017
 
 import cv2
 from Color import Color
@@ -13,7 +13,7 @@ import numpy as np
 class color_detection:
     
     ListOfAllImages = []
-    TotalPlasticPixels = 0
+    TotalAmountPlasticPixels= 0
 
     NumberOfDecimals = 2
     
@@ -29,7 +29,7 @@ class color_detection:
    
 
     def __init__(self, RGB_image, LAB_image):
-        self.image = RGB_image
+        self.RGB_image = RGB_image
         self.LAB_image = LAB_image
         self.__AddToListOfAllImages()
 
@@ -40,81 +40,88 @@ class color_detection:
     def StartColorDetection(self):
 
         ArrayWithPlasticPixels = self.__GetArrayWithPlasticPixels()
-        color_detection.TotalPlasticPixels = len(ArrayWithPlasticPixels)
+        color_detection.TotalAmountPlasticPixels= len(ArrayWithPlasticPixels)
 
-        for PixelData in ArrayWithPlasticPixels:
+        for PlasticPixel_LAB in ArrayWithPlasticPixels:
 
-            self.__AddPixelToCorrespondingColor(PixelData)
+            self.__AddPixelToCorrespondingColor(PlasticPixel_LAB)
            
 
     def __GetArrayWithPlasticPixels(self):
-
-        BinaryImage = self.__GetArrayWithDetectedPixels()
+        #True if pixels is the belt, False if pixel is plastic
+        BinaryArrayOfDetectedPlastic = self.__ConvertImageToBinaryArray()
         
 
         height, width, channels = self.LAB_image.shape
-        masked_image = ma.masked_array((self.LAB_image), mask = BinaryImage)
-        ArrayWithDetectedPixels = np.reshape(masked_image, ((height * width), 3))
+        ArrayOfAllDetecedPlasticPixels3D = ma.masked_array((self.LAB_image), mask = BinaryArrayOfDetectedPlastic)
+        ArrayOfAllDetecedPlasticPixels3D = np.reshape(ArrayOfAllDetecedPlasticPixels3D, ((height * width), 3))
 
         #delete [-- -- --] from ArrayWithDetectedPixels
-        ArrayWithDetectedPixels = ma.compress_rows(ArrayWithDetectedPixels)
+        ArrayOfAllDetecedPlasticPixel2D = ma.compress_rows(ArrayOfAllDetecedPlasticPixels3D)
         
-        return ArrayWithDetectedPixels
+        return ArrayOfAllDetecedPlasticPixel2D 
 
-    def __GetArrayWithDetectedPixels(self):
+    def __ConvertImageToBinaryArray(self):
         
         #create temporary image copy with sqrt(R^2+B^2+G^2)
-        temp_image = np.array(self.image, dtype = 'uint32')**2
-        temp_image = np.sum(temp_image, axis = 2)
+        RGB_imageSquared = np.array(self.RGB_image, dtype = 'uint32')**2
+        RGB_imagePythagorean = np.sum(RGB_imageSquared, axis = 2)
 
         #create bitmask with detected pixels as True and the conveyerbelt as False
-        BinaryImageMap = temp_image <= color_detection.BeltColorRadius**2
-        BinaryImageMap = np.repeat(BinaryImageMap[:, :, np.newaxis], 3, axis=2)
+        BinaryArrayOfDetectedPlastic = RGB_imagePythagorean <= color_detection.BeltColorRadius**2
+        BinaryArrayOfDetectedPlastic = np.repeat(BinaryArrayOfDetectedPlastic[:, :, np.newaxis], 3, axis=2)
 
-        return BinaryImageMap
+        return BinaryArrayOfDetectedPlastic
    
-    def __AddPixelToCorrespondingColor(self, PixelData):   
+    def __AddPixelToCorrespondingColor(self, PlastixPixel_LAB):   
 
-        if self.__CheckIfPixelIsWhite(PixelData) == True:
+        if self.__CheckIfPixelIsWhite(PlastixPixel_LAB) == True:
             self.__AddWhitePixelToAmountOfWhitePixels()
-        elif self.__CheckIfPixelIsBlack(PixelData) == True:
+        elif self.__CheckIfPixelIsBlack(PlastixPixel_LAB) == True:
             self.__AddBlackPixelToAmountOfBlackPixels()
-        elif self.__CheckIfPixelIsGrey(PixelData) == True:
+        elif self.__CheckIfPixelIsGrey(PlastixPixel_LAB) == True:
             self.__AddGreyPixelToAmountOfGreyPixels()
         else:
-            self.__AddPixelToCorrectColor(PixelData)
+            self.__AddPixelToCorrectColor(PlastixPixel_LAB)
 
-    def __AddPixelToCorrectColor(self, PixelData):
-            angle = self.__CalculateAngle(PixelData)
+    def __AddPixelToCorrectColor(self, PlastixPixel_LAB):
+        angle = self.__CalculateAngle(PlastixPixel_LAB)
 
-            self.__AddPixelToCorrectColorUsingAngle(angle)
+        for CurrentColor in Color.AllColors:
 
-    def __CheckIfPixelIsWhite(self, PixelData):
+            if self.__CheckIfAnglesCrossBAxis(CurrentColor) == True:
+                self.__AddPixelToCorrectColorIfAnglesCrossBAxis(CurrentColor, angle)
+            else:
+                #function __AddPixelToCurrentColor returns true when the pixels matches a color
+                 if self.__AddPixelToCurrentColor(CurrentColor, angle) == True:
+                     return
+
+    def __CheckIfPixelIsWhite(self, PlastixPixel_LAB):
             
-            if PixelData[0] >= color_detection.LowestWhiteValue:
+            if PlastixPixel_LAB[0] >= color_detection.LowestWhiteValue:
                 return True
             else:
                 return False
 
-    def __CheckIfPixelIsBlack(self, PixelData):
+    def __CheckIfPixelIsBlack(self, PlastixPixel_LAB):
             
-            if PixelData[0] <= color_detection.HighestBlackValue:
+            if PlastixPixel_LAB[0] <= color_detection.HighestBlackValue:
                 return True
             else:
                 return False
 
-    def __CheckIfPixelIsGrey(self, PixelData):
+    def __CheckIfPixelIsGrey(self, PlastixPixel_LAB):
 
-        GreyRadius = self.__CalculateRadius(PixelData)
+        GreyRadius = self.__CalculateRadius(PlastixPixel_LAB)
 
         if color_detection.LongestGreyRadius >= GreyRadius :
             return True
         else: 
             return False
 
-    def __CalculateRadius(self, PixelData):
+    def __CalculateRadius(self, PlastixPixel_LAB):
 
-        return math.sqrt(PixelData[1]**2 + PixelData[2]**2)
+        return math.sqrt(PlastixPixel_LAB[1]**2 + PlastixPixel_LAB[2]**2)
 
     def __AddGreyPixelToAmountOfGreyPixels(self):
 
@@ -127,17 +134,6 @@ class color_detection:
     def __AddBlackPixelToAmountOfBlackPixels(self):
 
             color_detection.TotalAmountBlackPixels += 1
-
-    def __AddPixelToCorrectColorUsingAngle(self, angle):
-
-        for CurrentColor in Color.AllColors:
-
-            if self.__CheckIfAnglesCrossBAxis(CurrentColor) == True:
-                self.__AddPixelToCorrectColorIfAnglesCrossBAxis(CurrentColor, angle)
-            else:
-                #function __AddPixelToCurrentColor returns true when the pixels matches a color
-                 if self.__AddPixelToCurrentColor(CurrentColor, angle) == True:
-                     return
 
     def __AddPixelToCurrentColor(self, CurrentColor, angle):
         if CurrentColor.LeftAngle >= angle:
@@ -159,10 +155,10 @@ class color_detection:
         else:
             return False
 
-    def __CalculateAngle(self, PixelData):
+    def __CalculateAngle(self, PlastixPixel_LAB):
 
-        a = PixelData[1] 
-        b = PixelData[2] 
+        a = PlastixPixel_LAB[1] 
+        b = PlastixPixel_LAB[2] 
         
         if b == 0.0:
             return self.__ReturnAngleIfBIsNull(a)
@@ -194,6 +190,7 @@ class color_detection:
         if a > 0:
             angle = 180
             return angle
+            
         else:
             angle = 0 
             return angle
@@ -211,23 +208,23 @@ class color_detection:
 
     def __CalcWhitePercentage():
 
-        return ((color_detection.TotalAmountWhitePixels / color_detection.TotalPlasticPixels) * 100)
+        return ((color_detection.TotalAmountWhitePixels / color_detection.TotalAmountPlasticPixels) * 100)
 
     def __CalcBlackPercentage():
 
-        return ((color_detection.TotalAmountBlackPixels / color_detection.TotalPlasticPixels) * 100)
+        return ((color_detection.TotalAmountBlackPixels / color_detection.TotalAmountPlasticPixels) * 100)
 
     def __CalcGreyPercentage():
 
-        return ((color_detection.TotalAmountGreyPixels / color_detection.TotalPlasticPixels) * 100)
+        return ((color_detection.TotalAmountGreyPixels / color_detection.TotalAmountPlasticPixels) * 100)
         
     def __CalcPercentages(CurrentColor):
 
-        return ((CurrentColor.AmountOfDetectedPixels / color_detection.TotalPlasticPixels) * 100)
+        return ((CurrentColor.AmountOfDetectedPixels / color_detection.TotalAmountPlasticPixels) * 100)
 
-    def PrintTotalPlasticPixels():
+    def PrintTotalAmountPlasticPixels():
 
-        print('the amount of pixels is', color_detection.TotalPlasticPixels, '\n')
+        print('the amount of pixels is', color_detection.TotalAmountPlasticPixels, '\n')
 
     def SetBeltColorRadius(BeltColorRadius):
         # 0 means ignore the belt and detect everything
