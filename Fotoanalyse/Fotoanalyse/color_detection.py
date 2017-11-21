@@ -27,10 +27,10 @@ class color_detection:
     TotalAmountBlackPixels = 0
     TotalAmountGreyPixels = 0
     
-    PercentageWhite = None
-    PercentageBlack = None
-    PercentageGrey = None
-   
+    PercentageWhite = 0
+    PercentageBlack = 0
+    PercentageGrey = 0
+
     def __init__(self, RGB_image, LAB_image):
         self.RGB_image = RGB_image
         self.LAB_image = LAB_image
@@ -49,6 +49,8 @@ class color_detection:
         for PlasticPixel_LAB in ArrayWithPlasticPixels:
 
             self.__AddPixelToCorrespondingColor(PlasticPixel_LAB)
+        
+
            
 
     def __GetArrayWithPlasticPixels(self):
@@ -200,6 +202,10 @@ class color_detection:
             return angle
 
     def CalcAllPercentages():
+        
+        if color_detection.TotalAmountPlasticPixels == 0:
+            print('NO PLASTIC DETECTED \n')
+            return
 
         color_detection.PercentageBlack = round(color_detection.__CalcBlackPercentage(), color_detection.NumberOfDecimals) 
         color_detection.PercentageWhite = round(color_detection.__CalcWhitePercentage(), color_detection.NumberOfDecimals)

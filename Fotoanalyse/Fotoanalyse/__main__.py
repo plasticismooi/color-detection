@@ -2,6 +2,8 @@
 # student ID : 14073595
 # date : 21-11-2017
 
+#----------------------------------------Import needed librarys------------------------------------
+
 import numpy as np
 import datetime
 import cv2
@@ -19,7 +21,7 @@ from WaitingTime import WaitingTime
 
 start_time = time.time()
 
-#----------------------------------------Functions for initializing camera and taking pictures----------------------------------------
+#----------------------------------------Functions for initializing camera and taking pictures-----------------------------------
 
 def TakePicture():
    
@@ -77,6 +79,14 @@ def WriteDataTotxtFile():
     for CurrentColor in Color.AllColors:
         DataFile.write('{} % is {} \n'.format(CurrentColor.Percentage, CurrentColor.name))
         
+        
+#----------------------------------------initialize class-values----------------------------------------
+
+color_detection.SetNumberOfDecimals(2) #max 14
+color_detection.SetBeltColorRadius(0) # 0-443, 0 detects everything, 443 nothing
+color_detection.SetLongestGreyRadius(15)
+
+        
 #----------------------------------------START PROGRAM----------------------------------------
 
 for NumberOfTakenImages in range(0, 1):
@@ -89,10 +99,6 @@ Color('2nd quadrant', 91, 180)
 Color('3rd quadrant', 181, 270)
 Color('4th quadrant', 271, 360)
 
-#initialize values
-color_detection.SetNumberOfDecimals(2) #max 14
-color_detection.SetBeltColorRadius(0) # if 0 all colors are detected, including the conveyerbelt
-color_detection.SetLongestGreyRadius(20)
 
 for image in color_detection.ListOfAllImages:
     image.StartColorDetection()
