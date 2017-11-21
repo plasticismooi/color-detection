@@ -11,6 +11,7 @@ class Color:
         self.LeftAngle = LeftAngle
         self.RightAngle = RightAngle
         self.AmountOfDetectedPixels = 0
+        self.Percentage = None
         self.__AddColorToAllColors()
 
     #private

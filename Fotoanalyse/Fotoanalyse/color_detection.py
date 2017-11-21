@@ -26,8 +26,11 @@ class color_detection:
     TotalAmountWhitePixels = 0
     TotalAmountBlackPixels = 0
     TotalAmountGreyPixels = 0
+    
+    PercentageWhite = None
+    PercentageBlack = None
+    PercentageGrey = None
    
-
     def __init__(self, RGB_image, LAB_image):
         self.RGB_image = RGB_image
         self.LAB_image = LAB_image
@@ -40,7 +43,8 @@ class color_detection:
     def StartColorDetection(self):
 
         ArrayWithPlasticPixels = self.__GetArrayWithPlasticPixels()
-        color_detection.TotalAmountPlasticPixels= len(ArrayWithPlasticPixels)
+        
+        color_detection.TotalAmountPlasticPixels = color_detection.TotalAmountPlasticPixels + len(ArrayWithPlasticPixels)
 
         for PlasticPixel_LAB in ArrayWithPlasticPixels:
 
@@ -195,16 +199,26 @@ class color_detection:
             angle = 0 
             return angle
 
-    def PrintAllPercentages():
+    def CalcAllPercentages():
 
-        print(round(color_detection.__CalcBlackPercentage(), color_detection.NumberOfDecimals), '% is black')
-        print(round(color_detection.__CalcWhitePercentage(), color_detection.NumberOfDecimals),'% is white')
-        print(round(color_detection.__CalcGreyPercentage(), color_detection.NumberOfDecimals), '% is grey ','\n')
+        color_detection.PercentageBlack = round(color_detection.__CalcBlackPercentage(), color_detection.NumberOfDecimals) 
+        color_detection.PercentageWhite = round(color_detection.__CalcWhitePercentage(), color_detection.NumberOfDecimals)
+        color_detection.PercentageGrey = round(color_detection.__CalcGreyPercentage(), color_detection.NumberOfDecimals)
+
 
         for CurrentColor in Color.AllColors:
             
-            percentage = color_detection.__CalcPercentages(CurrentColor)
-            print(round(percentage, color_detection.NumberOfDecimals), '% is', CurrentColor.name)
+            CurrentColor.percentage = color_detection.__CalcPercentages(CurrentColor)
+            CurrentColor.Percentage = round(CurrentColor.percentage, color_detection.NumberOfDecimals)
+            
+    def PrintAllPercentages():
+        print(color_detection.PercentageWhite, '% is white')
+        print(color_detection.PercentageBlack, '% is black')
+        print(color_detection.PercentageGrey, '% is grey''\n')
+        
+        for CurrentColor in Color.AllColors:
+            print(CurrentColor.Percentage, '% is ', CurrentColor.name)
+        
 
     def __CalcWhitePercentage():
 
