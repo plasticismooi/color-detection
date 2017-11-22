@@ -4,13 +4,13 @@
 # date : 20-11-2017
 
 import cv2
-from Color import Color
+from color import color
 import math
 import numpy.ma as ma
 import numpy as np
 #object in this class is a picture
 
-class color_detection:
+class detection:
     
     ListOfAllImages = []
     TotalAmountPlasticPixels= 0
@@ -38,13 +38,13 @@ class color_detection:
 
     def __AddToListOfAllImages(self):
 
-        color_detection.ListOfAllImages.append(self)
+        detection.ListOfAllImages.append(self)
 
     def StartColorDetection(self):
 
         ArrayWithPlasticPixels = self.__GetArrayWithPlasticPixels()
         
-        color_detection.TotalAmountPlasticPixels = color_detection.TotalAmountPlasticPixels + len(ArrayWithPlasticPixels)
+        detection.TotalAmountPlasticPixels = detection.TotalAmountPlasticPixels + len(ArrayWithPlasticPixels)
 
         for PlasticPixel_LAB in ArrayWithPlasticPixels:
 
@@ -74,7 +74,7 @@ class color_detection:
         RGB_imagePythagorean = np.sum(RGB_imageSquared, axis = 2)
 
         #create bitmask with detected pixels as True and the conveyerbelt as False
-        BinaryArrayOfDetectedPlastic = RGB_imagePythagorean <= color_detection.BeltColorRadius**2
+        BinaryArrayOfDetectedPlastic = RGB_imagePythagorean <= detection.BeltColorRadius**2
         BinaryArrayOfDetectedPlastic = np.repeat(BinaryArrayOfDetectedPlastic[:, :, np.newaxis], 3, axis=2)
 
         return BinaryArrayOfDetectedPlastic
@@ -93,7 +93,7 @@ class color_detection:
     def __AddPixelToCorrectColor(self, PlasticPixel_LAB):
         angle = self.__CalculateAngle(PlasticPixel_LAB)
 
-        for CurrentColor in Color.AllColors:
+        for CurrentColor in color.AllColors:
 
             if self.__CheckIfAnglesCrossBAxis(CurrentColor) == True:
                 self.__AddPixelToCorrectColorIfAnglesCrossBAxis(CurrentColor, angle)
@@ -104,14 +104,14 @@ class color_detection:
 
     def __CheckIfPixelIsWhite(self, PlasticPixel_LAB):
             
-            if PlasticPixel_LAB[0] >= color_detection.LowestWhiteValue:
+            if PlasticPixel_LAB[0] >= detection.LowestWhiteValue:
                 return True
             else:
                 return False
 
     def __CheckIfPixelIsBlack(self, PlasticPixel_LAB):
             
-            if PlasticPixel_LAB[0] <= color_detection.HighestBlackValue:
+            if PlasticPixel_LAB[0] <= detection.HighestBlackValue:
                 return True
             else:
                 return False
@@ -120,7 +120,7 @@ class color_detection:
 
         GreyRadius = self.__CalculateRadius(PlasticPixel_LAB)
 
-        if color_detection.LongestGreyRadius >= GreyRadius :
+        if detection.LongestGreyRadius >= GreyRadius :
             return True
         else: 
             return False
@@ -131,15 +131,15 @@ class color_detection:
 
     def __AddGreyPixelToAmountOfGreyPixels(self):
 
-        color_detection.TotalAmountGreyPixels += 1
+        detection.TotalAmountGreyPixels += 1
 
     def __AddWhitePixelToAmountOfWhitePixels(self):
 
-            color_detection.TotalAmountWhitePixels += 1
+            detection.TotalAmountWhitePixels += 1
 
     def __AddBlackPixelToAmountOfBlackPixels(self):
 
-            color_detection.TotalAmountBlackPixels += 1
+            detection.TotalAmountBlackPixels += 1
 
     def __AddPixelToCurrentColor(self, CurrentColor, angle):
         if CurrentColor.LeftAngle >= angle:
@@ -152,7 +152,7 @@ class color_detection:
     def __AddPixelToCorrectColorIfAnglesCrossBAxis(self, CurrentColor, angle):
 
         if (CurrentColor.LeftAngle >= angle) | (CurrentColor.RightAngle <= angle):
-            CurrentColor.PixelCount += 1
+            CurrentColor.AmountOfDetectedPixels += 1
             return
 
     def __CheckIfAnglesCrossBAxis(self, CurrentColor):
@@ -203,61 +203,61 @@ class color_detection:
 
     def CalcAllPercentages():
         
-        if color_detection.TotalAmountPlasticPixels == 0:
+        if detection.TotalAmountPlasticPixels == 0:
             print('NO PLASTIC DETECTED \n')
             return
 
-        color_detection.PercentageBlack = round(color_detection.__CalcBlackPercentage(), color_detection.NumberOfDecimals) 
-        color_detection.PercentageWhite = round(color_detection.__CalcWhitePercentage(), color_detection.NumberOfDecimals)
-        color_detection.PercentageGrey = round(color_detection.__CalcGreyPercentage(), color_detection.NumberOfDecimals)
+        detection.PercentageBlack = round(detection.__CalcBlackPercentage(), detection.NumberOfDecimals) 
+        detection.PercentageWhite = round(detection.__CalcWhitePercentage(), detection.NumberOfDecimals)
+        detection.PercentageGrey = round(detection.__CalcGreyPercentage(), detection.NumberOfDecimals)
 
 
-        for CurrentColor in Color.AllColors:
+        for CurrentColor in color.AllColors:
             
-            CurrentColor.percentage = color_detection.__CalcPercentages(CurrentColor)
-            CurrentColor.Percentage = round(CurrentColor.percentage, color_detection.NumberOfDecimals)
+            CurrentColor.percentage = detection.__CalcPercentages(CurrentColor)
+            CurrentColor.Percentage = round(CurrentColor.percentage, detection.NumberOfDecimals)
             
     def PrintAllPercentages():
-        print(color_detection.PercentageWhite, '% is white')
-        print(color_detection.PercentageBlack, '% is black')
-        print(color_detection.PercentageGrey, '% is grey''\n')
+        print(detection.PercentageWhite, '% is white')
+        print(detection.PercentageBlack, '% is black')
+        print(detection.PercentageGrey, '% is grey''\n')
         
-        for CurrentColor in Color.AllColors:
+        for CurrentColor in color.AllColors:
             print(CurrentColor.Percentage, '% is ', CurrentColor.name)
         
 
     def __CalcWhitePercentage():
 
-        return ((color_detection.TotalAmountWhitePixels / color_detection.TotalAmountPlasticPixels) * 100)
+        return ((detection.TotalAmountWhitePixels / detection.TotalAmountPlasticPixels) * 100)
 
     def __CalcBlackPercentage():
 
-        return ((color_detection.TotalAmountBlackPixels / color_detection.TotalAmountPlasticPixels) * 100)
+        return ((detection.TotalAmountBlackPixels / detection.TotalAmountPlasticPixels) * 100)
 
     def __CalcGreyPercentage():
 
-        return ((color_detection.TotalAmountGreyPixels / color_detection.TotalAmountPlasticPixels) * 100)
+        return ((detection.TotalAmountGreyPixels / detection.TotalAmountPlasticPixels) * 100)
         
     def __CalcPercentages(CurrentColor):
 
-        return ((CurrentColor.AmountOfDetectedPixels / color_detection.TotalAmountPlasticPixels) * 100)
+        return ((CurrentColor.AmountOfDetectedPixels / detection.TotalAmountPlasticPixels) * 100)
 
     def PrintTotalAmountPlasticPixels():
 
-        print('the amount of pixels is', color_detection.TotalAmountPlasticPixels, '\n')
+        print('the amount of pixels is', detection.TotalAmountPlasticPixels, '\n')
 
     def SetBeltColorRadius(BeltColorRadius):
         # 0 means ignore the belt and detect everything
-        color_detection.BeltColorRadius = BeltColorRadius
+        detection.BeltColorRadius = BeltColorRadius
 
     def PrintBeltColorRadius():
 
-        print('BeltColorRadius is ', color_detection.BeltColorRadius, '\n')
+        print('BeltColorRadius is ', detection.BeltColorRadius, '\n')
 
     #set and print white pixels
     def SetLowestWhiteValue(LowestWhiteValue):
 
-        color_detection.LowestWhiteValue = LowestWhiteValue
+        detection.LowestWhiteValue = LowestWhiteValue
 
     def PrintLowestWhiteValue():
 
@@ -265,12 +265,12 @@ class color_detection:
 
     def PrintTotalTotalAmountWhitePixels():   
          
-        print('total white pixels', color_detection.TotalAmountWhitePixels, '\n')
+        print('total white pixels', detection.TotalAmountWhitePixels, '\n')
 
     #set and print black pixels
     def SetHighestBlackValue(HighestBlackValue):
 
-        color_detection.HighestBlackValue = HighestBlackValue
+        detection.HighestBlackValue = HighestBlackValue
 
     def PrintHighestBlackValue():
 
@@ -278,19 +278,19 @@ class color_detection:
 
     def PrintTotalTotalAmountBlackPixels(): 
            
-        print('total black pixels', color_detection.TotalAmountBlackPixels, '\n')
+        print('total black pixels', detection.TotalAmountBlackPixels, '\n')
 
     #set and print grey pixels
     def PrintTotalAmountGreyPixels():
 
-        print('TotalAmountGreyPixels is', color_detection.TotalAmountGreyPixels) 
+        print('TotalAmountGreyPixels is', detection.TotalAmountGreyPixels) 
 
     def SetLongestGreyRadius(LongestGreyRadius):
 
-        color_detection.LongestGreyRadius = LongestGreyRadius
+        detection.LongestGreyRadius = LongestGreyRadius
 
     def SetNumberOfDecimals(NumberOfDecimals):
-        color_detection.NumberOfDecimals = NumberOfDecimals
+        detection.NumberOfDecimals = NumberOfDecimals
 
 
 

@@ -7,7 +7,6 @@
 import numpy as np
 import datetime
 import cv2
-from picamera import PiCamera
 import time
 
 import math
@@ -15,96 +14,58 @@ import numpy.ma as ma
 import glob
 
 #project .py files
-from color_detection import color_detection
-from Color import Color
-from WaitingTime import WaitingTime
+from detection import detection
+from color import color
+from wait import wait
 
 start_time = time.time()
 
-#----------------------------------------Functions for initializing camera and taking pictures-----------------------------------
+#----------------------------------------Test----------------------------------------
 
-def TakePicture():
-       
-    camera = PiCamera()
-    camera.resolution = (1024, 768)
-    
-    camera.shutter_speed = 10000
-    camera.awb_mode ='auto'
-    camera.brightness = 50
-    
-    camera.start_preview()
-    camera.capture('/media/pi/9E401DB5401D94DD/Pictures/{:%Y-%m-%d %H:%M:%S}.png'.format(datetime.datetime.now())) 
+test_image = cv2.imread('C:\\Users\\tom_l\\OneDrive\\HHS\\Jaar_3\\stage_2\\test_image.png')
 
-    camera.close()
-    
-def PreparePictures():
-    
-    ImageFiles = ReadPictures()
-    
-    for RGB_image in ImageFiles:
-        RGB_image = cv2.imread(RGB_image)
-        LAB_image = ConvertRGBtoLAB(RGB_image)
-        
-        CreateImageObject(RGB_image, LAB_image)
-    
-def ReadPictures():
-    
-    path = '/media/pi/9E401DB5401D94DD/Pictures/*.png'
-    files = glob.glob(path)
-    
-    return files
+FloatRGB_image = test_image/255
+FloatRGB_image = FloatRGB_image.astype(np.float32)
+LAB_image = cv2.cvtColor(FloatRGB_image , cv2.COLOR_BGR2LAB)
 
-def CreateImageObject(RGB_image, LAB_image):
-   
-    color_detection(RGB_image, LAB_image)
+detection(test_image, LAB_image)
 
-def ConvertRGBtoLAB(RGB_image):
-    
-    FloatRGB_image = RGB_image/255
-    FloatRGB_image = FloatRGB_image.astype(np.float32)
-    LAB_image = cv2.cvtColor(FloatRGB_image , cv2.COLOR_BGR2LAB)
-    
-    return LAB_image
 
-#----------------------------------------Function for writing data to text file---------------------------------------
-
-def WriteDataTotxtFile():
-    DataFile = open('/media/pi/9E401DB5401D94DD/Color-detection-data/data.txt', 'w')
-    
-    DataFile.write('Analysed all pictures in folder /media/pi/9E401DB5401D94DD/Pictures''\n')
-    DataFile.write('{} % is white \n{} % is grey \n{} % is black \n\n'.format(color_detection.PercentageWhite, color_detection.PercentageGrey, color_detection.PercentageBlack))
-    
-    for CurrentColor in Color.AllColors:
-        DataFile.write('{} % is {} \n'.format(CurrentColor.Percentage, CurrentColor.name))
         
         
 #----------------------------------------initialize class-values----------------------------------------
 
-color_detection.SetNumberOfDecimals(2) #max 14
-color_detection.SetBeltColorRadius(0) # 0-443, 0 detects everything, 443 nothing
-color_detection.SetLongestGreyRadius(15)
+detection.SetNumberOfDecimals(2) #max 14
+detection.SetBeltColorRadius(40) # 0-443, 0 detects everything, 443 nothing
+detection.SetLongestGreyRadius(15)
+detection.SetLowestWhiteValue(95)
 
-#----------------------------------------Color definitions----------------------------------------
+wait.SetBeltSetting(1)
+wait.SetPictureWidth(123451345)
+wait.CalculateWaitingTime()
+print(wait.PictureInterval)
+
+#----------------------------------------color definitions----------------------------------------
     
-Color('1st quadrant', 0, 90)
-Color('2nd quadrant', 91, 180)
-Color('3rd quadrant', 181, 270)
-Color('4th quadrant', 271, 360)
+color('dark blue', 0, 45)
+color('purple', 45, 80)
+color('red', 81, 120)
+color('orange', 121, 170)
+color('yellow', 171, 190)
+color('green', 191, 270)
+color('light blue', 271, 360)
+
         
 #----------------------------------------START PROGRAM----------------------------------------
 
-for NumberOfTakenImages in range(0, 1):
-    TakePicture()
-    
-PreparePictures()
 
-for image in color_detection.ListOfAllImages:
+for image in detection.ListOfAllImages:
     image.StartColorDetection()
     
-color_detection.CalcAllPercentages()
-color_detection.PrintAllPercentages()
+detection.CalcAllPercentages()
+detection.PrintAllPercentages()
 
-WriteDataTotxtFile()
+
 
 print('\n''%s seconds run-time' %(time.time() - start_time))
 
