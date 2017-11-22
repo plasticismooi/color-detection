@@ -15,9 +15,9 @@ import numpy.ma as ma
 import glob
 
 #project .py files
-from color_detection import color_detection
-from Color import Color
-from WaitingTime import WaitingTime
+from detection import detection
+from color import color
+from wait import wait
 
 start_time = time.time()
 
@@ -80,16 +80,19 @@ def WriteDataTotxtFile():
         
 #----------------------------------------initialize class-values----------------------------------------
 
-color_detection.SetNumberOfDecimals(2) #max 14
-color_detection.SetBeltColorRadius(0) # 0-443, 0 detects everything, 443 nothing
-color_detection.SetLongestGreyRadius(15)
+detection.SetNumberOfDecimals(2) #max 14
+detection.SetBeltColorRadius(0) # 0-443, 0 detects everything, 443 nothing
+detection.SetLongestGreyRadius(15)
 
 #----------------------------------------Color definitions----------------------------------------
     
-Color('1st quadrant', 0, 90)
-Color('2nd quadrant', 91, 180)
-Color('3rd quadrant', 181, 270)
-Color('4th quadrant', 271, 360)
+color('dark blue', 0, 45)
+color('purple', 45, 80)
+color('red', 81, 120)
+color('orange', 121, 170)
+color('yellow', 171, 190)
+color('green', 191, 270)
+color('light blue', 271, 360)
         
 #----------------------------------------START PROGRAM----------------------------------------
 
@@ -98,7 +101,7 @@ for NumberOfTakenImages in range(0, 1):
     
 PreparePictures()
 
-for image in color_detection.ListOfAllImages:
+for image in detection.ListOfAllImages:
     image.StartColorDetection()
     
 color_detection.CalcAllPercentages()

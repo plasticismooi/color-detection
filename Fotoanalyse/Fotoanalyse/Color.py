@@ -3,7 +3,7 @@
 # date : 20-11-2017
 
 
-class Color:
+class color:
     AllColors = []
     
     def __init__(self, name, RightAngle, LeftAngle):
@@ -16,10 +16,10 @@ class Color:
 
     #private
     def __AddColorToAllColors(self): 
-        Color.AllColors.append(self)
+        color.AllColors.append(self)
 
     def PrintAllColors():
-        print(Color.AllColors)
+        print(color.AllColors)
 
     def PrintAmountOfDetectedPixels(self):
         print('The amount of detected pixels is', self.AmountOfDetectedPixels)
