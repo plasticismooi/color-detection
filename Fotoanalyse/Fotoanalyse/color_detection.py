@@ -62,7 +62,7 @@ class color_detection:
         ArrayOfAllDetecedPlasticPixels3D = ma.masked_array((self.LAB_image), mask = BinaryArrayOfDetectedPlastic)
         ArrayOfAllDetecedPlasticPixels3D = np.reshape(ArrayOfAllDetecedPlasticPixels3D, ((height * width), 3))
 
-        #delete [-- -- --] from ArrayWithDetectedPixels
+        #delete [-- -- --] from ArrayWithDetectedPixels3D
         ArrayOfAllDetecedPlasticPixel2D = ma.compress_rows(ArrayOfAllDetecedPlasticPixels3D)
         
         return ArrayOfAllDetecedPlasticPixel2D 
@@ -79,19 +79,19 @@ class color_detection:
 
         return BinaryArrayOfDetectedPlastic
    
-    def __AddPixelToCorrespondingColor(self, PlastixPixel_LAB):   
+    def __AddPixelToCorrespondingColor(self, PlasticPixel_LAB):   
 
-        if self.__CheckIfPixelIsWhite(PlastixPixel_LAB) == True:
+        if self.__CheckIfPixelIsWhite(PlasticPixel_LAB) == True:
             self.__AddWhitePixelToAmountOfWhitePixels()
-        elif self.__CheckIfPixelIsBlack(PlastixPixel_LAB) == True:
+        elif self.__CheckIfPixelIsBlack(PlasticPixel_LAB) == True:
             self.__AddBlackPixelToAmountOfBlackPixels()
-        elif self.__CheckIfPixelIsGrey(PlastixPixel_LAB) == True:
+        elif self.__CheckIfPixelIsGrey(PlasticPixel_LAB) == True:
             self.__AddGreyPixelToAmountOfGreyPixels()
         else:
-            self.__AddPixelToCorrectColor(PlastixPixel_LAB)
+            self.__AddPixelToCorrectColor(PlasticPixel_LAB)
 
-    def __AddPixelToCorrectColor(self, PlastixPixel_LAB):
-        angle = self.__CalculateAngle(PlastixPixel_LAB)
+    def __AddPixelToCorrectColor(self, PlasticPixel_LAB):
+        angle = self.__CalculateAngle(PlasticPixel_LAB)
 
         for CurrentColor in Color.AllColors:
 
@@ -102,32 +102,32 @@ class color_detection:
                  if self.__AddPixelToCurrentColor(CurrentColor, angle) == True:
                      return
 
-    def __CheckIfPixelIsWhite(self, PlastixPixel_LAB):
+    def __CheckIfPixelIsWhite(self, PlasticPixel_LAB):
             
-            if PlastixPixel_LAB[0] >= color_detection.LowestWhiteValue:
+            if PlasticPixel_LAB[0] >= color_detection.LowestWhiteValue:
                 return True
             else:
                 return False
 
-    def __CheckIfPixelIsBlack(self, PlastixPixel_LAB):
+    def __CheckIfPixelIsBlack(self, PlasticPixel_LAB):
             
-            if PlastixPixel_LAB[0] <= color_detection.HighestBlackValue:
+            if PlasticPixel_LAB[0] <= color_detection.HighestBlackValue:
                 return True
             else:
                 return False
 
-    def __CheckIfPixelIsGrey(self, PlastixPixel_LAB):
+    def __CheckIfPixelIsGrey(self, PlasticPixel_LAB):
 
-        GreyRadius = self.__CalculateRadius(PlastixPixel_LAB)
+        GreyRadius = self.__CalculateRadius(PlasticPixel_LAB)
 
         if color_detection.LongestGreyRadius >= GreyRadius :
             return True
         else: 
             return False
 
-    def __CalculateRadius(self, PlastixPixel_LAB):
+    def __CalculateRadius(self, PlasticPixel_LAB):
 
-        return math.sqrt(PlastixPixel_LAB[1]**2 + PlastixPixel_LAB[2]**2)
+        return math.sqrt(PlasticPixel_LAB[1]**2 + PlasticPixel_LAB[2]**2)
 
     def __AddGreyPixelToAmountOfGreyPixels(self):
 
@@ -161,10 +161,10 @@ class color_detection:
         else:
             return False
 
-    def __CalculateAngle(self, PlastixPixel_LAB):
+    def __CalculateAngle(self, PlasticPixel_LAB):
 
-        a = PlastixPixel_LAB[1] 
-        b = PlastixPixel_LAB[2] 
+        a = PlasticPixel_LAB[1] 
+        b = PlasticPixel_LAB[2] 
         
         if b == 0.0:
             return self.__ReturnAngleIfBIsNull(a)

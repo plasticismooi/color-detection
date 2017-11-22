@@ -23,6 +23,9 @@ class Color:
 
     def PrintAmountOfDetectedPixels(self):
         print('The amount of detected pixels is', self.AmountOfDetectedPixels)
+        
+    def PrintPercentage(self):
+        print(self.Percentage, '% is ', self.name)
 
     def PrintLeftAngle(self):
         print('LeftAngle is :', self.LeftAngle)

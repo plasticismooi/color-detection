@@ -24,7 +24,7 @@ start_time = time.time()
 #----------------------------------------Functions for initializing camera and taking pictures-----------------------------------
 
 def TakePicture():
-   
+       
     camera = PiCamera()
     camera.resolution = (1024, 768)
     
@@ -48,23 +48,21 @@ def PreparePictures():
         CreateImageObject(RGB_image, LAB_image)
     
 def ReadPictures():
-    path = '/media/pi/9E401DB5401D94DD/Pictures/*.png'
     
+    path = '/media/pi/9E401DB5401D94DD/Pictures/*.png'
     files = glob.glob(path)
     
     return files
 
-        
 def CreateImageObject(RGB_image, LAB_image):
    
     color_detection(RGB_image, LAB_image)
 
-
 def ConvertRGBtoLAB(RGB_image):
     
-    temp_image = RGB_image/255
-    temp_image = temp_image.astype(np.float32)
-    LAB_image = cv2.cvtColor(temp_image, cv2.COLOR_BGR2LAB)
+    FloatRGB_image = RGB_image/255
+    FloatRGB_image = FloatRGB_image.astype(np.float32)
+    LAB_image = cv2.cvtColor(FloatRGB_image , cv2.COLOR_BGR2LAB)
     
     return LAB_image
 
@@ -86,6 +84,12 @@ color_detection.SetNumberOfDecimals(2) #max 14
 color_detection.SetBeltColorRadius(0) # 0-443, 0 detects everything, 443 nothing
 color_detection.SetLongestGreyRadius(15)
 
+#----------------------------------------Color definitions----------------------------------------
+    
+Color('1st quadrant', 0, 90)
+Color('2nd quadrant', 91, 180)
+Color('3rd quadrant', 181, 270)
+Color('4th quadrant', 271, 360)
         
 #----------------------------------------START PROGRAM----------------------------------------
 
@@ -93,12 +97,6 @@ for NumberOfTakenImages in range(0, 1):
     TakePicture()
     
 PreparePictures()
-    
-Color('1st quadrant', 0, 90)
-Color('2nd quadrant', 91, 180)
-Color('3rd quadrant', 181, 270)
-Color('4th quadrant', 271, 360)
-
 
 for image in color_detection.ListOfAllImages:
     image.StartColorDetection()

@@ -43,7 +43,7 @@ class WaitingTime:
 
     def CalculateWaitingTime():
 
-        PictureInterval = WaitingTime.BeltSpeed / WaitingTime.PictureInterval
+        PictureInterval = WaitingTime.BeltSpeed / WaitingTime.PictureWidth
         return PictureInterval
         
 
