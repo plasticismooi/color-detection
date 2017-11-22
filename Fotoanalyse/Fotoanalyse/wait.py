@@ -13,7 +13,7 @@ class wait:
 
         pass
 
-    def SetBeltSpeed(self, BeltSetting):
+    def SetBeltSetting(BeltSetting):
 
         if BeltSetting == 0:
             wait.BeltSpeed = 0.53
@@ -46,7 +46,7 @@ class wait:
 
         wait.PictureWidth = PictureWidth 
 
-    def Calculatewait():
+    def CalculatePictureInterval():
 
         wait.PictureInterval = wait.BeltSpeed / wait.PictureWidth
         

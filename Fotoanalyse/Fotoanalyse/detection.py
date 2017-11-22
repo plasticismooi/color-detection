@@ -93,7 +93,7 @@ class detection:
     def __AddPixelToCorrectColor(self, PlasticPixel_LAB):
         angle = self.__CalculateAngle(PlasticPixel_LAB)
 
-        for CurrentColor in Color.AllColors:
+        for CurrentColor in color.AllColors:
 
             if self.__CheckIfAnglesCrossBAxis(CurrentColor) == True:
                 self.__AddPixelToCorrectColorIfAnglesCrossBAxis(CurrentColor, angle)
@@ -212,7 +212,7 @@ class detection:
         detection.PercentageGrey = round(detection.__CalcGreyPercentage(), detection.NumberOfDecimals)
 
 
-        for CurrentColor in Color.AllColors:
+        for CurrentColor in color.AllColors:
             
             CurrentColor.percentage = detection.__CalcPercentages(CurrentColor)
             CurrentColor.Percentage = round(CurrentColor.percentage, detection.NumberOfDecimals)
@@ -222,7 +222,7 @@ class detection:
         print(detection.PercentageBlack, '% is black')
         print(detection.PercentageGrey, '% is grey''\n')
         
-        for CurrentColor in Color.AllColors:
+        for CurrentColor in color.AllColors:
             print(CurrentColor.Percentage, '% is ', CurrentColor.name)
         
 
