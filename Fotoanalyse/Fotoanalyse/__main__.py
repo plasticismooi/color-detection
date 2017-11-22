@@ -1,7 +1,6 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 21-11-2017
-
+# date : 22-11-2017
 #----------------------------------------Import needed librarys------------------------------------
 
 import numpy as np
@@ -104,8 +103,8 @@ PreparePictures()
 for image in detection.ListOfAllImages:
     image.StartColorDetection()
     
-color_detection.CalcAllPercentages()
-color_detection.PrintAllPercentages()
+detection.CalcAllPercentages()
+detection.PrintAllPercentages()
 
 WriteDataTotxtFile()
 

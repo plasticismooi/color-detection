@@ -1,3 +1,8 @@
+# Tom Landzaat student @ EE THUAS
+# student ID : 14073595
+# date : 22-11-2017
+
+
 class wait:
 
     BeltSpeed = 1

@@ -1,10 +1,10 @@
 #OOP approach for color detection
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 20-11-2017
+# date : 22-11-2017
 
 import cv2
-from Color import Color
+from color import color
 import math
 import numpy.ma as ma
 import numpy as np
