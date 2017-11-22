@@ -1,4 +1,4 @@
-class WaitingTime:
+class wait:
 
     BeltSpeed = 1
     PictureWidth = 1
@@ -11,40 +11,40 @@ class WaitingTime:
     def SetBeltSpeed(self, BeltSetting):
 
         if BeltSetting == 0:
-            WaitingTime.BeltSpeed = 0.53
+            wait.BeltSpeed = 0.53
         elif BeltSetting == 1:
-            WaitingTime.BeltSpeed = 0.065
+            wait.BeltSpeed = 0.065
         elif BeltSetting == 2:
-            WaitingTime.BeltSpeed = 0.078
+            wait.BeltSpeed = 0.078
         elif BeltSetting == 3:
-            WaitingTime.BeltSpeed = 0.091
+            wait.BeltSpeed = 0.091
         elif BeltSetting == 4:
-            WaitingTime.BeltSpeed = 0.104
+            wait.BeltSpeed = 0.104
         elif BeltSetting == 5:
-            WaitingTime.BeltSpeed = 0.120
+            wait.BeltSpeed = 0.120
         elif BeltSetting == 6:
-            WaitingTime.BeltSpeed = 0.135
+            wait.BeltSpeed = 0.135
         elif BeltSetting == 7:
-            WaitingTime.BeltSpeed = 0
+            wait.BeltSpeed = 0
         elif BeltSetting == 8:
-            WaitingTime.BeltSpeed = 0
+            wait.BeltSpeed = 0
         elif BeltSetting == 9:
-            WaitingTime.BeltSpeed = 0
+            wait.BeltSpeed = 0
         else:
-            WaitingTime.BeltSpeed = 0
+            wait.BeltSpeed = 0
 
     def PrintBeltSpeed():
 
-        print(WaitingTime.BeltSpeed)
+        print(wait.BeltSpeed)
 
     def SetPictureWidth(PictureWidth):
 
-        WaitingTime.PictureWidth = PictureWidth 
+        wait.PictureWidth = PictureWidth 
 
-    def CalculateWaitingTime():
+    def Calculatewait():
 
-        PictureInterval = WaitingTime.BeltSpeed / WaitingTime.PictureWidth
-        return PictureInterval
+        wait.PictureInterval = wait.BeltSpeed / wait.PictureWidth
+        
         
 
         

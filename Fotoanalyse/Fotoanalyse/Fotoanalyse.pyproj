@@ -22,13 +22,13 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Color.py">
+    <Compile Include="color.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="color_detection.py">
+    <Compile Include="detection.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WaitingTime.py">
+    <Compile Include="wait.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="__main__.py" />
