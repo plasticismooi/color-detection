@@ -1,7 +1,7 @@
 class wait:
 
-    BeltSpeed = 0.53 #equal to BeltSetting 1
-    PictureWidth = 0.16
+    BeltSpeed = None
+    PictureWidth = None
     PictureInterval = None
 
     def __init__(self):
@@ -43,7 +43,13 @@ class wait:
 
     def CalculateWaitingTime():
 
-        wait.PictureInterval =   wait.PictureWidth / wait.BeltSpeed
+        try:
+            wait.PictureInterval =   wait.PictureWidth / wait.BeltSpeed
+
+        except TypeError:
+
+            print ('WARNING')
+            print ('set value for picture width and or belt setting')
         
         
 

@@ -127,7 +127,7 @@ class detection:
 
     def __CalculateRadius(self, PlasticPixel_LAB):
 
-        return math.sqrt(PlasticPixel_LAB[1]**2 + PlasticPixel_LAB[2]**2)
+        return math.sqrt(abs(PlasticPixel_LAB[1]**2) + abs(PlasticPixel_LAB[2]**2))
 
     def __AddGreyPixelToAmountOfGreyPixels(self):
 
@@ -203,19 +203,20 @@ class detection:
 
     def CalcAllPercentages():
         
-        if detection.TotalAmountPlasticPixels == 0:
-            print('NO PLASTIC DETECTED \n')
-            return
+        try:
 
-        detection.PercentageBlack = round(detection.__CalcBlackPercentage(), detection.NumberOfDecimals) 
-        detection.PercentageWhite = round(detection.__CalcWhitePercentage(), detection.NumberOfDecimals)
-        detection.PercentageGrey = round(detection.__CalcGreyPercentage(), detection.NumberOfDecimals)
+            detection.PercentageBlack = round(detection.__CalcBlackPercentage(), detection.NumberOfDecimals) 
+            detection.PercentageWhite = round(detection.__CalcWhitePercentage(), detection.NumberOfDecimals)
+            detection.PercentageGrey = round(detection.__CalcGreyPercentage(), detection.NumberOfDecimals)
 
 
-        for CurrentColor in color.AllColors:
+            for CurrentColor in color.AllColors:
             
-            CurrentColor.percentage = detection.__CalcPercentages(CurrentColor)
-            CurrentColor.Percentage = round(CurrentColor.percentage, detection.NumberOfDecimals)
+                CurrentColor.percentage = detection.__CalcPercentages(CurrentColor)
+                CurrentColor.Percentage = round(CurrentColor.percentage, detection.NumberOfDecimals)
+
+        except ZeroDivisionError:
+            print('NO PLASTIC DETECTED')
             
     def PrintAllPercentages():
         print(detection.PercentageWhite, '% is white')
