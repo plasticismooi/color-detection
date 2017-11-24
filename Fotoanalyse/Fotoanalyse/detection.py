@@ -1,7 +1,7 @@
-#OOP approach for color detection
+# OOP approach for color detection
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 20-11-2017
+# date : 24-11-2017
 
 import cv2
 from color import color
@@ -60,10 +60,10 @@ class detection:
 
         height, width, channels = self.LAB_image.shape
         ArrayOfAllDetecedPlasticPixels3D = ma.masked_array((self.LAB_image), mask = BinaryArrayOfDetectedPlastic)
-        ArrayOfAllDetecedPlasticPixels3D = np.reshape(ArrayOfAllDetecedPlasticPixels3D, ((height * width), 3))
+        ArrayOfAllDetecedPlasticPixels2D = np.reshape(ArrayOfAllDetecedPlasticPixels3D, ((height * width), 3))
 
         #delete [-- -- --] from ArrayWithDetectedPixels3D
-        ArrayOfAllDetecedPlasticPixel2D = ma.compress_rows(ArrayOfAllDetecedPlasticPixels3D)
+        ArrayOfAllDetecedPlasticPixel2D = ma.compress_rows(ArrayOfAllDetecedPlasticPixels2D)
         
         return ArrayOfAllDetecedPlasticPixel2D 
 
