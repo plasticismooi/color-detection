@@ -14,7 +14,6 @@ class color:
         self.Percentage = 0
         self.__AddColorToAllColors()
 
-    #private
     def __AddColorToAllColors(self): 
         color.AllColors.append(self)
 

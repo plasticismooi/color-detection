@@ -4,6 +4,7 @@
 #----------------------------------------Import needed librarys------------------------------------
 
 import numpy as np
+import os
 import datetime
 import cv2
 from picamera import PiCamera
@@ -28,9 +29,12 @@ def TakePicture():
     camera = PiCamera()
     camera.resolution = (1024, 768)
     
-    camera.shutter_speed = 5000
-    camera.awb_mode ='auto'
+    camera.shutter_speed = 10000
+    camera.awb_mode ='incandescent'
     camera.brightness = 50
+    camera.ISO = 800
+    
+    
     
     camera.start_preview()
     camera.capture('/media/pi/9E401DB5401D94DD/Pictures/{:%Y-%m-%d %H:%M:%S}.png'.format(datetime.datetime.now())) 
@@ -39,22 +43,32 @@ def TakePicture():
     
     sleep(wait.PictureInterval)
     
-def PreparePicturesForDetection():
+    #----------------------------------------Functions for initializing images-----------------------------------
     
-    ImageFiles = ReadPictures()
+def PrepareImagesForDetection():
     
-    for RGB_image in ImageFiles:
+    DirectoryOfAllImages = PathToAllImages()
+    
+    for RGB_image in DirectoryOfAllImages:
         RGB_image = cv2.imread(RGB_image)
         LAB_image = ConvertRGBtoLAB(RGB_image)
         
         CreateImageObject(RGB_image, LAB_image)
     
-def ReadPictures():
+def PathToAllImages():
     
     path = '/media/pi/9E401DB5401D94DD/Pictures/*.png'
-    files = glob.glob(path)
+    DirectoryOfAllImages = glob.glob(path)
     
-    return files
+    return DirectoryOfAllImages
+
+def RemoveAllImages():
+    
+    DirectoryOfAllImages = PathToAllImages()
+    
+    for RGB_image in DirectoryOfAllImages:
+        os.remove(RGB_image)
+    
 
 def CreateImageObject(RGB_image, LAB_image):
    
@@ -78,21 +92,24 @@ def WriteDataTotxtFile():
     
     for CurrentColor in color.AllColors:
         DataFile.write('{} % is {} \n'.format(CurrentColor.Percentage, CurrentColor.name))
-        
-        
-#----------------------------------------initialize values----------------------------------------
 
+#----------------------------------------initialize class-values----------------------------------------
+        
 AmountOfPicturestToBeTaken = 1
 
 detection.SetNumberOfDecimals(2) #max 14
-detection.SetBeltColorRadius(0) # 0-443, 0 detects everything, 443 nothing
-detection.SetLongestGreyRadius(20)
+
+detection.SetBeltColorRadius(30) # 0-443, 0 detects everything, 443 nothing
+detection.SetLongestGreyRadius(15)
+detection.SetLowestWhiteValue(70)
 
 wait.SetBeltSetting(1)
-wait.CalculatePictureInterval()
+wait.SetPictureWidth(0.15)
+wait.CalculateWaitingTime()
 
-#----------------------------------------Color definitions----------------------------------------
-      
+
+#----------------------------------------color definitions----------------------------------------
+
 color('dark blue', 0, 45)
 color('purple', 45, 80)
 color('red', 81, 120)
@@ -100,13 +117,15 @@ color('orange', 121, 170)
 color('yellow', 171, 190)
 color('green', 191, 270)
 color('light blue', 271, 360)
-        
+
 #----------------------------------------START PROGRAM----------------------------------------
+
+RemoveAllImages()
 
 for x in range(0, AmountOfPicturestToBeTaken):
     TakePicture()
     
-PreparePicturesForDetection()
+PrepareImagesForDetection()
 
 for image in detection.ListOfAllImages:
     image.StartColorDetection()
@@ -114,9 +133,9 @@ for image in detection.ListOfAllImages:
 detection.CalcAllPercentages()
 detection.PrintAllPercentages()
 
-WriteDataTotxtFile()
-
 print('\n''%s seconds run-time' %(time.time() - start_time))
+
+#----------------------------------------END PROGRAM----------------------------------------
 
 
 

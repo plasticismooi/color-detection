@@ -1,7 +1,7 @@
-#OOP approach for color detection
+# OOP approach for color detection
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 22-11-2017
+# date : 24-11-2017
 
 import cv2
 from color import color
@@ -60,10 +60,10 @@ class detection:
 
         height, width, channels = self.LAB_image.shape
         ArrayOfAllDetecedPlasticPixels3D = ma.masked_array((self.LAB_image), mask = BinaryArrayOfDetectedPlastic)
-        ArrayOfAllDetecedPlasticPixels3D = np.reshape(ArrayOfAllDetecedPlasticPixels3D, ((height * width), 3))
+        ArrayOfAllDetecedPlasticPixels2D = np.reshape(ArrayOfAllDetecedPlasticPixels3D, ((height * width), 3))
 
         #delete [-- -- --] from ArrayWithDetectedPixels3D
-        ArrayOfAllDetecedPlasticPixel2D = ma.compress_rows(ArrayOfAllDetecedPlasticPixels3D)
+        ArrayOfAllDetecedPlasticPixel2D = ma.compress_rows(ArrayOfAllDetecedPlasticPixels2D)
         
         return ArrayOfAllDetecedPlasticPixel2D 
 
@@ -127,7 +127,7 @@ class detection:
 
     def __CalculateRadius(self, PlasticPixel_LAB):
 
-        return math.sqrt(PlasticPixel_LAB[1]**2 + PlasticPixel_LAB[2]**2)
+        return math.sqrt(abs(PlasticPixel_LAB[1]**2) + abs(PlasticPixel_LAB[2]**2))
 
     def __AddGreyPixelToAmountOfGreyPixels(self):
 
@@ -152,7 +152,7 @@ class detection:
     def __AddPixelToCorrectColorIfAnglesCrossBAxis(self, CurrentColor, angle):
 
         if (CurrentColor.LeftAngle >= angle) | (CurrentColor.RightAngle <= angle):
-            CurrentColor.PixelCount += 1
+            CurrentColor.AmountOfDetectedPixels += 1
             return
 
     def __CheckIfAnglesCrossBAxis(self, CurrentColor):
@@ -203,19 +203,20 @@ class detection:
 
     def CalcAllPercentages():
         
-        if detection.TotalAmountPlasticPixels == 0:
-            print('NO PLASTIC DETECTED \n')
-            return
+        try:
 
-        detection.PercentageBlack = round(detection.__CalcBlackPercentage(), detection.NumberOfDecimals) 
-        detection.PercentageWhite = round(detection.__CalcWhitePercentage(), detection.NumberOfDecimals)
-        detection.PercentageGrey = round(detection.__CalcGreyPercentage(), detection.NumberOfDecimals)
+            detection.PercentageBlack = round(detection.__CalcBlackPercentage(), detection.NumberOfDecimals) 
+            detection.PercentageWhite = round(detection.__CalcWhitePercentage(), detection.NumberOfDecimals)
+            detection.PercentageGrey = round(detection.__CalcGreyPercentage(), detection.NumberOfDecimals)
 
 
-        for CurrentColor in color.AllColors:
+            for CurrentColor in color.AllColors:
             
-            CurrentColor.percentage = detection.__CalcPercentages(CurrentColor)
-            CurrentColor.Percentage = round(CurrentColor.percentage, detection.NumberOfDecimals)
+                CurrentColor.percentage = detection.__CalcPercentages(CurrentColor)
+                CurrentColor.Percentage = round(CurrentColor.percentage, detection.NumberOfDecimals)
+
+        except ZeroDivisionError:
+            print('NO PLASTIC DETECTED')
             
     def PrintAllPercentages():
         print(detection.PercentageWhite, '% is white')

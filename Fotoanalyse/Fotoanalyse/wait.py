@@ -1,13 +1,8 @@
-# Tom Landzaat student @ EE THUAS
-# student ID : 14073595
-# date : 22-11-2017
-
-
 class wait:
 
-    BeltSpeed = 1
-    PictureWidth = 1
-    PictureInterval = 1
+    BeltSpeed = None
+    PictureWidth = None
+    PictureInterval = None
 
     def __init__(self):
 
@@ -46,9 +41,15 @@ class wait:
 
         wait.PictureWidth = PictureWidth 
 
-    def CalculatePictureInterval():
+    def CalculateWaitingTime():
 
-        wait.PictureInterval = wait.BeltSpeed / wait.PictureWidth
+        try:
+            wait.PictureInterval =   wait.PictureWidth / wait.BeltSpeed
+
+        except TypeError:
+
+            print ('WARNING')
+            print ('set value for picture width and or belt setting')
         
         
 
