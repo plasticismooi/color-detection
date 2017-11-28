@@ -8,7 +8,7 @@ import os
 import datetime
 import cv2
 import time
-from time import sleep
+
 
 import math
 import numpy.ma as ma
@@ -32,12 +32,8 @@ color('purple', 271, 339)
 #--------------------------------START TEST--------------------------------
 
 BGR_image = cv2.imread('C:\\Users\\tom_l\\OneDrive\\HHS\\Jaar_3\\stage_2\\test_image.png')
-
-B, G, R = cv2.split(BGR_image)      
-RGB_image = cv2.merge([R, G, B])     
-
-detection(RGB_image)
-detection.SetNumberOfDecimals(3)
+ 
+detection(BGR_image)
 
 for image in detection.ListOfAllImages:
     image.StartColorDetection()

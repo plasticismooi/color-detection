@@ -32,9 +32,16 @@ class detection:
     PercentageBlack = 0
     PercentageGrey = 0
 
-    def __init__(self, RGB_image):
+    def __init__(self, BGR_image):
 
-        self.RGB_image = RGB_image
+        self.BGR_image = BGR_image
+
+        height, width, channels = self.BGR_image.shape
+        BGR_image_float = self.BGR_image/255
+        BGR_image_float = BGR_image_float.astype(np.float32)
+        HSV_Image3D = cv2.cvtColor(BGR_image_float, cv2.COLOR_BGR2HSV)
+        self.HSV_Image2D = np.reshape(HSV_Image3D, ((height * width), 3))
+
         self.__AddToListOfAllImages()
 
     def __AddToListOfAllImages(self):
@@ -42,86 +49,85 @@ class detection:
         detection.ListOfAllImages.append(self)
 
     def StartColorDetection(self):
-        
-        height, width, channels = self.RGB_image.shape
 
-        for x in range(height):
-            for y in range(width):
+        ArrayWithDetectedPixels = self.__ReturnArrayWithDetectedPixels(self.HSV_Image2D)
+        detection.TotalAmountPlasticPixels = detection.TotalAmountPlasticPixels + len(ArrayWithDetectedPixels)
 
-                HSV_pixel = np.array([0,0,0])
-                RGB_pixel = self.RGB_image[x,y]/255
-                temporary_hsv_pixel = colorsys.rgb_to_hsv(RGB_pixel[0], RGB_pixel[1], RGB_pixel[2])
+        for HSV_Pixel in ArrayWithDetectedPixels:
+            self.__AddPixelToCorrespondingColor(HSV_Pixel)
 
-           
-                HSV_pixel[0] = temporary_hsv_pixel[0] * 360
-                HSV_pixel[1] = temporary_hsv_pixel[1] * 100
-                HSV_pixel[2] = temporary_hsv_pixel[2] * 100
+    def __ReturnBinaryArrayWithDetectedPixels(self, HSV_Image2D):
 
-                if self.CheckIfPixelsIsPlastic(HSV_pixel) == True:
+        V_Image2D = np.delete(HSV_Image2D, [0,1], axis = 1)
+        V_Image2D = V_Image2D * 100
 
-                    self.__AddPixelToCorrespondingColor(HSV_pixel)
-                    detection.TotalAmountPlasticPixels +=1
+        BinaryArrayWithDetectedPixels = V_Image2D <= detection.BeltValue
+        BinaryArrayWithDetectedPixels = np.repeat(BinaryArrayWithDetectedPixels [:], 3, axis=1)
 
-    def CheckIfPixelsIsPlastic(self, HSV_pixel):
+        return BinaryArrayWithDetectedPixels
 
-        if HSV_pixel[2] >= detection.BeltValue:
-            return True
-        else:
-            return False
+    def __ReturnArrayWithDetectedPixels(self, HSV_Image2D):
 
-    def __AddPixelToCorrespondingColor(self, HSV_pixel):   
+        BinaryArrayWithDetectedPixels = self.__ReturnBinaryArrayWithDetectedPixels(HSV_Image2D)
+        ArrayOfAllDetecedPlasticPixels = ma.masked_array((self.HSV_Image2D), mask = BinaryArrayWithDetectedPixels)
+        ArrayOfAllDetecedPlasticPixels = ma.compress_rows(ArrayOfAllDetecedPlasticPixels)
 
-        if self.__CheckIfPixelIsWhite(HSV_pixel) == True:
+        return ArrayOfAllDetecedPlasticPixels
+
+    def __AddPixelToCorrespondingColor(self, HSV_Pixel):   
+
+        if self.__CheckIfPixelIsWhite(HSV_Pixel) == True:
             self.__AddWhitePixelToAmountOfWhitePixels()
-        elif self.__CheckIfPixelIsBlack(HSV_pixel) == True:
+        elif self.__CheckIfPixelIsBlack(HSV_Pixel) == True:
             self.__AddBlackPixelToAmountOfBlackPixels()
-        elif self.__CheckIfPixelIsGrey(HSV_pixel) == True:
+        elif self.__CheckIfPixelIsGrey(HSV_Pixel) == True:
             self.__AddGreyPixelToAmountOfGreyPixels()
         else:
-            self.__AddPixelToCorrectColor(HSV_pixel)
+            self.__AddPixelToCorrectColor(HSV_Pixel)
 
-    def __AddPixelToCorrectColor(self, HSV_pixel):
+    def __AddPixelToCorrectColor(self, HSV_Pixel):
 
         for CurrentColor in color.AllColors:
 
             #if the defined color crosses the 0 value on the circle, detect color as below
-            if CurrentColor.LeftAngle < CurrentColor.RightAngle:
+            if CurrentColor.LeftAngle > CurrentColor.RightAngle:
 
-                if (CurrentColor.LeftAngle >= HSV_pixel[0]) | (CurrentColor.RightAngle <= HSV_pixel[0]):
+                if (CurrentColor.RightAngle > HSV_Pixel[0]) or (CurrentColor.LeftAngle < HSV_Pixel[0]):
                     CurrentColor.AmountOfDetectedPixels += 1
-                    return
+                    return 
 
             else:
-                if CurrentColor.LeftAngle >= HSV_pixel[0]:
-                    if CurrentColor.RightAngle <= HSV_pixel[0]:
+                if CurrentColor.LeftAngle <= HSV_Pixel[0]:
+                    if CurrentColor.RightAngle >= HSV_Pixel[0]:
                         CurrentColor.AmountOfDetectedPixels += 1
-                        return True
-                    else:
-                        return False
+                        return 
+                    
+    def __CheckIfPixelIsWhite(self, HSV_Pixel):
 
-
-    def __CheckIfPixelIsWhite(self, HSV_pixel):
-
-        if HSV_pixel[1] <= detection.MaxSaturation:
+        HSV_Pixel[1] = HSV_Pixel[1] * 100
+      
+        if HSV_Pixel[1] <= detection.MaxSaturation:
             
-            if HSV_pixel[2] >= detection.WhiteValue:
+            if HSV_Pixel[2] >= detection.WhiteValue:
                 return True
            
             else:
                 return False
 
-    def __CheckIfPixelIsBlack(self, HSV_pixel):
+    def __CheckIfPixelIsBlack(self, HSV_Pixel):
 
-        if HSV_pixel[2] <= detection.BlackValue:
+        HSV_Pixel[2] = HSV_Pixel[2] * 100
+
+        if HSV_Pixel[2] <= detection.BlackValue:
             return True
         else:   
             return False
             
-    def __CheckIfPixelIsGrey(self, HSV_pixel):
+    def __CheckIfPixelIsGrey(self, HSV_Pixel):
 
-        if HSV_pixel[1] <= detection.MaxSaturation:
-
-            if HSV_pixel[2] >= detection.BlackValue & HSV_pixel[2] <= detection.WhiteValue:
+        if HSV_Pixel[1] <= detection.MaxSaturation:
+            
+            if HSV_Pixel[2] >= detection.BlackValue and HSV_Pixel[2] <= detection.WhiteValue:
                 return True
             else:
                 return False
@@ -188,18 +194,18 @@ class detection:
         # 0 means ignore the belt and detect everything
         detection.BeltColorRadius = BeltColorRadius
 
-    def PrintBeltColorRadius():
+    def PrintBeltValue():
 
-        print('BeltColorRadius is ', detection.BeltColorRadius, '\n')
+        print('BeltValue is ', detection.BeltValue, '\n')
 
     #set and print white pixels
-    def SetValue(Value):
+    def SetWhiteValue(WhiteValue):
 
-        detection.Value = Value
+        detection.WhiteValue = WhiteValue
 
-    def PrintValue():
+    def PrintWhiteValue():
 
-        print('white boundary is', self.Value, '\n')
+        print('white boundary is', detection.WhiteValue, '\n')
 
     def PrintTotalTotalAmountWhitePixels():   
          
@@ -223,12 +229,6 @@ class detection:
 
         print('TotalAmountGreyPixels is', detection.TotalAmountGreyPixels) 
 
-    def SetLongestGreyRadius(LongestGreyRadius):
-
-        detection.LongestGreyRadius = LongestGreyRadius
-
-    def SetNumberOfDecimals(NumberOfDecimals):
-        detection.NumberOfDecimals = NumberOfDecimals
 
 
 
