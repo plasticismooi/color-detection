@@ -6,7 +6,7 @@
 class color:
     AllColors = []
     
-    def __init__(self, name, RightAngle, LeftAngle):
+    def __init__(self, name, LeftAngle, RightAngle):
         self.name = name
         self.LeftAngle = LeftAngle
         self.RightAngle = RightAngle
