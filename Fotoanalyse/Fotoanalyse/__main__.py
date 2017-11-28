@@ -8,7 +8,7 @@ import numpy as np
 import os
 import datetime
 import cv2
-#from picamera import PiCamera
+from picamera import PiCamera
 import time
 from time import sleep
 
@@ -31,12 +31,10 @@ def TakePicture():
     camera.resolution = (1024, 768)
     
     camera.shutter_speed = 10000
-    camera.awb_mode ='incandescent'
+    camera.awb_mode ='fluorescent'
     camera.brightness = 50
     camera.ISO = 800
-    
-    
-    
+
     camera.start_preview()
     camera.capture('/media/pi/9E401DB5401D94DD/Pictures/{:%Y-%m-%d %H:%M:%S}.png'.format(datetime.datetime.now()))
     camera.close()
@@ -52,7 +50,7 @@ def PrepareAllImagesForDetection():
     for BGR_image in DirectoryOfAllImages:
         
         BGR_image = cv2.imread(BGR_image)
-        BlurredBGRImage = cv2.bilateralFilter(BGR_image, 9, 75 ,75)
+        BlurredBGRImage = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
         cv2.imwrite('/media/pi/9E401DB5401D94DD/Pictures/bilateral.png', BlurredBGRImage)
         detection(BlurredBGRImage)
         
@@ -88,11 +86,11 @@ AmountOfPicturestToBeTaken = 1
 
 detection.SetNumberOfDecimals(2) #max 14
 
-detection.SetBeltValue(20)
+detection.SetBeltValue(23)
 
-detection.SetBlackValue(21)
-detection.SetWhiteValue(70)
-detection.SetMaxSaturation(37)
+detection.SetBlackValue(24)
+detection.SetWhiteValue(90)
+detection.SetMaxSaturation(25)
 
 
 wait.SetBeltSetting(1)
@@ -105,23 +103,21 @@ wait.CalculateWaitingTime()
 color('red', 340, 15)
 color('orange', 16, 40)
 color('yellow', 41, 70)
-color('green', 71, 140)
-color('light blue', 141, 190)
+color('green', 71, 160)
+color('light blue', 161, 190)
 color('dark blue', 191, 270)
 color('purple', 271, 339)
 
 #----------------------------------------START PROGRAM----------------------------------------
 
-#RemoveAllImages()
+RemoveAllImages()
 
-#for x in range(0, AmountOfPicturestToBeTaken):
-#    TakePicture()
+for x in range(0, AmountOfPicturestToBeTaken):
+    TakePicture()
     
-#PrepareAllImagesForDetection()
+PrepareAllImagesForDetection()
 
-BGR_image = cv2.imread('C:\\Users\\tom_l\\OneDrive\\HHS\\Jaar_3\\stage_2\\wittest.png')
- 
-detection(BGR_image)
+
 
 for image in detection.ListOfAllImages:
     image.StartColorDetection()

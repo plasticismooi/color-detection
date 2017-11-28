@@ -9,7 +9,7 @@ import math
 import numpy.ma as ma
 import numpy as np
 import colorsys
-#object in this class is a picture
+
 
 class detection:
     
@@ -42,10 +42,6 @@ class detection:
         HSV_Image3D = cv2.cvtColor(BGR_image_float, cv2.COLOR_BGR2HSV)
         self.HSV_Image2D = np.reshape(HSV_Image3D, ((height * width), 3))
         
-        
-        
-        
-
         self.__AddToListOfAllImages()
 
     def __AddToListOfAllImages(self):
