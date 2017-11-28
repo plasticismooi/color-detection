@@ -8,7 +8,7 @@ import numpy as np
 import os
 import datetime
 import cv2
-from picamera import PiCamera
+#from picamera import PiCamera
 import time
 from time import sleep
 
@@ -112,12 +112,16 @@ color('purple', 271, 339)
 
 #----------------------------------------START PROGRAM----------------------------------------
 
-RemoveAllImages()
+#RemoveAllImages()
 
-for x in range(0, AmountOfPicturestToBeTaken):
-    TakePicture()
+#for x in range(0, AmountOfPicturestToBeTaken):
+#    TakePicture()
     
-PrepareAllImagesForDetection()
+#PrepareAllImagesForDetection()
+
+BGR_image = cv2.imread('C:\\Users\\tom_l\\OneDrive\\HHS\\Jaar_3\\stage_2\\wittest.png')
+ 
+detection(BGR_image)
 
 for image in detection.ListOfAllImages:
     image.StartColorDetection()

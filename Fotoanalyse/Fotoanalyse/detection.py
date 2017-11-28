@@ -107,12 +107,8 @@ class detection:
                         return 
                     
     def __CheckIfPixelIsWhite(self, HSV_Pixel):
-
-        HSV_Pixel[1] = HSV_Pixel[1] * 100
-        HSV_Pixel[2] = HSV_Pixel[2] * 100
-        
       
-        if HSV_Pixel[1] >= detection.MaxSaturation:
+        if HSV_Pixel[1] <= detection.MaxSaturation:
             
             if HSV_Pixel[2] >= detection.WhiteValue:
                 return True
@@ -121,12 +117,7 @@ class detection:
                 return False
 
     def __CheckIfPixelIsBlack(self, HSV_Pixel):
-        
-        HSV_Pixel[1] = HSV_Pixel[1] * 100
-        HSV_Pixel[2] = HSV_Pixel[2] * 100
-
        
-
         if HSV_Pixel[2] <= detection.BlackValue:
             return True
         else:   
@@ -134,9 +125,6 @@ class detection:
             
     def __CheckIfPixelIsGrey(self, HSV_Pixel):
         
-        HSV_Pixel[1] = HSV_Pixel[1] * 100
-        HSV_Pixel[2] = HSV_Pixel[2] * 100
-
         if HSV_Pixel[1] <= detection.MaxSaturation:
             
             if HSV_Pixel[2] >= detection.BlackValue and HSV_Pixel[2] <= detection.WhiteValue:
@@ -204,7 +192,7 @@ class detection:
 
     def SetBeltValue(BeltValue):
         
-        detection.BeltValue = BeltValue
+        detection.BeltValue = BeltValue/100
 
     def PrintBeltValue():
 
@@ -213,7 +201,7 @@ class detection:
     #set and print white pixels
     def SetWhiteValue(WhiteValue):
 
-        detection.WhiteValue = WhiteValue
+        detection.WhiteValue = WhiteValue/100
 
     def PrintWhiteValue():
 
@@ -222,7 +210,7 @@ class detection:
     #set and print black pixels
     def SetBlackValue(BlackValue):
 
-        detection.BlackValue = BlackValue
+        detection.BlackValue = BlackValue/100
 
     def PrintBlackValue():
 
@@ -247,7 +235,7 @@ class detection:
         
     def SetMaxSaturation(MaxSaturation):
         
-        detection.MaxSaturation = MaxSaturation
+        detection.MaxSaturation = MaxSaturation/100
 
 
         
