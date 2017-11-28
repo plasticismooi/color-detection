@@ -1,8 +1,7 @@
-
-
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 22-11-2017
+# date : 28-11-2017
+
 #----------------------------------------Import needed librarys------------------------------------
 
 import numpy as np
@@ -39,8 +38,7 @@ def TakePicture():
     
     
     camera.start_preview()
-    camera.capture('/media/pi/9E401DB5401D94DD/Pictures/{:%Y-%m-%d %H:%M:%S}.png'.format(datetime.datetime.now())) 
-
+    camera.capture('/media/pi/9E401DB5401D94DD/Pictures/{:%Y-%m-%d %H:%M:%S}.png'.format(datetime.datetime.now()))
     camera.close()
     
     sleep(wait.PictureInterval)
@@ -52,8 +50,11 @@ def PrepareAllImagesForDetection():
     DirectoryOfAllImages = PathToAllImages()
     
     for BGR_image in DirectoryOfAllImages:
+        
         BGR_image = cv2.imread(BGR_image)
-        detection(BGR_image)
+        BlurredBGRImage = cv2.bilateralFilter(BGR_image, 9, 75 ,75)
+        cv2.imwrite('/media/pi/9E401DB5401D94DD/Pictures/bilateral.png', BlurredBGRImage)
+        detection(BlurredBGRImage)
         
 def PathToAllImages():
     
@@ -87,9 +88,12 @@ AmountOfPicturestToBeTaken = 1
 
 detection.SetNumberOfDecimals(2) #max 14
 
-detection.SetBeltColorRadius(30) # 0-443, 0 detects everything, 443 nothing
-detection.SetLongestGreyRadius(15)
-detection.SetLowestWhiteValue(70)
+detection.SetBeltValue(20)
+
+detection.SetBlackValue(21)
+detection.SetWhiteValue(70)
+detection.SetMaxSaturation(37)
+
 
 wait.SetBeltSetting(1)
 wait.SetPictureWidth(0.15)

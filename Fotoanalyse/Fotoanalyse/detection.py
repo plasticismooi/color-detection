@@ -1,7 +1,7 @@
 # OOP approach for color detection
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 24-11-2017
+# date : 28-11-2017
 
 import cv2
 from color import color
@@ -41,6 +41,10 @@ class detection:
         BGR_image_float = BGR_image_float.astype(np.float32)
         HSV_Image3D = cv2.cvtColor(BGR_image_float, cv2.COLOR_BGR2HSV)
         self.HSV_Image2D = np.reshape(HSV_Image3D, ((height * width), 3))
+        
+        
+        
+        
 
         self.__AddToListOfAllImages()
 
@@ -105,8 +109,10 @@ class detection:
     def __CheckIfPixelIsWhite(self, HSV_Pixel):
 
         HSV_Pixel[1] = HSV_Pixel[1] * 100
+        HSV_Pixel[2] = HSV_Pixel[2] * 100
+        
       
-        if HSV_Pixel[1] <= detection.MaxSaturation:
+        if HSV_Pixel[1] >= detection.MaxSaturation:
             
             if HSV_Pixel[2] >= detection.WhiteValue:
                 return True
@@ -115,8 +121,11 @@ class detection:
                 return False
 
     def __CheckIfPixelIsBlack(self, HSV_Pixel):
-
+        
+        HSV_Pixel[1] = HSV_Pixel[1] * 100
         HSV_Pixel[2] = HSV_Pixel[2] * 100
+
+       
 
         if HSV_Pixel[2] <= detection.BlackValue:
             return True
@@ -124,6 +133,9 @@ class detection:
             return False
             
     def __CheckIfPixelIsGrey(self, HSV_Pixel):
+        
+        HSV_Pixel[1] = HSV_Pixel[1] * 100
+        HSV_Pixel[2] = HSV_Pixel[2] * 100
 
         if HSV_Pixel[1] <= detection.MaxSaturation:
             
@@ -190,9 +202,9 @@ class detection:
 
         print('the amount of pixels is', detection.TotalAmountPlasticPixels, '\n')
 
-    def SetBeltColorRadius(BeltColorRadius):
-        # 0 means ignore the belt and detect everything
-        detection.BeltColorRadius = BeltColorRadius
+    def SetBeltValue(BeltValue):
+        
+        detection.BeltValue = BeltValue
 
     def PrintBeltValue():
 
@@ -207,18 +219,14 @@ class detection:
 
         print('white boundary is', detection.WhiteValue, '\n')
 
-    def PrintTotalTotalAmountWhitePixels():   
-         
-        print('total white pixels', detection.TotalAmountWhitePixels, '\n')
-
     #set and print black pixels
-    def SetHighestBlackValue(HighestBlackValue):
+    def SetBlackValue(BlackValue):
 
-        detection.HighestBlackValue = HighestBlackValue
+        detection.BlackValue = BlackValue
 
-    def PrintHighestBlackValue():
+    def PrintBlackValue():
 
-        print('black boundary is', self.HighestBlackValue, '\n')
+        print('BlackValue is', self.BlackValue, '\n')
 
     def PrintTotalTotalAmountBlackPixels(): 
            
@@ -227,9 +235,19 @@ class detection:
     #set and print grey pixels
     def PrintTotalAmountGreyPixels():
 
-        print('TotalAmountGreyPixels is', detection.TotalAmountGreyPixels) 
+        print('TotalAmountGreyPixels is', detection.TotalAmountGreyPixels)
+        
+    def PrintTotalTotalAmountWhitePixels():   
+         
+        print('total white pixels', detection.TotalAmountWhitePixels, '\n')
 
-
+    def SetNumberOfDecimals(NumberOfDecimals):
+        
+        detection.NumberOfDecimals = NumberOfDecimals
+        
+    def SetMaxSaturation(MaxSaturation):
+        
+        detection.MaxSaturation = MaxSaturation
 
 
         
