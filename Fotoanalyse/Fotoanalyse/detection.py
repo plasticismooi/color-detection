@@ -8,7 +8,7 @@ from color import color
 import math
 import numpy.ma as ma
 import numpy as np
-import colorsys
+
 
 
 class detection:
@@ -17,6 +17,7 @@ class detection:
     TotalAmountPlasticPixels= 0
 
     NumberOfDecimals = 2
+    WriteDetectedplasticImage = False
     
     BeltValue = 8
 
@@ -39,8 +40,7 @@ class detection:
         height, width, channels = self.BGR_image.shape
         BGR_image_float = self.BGR_image/255
         BGR_image_float = BGR_image_float.astype(np.float32)
-        HSV_Image3D = cv2.cvtColor(BGR_image_float, cv2.COLOR_BGR2HSV)
-        self.HSV_Image2D = np.reshape(HSV_Image3D, ((height * width), 3))
+        self.HSV_Image3D = cv2.cvtColor(BGR_image_float, cv2.COLOR_BGR2HSV)
         
         self.__AddToListOfAllImages()
 
@@ -50,28 +50,40 @@ class detection:
 
     def StartColorDetection(self):
 
-        ArrayWithDetectedPixels = self.__ReturnArrayWithDetectedPixels(self.HSV_Image2D)
+        ArrayWithDetectedPixels = self.__ReturnArrayWithDetectedPixels(self.HSV_Image3D)
         detection.TotalAmountPlasticPixels = detection.TotalAmountPlasticPixels + len(ArrayWithDetectedPixels)
 
         for HSV_Pixel in ArrayWithDetectedPixels:
             self.__AddPixelToCorrespondingColor(HSV_Pixel)
 
-    def __ReturnBinaryArrayWithDetectedPixels(self, HSV_Image2D):
+    def __ReturnBinaryArrayWithDetectedPixels(self, HSV_Image3D):
 
-        V_Image2D = np.delete(HSV_Image2D, [0,1], axis = 1)
-        V_Image2D = V_Image2D * 100
-
-        BinaryArrayWithDetectedPixels = V_Image2D <= detection.BeltValue
+        V_Image3D = np.delete(HSV_Image3D, [0,1], axis = 2)
+        BinaryArrayWithDetectedPixels = V_Image3D <= detection.BeltValue
+        
+        if detection.WriteDetectedplasticImage == True:
+            self.WriteBinaryImage(BinaryArrayWithDetectedPixels)
+        
         BinaryArrayWithDetectedPixels = np.repeat(BinaryArrayWithDetectedPixels [:], 3, axis=1)
-
+        
         return BinaryArrayWithDetectedPixels
+    
+    def WriteBinaryImage(self, BinaryArrayWithDetectedPixels):
+        
+        BinaryArrayWithDetectedPixels.dtype = 'uint8'
+        BinaryArrayWithDetectedPixels[BinaryArrayWithDetectedPixels > 0] = 255
+        cv2.imwrite('/media/pi/9E401DB5401D94DD/test/detectedplastic.png', BinaryArrayWithDetectedPixels)
+    
+    def __ReturnArrayWithDetectedPixels(self, HSV_Image3D):
 
-    def __ReturnArrayWithDetectedPixels(self, HSV_Image2D):
-
-        BinaryArrayWithDetectedPixels = self.__ReturnBinaryArrayWithDetectedPixels(HSV_Image2D)
-        ArrayOfAllDetecedPlasticPixels = ma.masked_array((self.HSV_Image2D), mask = BinaryArrayWithDetectedPixels)
+        BinaryArrayWithDetectedPixels = self.__ReturnBinaryArrayWithDetectedPixels(HSV_Image3D)
+        ArrayOfAllDetecedPlasticPixels = ma.masked_array((self.HSV_Image3D), mask = BinaryArrayWithDetectedPixels)
+        
+        height, width, channels = HSV_Image3D.shape        
+        ArrayOfAllDetecedPlasticPixels = np.reshape(ArrayOfAllDetecedPlasticPixels, ((height * width), 3))
+        
         ArrayOfAllDetecedPlasticPixels = ma.compress_rows(ArrayOfAllDetecedPlasticPixels)
-
+        
         return ArrayOfAllDetecedPlasticPixels
 
     def __AddPixelToCorrespondingColor(self, HSV_Pixel):   
@@ -112,7 +124,7 @@ class detection:
             else:
                 return False
 
-    def __CheckIfPixelIsBlack(self, HSV_Pixel):
+    def __CheckIfPixelIsBlack(self, HSV_Pixel): 
        
         if HSV_Pixel[2] <= detection.BlackValue:
             return True
@@ -134,11 +146,11 @@ class detection:
 
     def __AddWhitePixelToAmountOfWhitePixels(self):
 
-            detection.TotalAmountWhitePixels += 1
+        detection.TotalAmountWhitePixels += 1
 
     def __AddBlackPixelToAmountOfBlackPixels(self):
 
-            detection.TotalAmountBlackPixels += 1
+        detection.TotalAmountBlackPixels += 1
 
     def CalcAllPercentages():
         
@@ -232,6 +244,11 @@ class detection:
     def SetMaxSaturation(MaxSaturation):
         
         detection.MaxSaturation = MaxSaturation/100
+        
+    def WriteDetectedplasticImage(x):
+        
+        detection.WriteDetectedplasticImage = x
+        
 
 
         

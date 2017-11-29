@@ -32,9 +32,8 @@ def TakePicture():
     
     camera.shutter_speed = 10000
     camera.awb_mode ='fluorescent'
-    camera.brightness = 50
-    camera.ISO = 800
-
+    camera.brightness = 50 
+    
     camera.start_preview()
     camera.capture('/media/pi/9E401DB5401D94DD/Pictures/{:%Y-%m-%d %H:%M:%S}.png'.format(datetime.datetime.now()))
     camera.close()
@@ -51,7 +50,7 @@ def PrepareAllImagesForDetection():
         
         BGR_image = cv2.imread(BGR_image)
         BlurredBGRImage = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
-        cv2.imwrite('/media/pi/9E401DB5401D94DD/Pictures/bilateral.png', BlurredBGRImage)
+        cv2.imwrite('/media/pi/9E401DB5401D94DD/test/bilateral.png', BlurredBGRImage)
         detection(BlurredBGRImage)
         
 def PathToAllImages():
@@ -85,16 +84,17 @@ def WriteDataTotxtFile():
 AmountOfPicturestToBeTaken = 1
 
 detection.SetNumberOfDecimals(2) #max 14
+detection.WriteDetectedplasticImage(True)
 
-detection.SetBeltValue(23)
+detection.SetBeltValue(40)
 
 detection.SetBlackValue(24)
-detection.SetWhiteValue(90)
+detection.SetWhiteValue(75)
 detection.SetMaxSaturation(25)
 
 
 wait.SetBeltSetting(1)
-wait.SetPictureWidth(0.15)
+wait.SetPictureWidth(0.165)
 wait.CalculateWaitingTime()
 
 
@@ -116,8 +116,6 @@ for x in range(0, AmountOfPicturestToBeTaken):
     TakePicture()
     
 PrepareAllImagesForDetection()
-
-
 
 for image in detection.ListOfAllImages:
     image.StartColorDetection()
