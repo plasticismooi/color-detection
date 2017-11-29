@@ -8,20 +8,33 @@ from color import color
 import math
 import numpy.ma as ma
 import numpy as np
+import glob
+import os
+from picamera import PiCamera
+import datetime
+from time import sleep
+import time
+
+from wait import wait
 
 class detection:
     
     ListOfAllImages = []
-    TotalAmountPlasticPixels= 0
-
+    ImageNumber = 0
+    AmountOfPicturestToBeTaken = 1
+    
     NumberOfDecimals = 2
+    
     SaveDetectedPlasticImage = False
+    SaveBilateralfilterImage = False
     
     BeltValue = 0.8
 
     WhiteValue = 0.8
     BlackValue = 0.1
     MaxSaturation = 0.15
+    
+    TotalAmountPlasticPixels= 0
 
     TotalAmountWhitePixels = 0
     TotalAmountBlackPixels = 0
@@ -40,11 +53,65 @@ class detection:
         BGR_image_float = BGR_image_float.astype(np.float32)
         self.HSV_Image = cv2.cvtColor(BGR_image_float, cv2.COLOR_BGR2HSV)
         
+        self.ImageNumber = detection.ImageNumber
+        detection.ImageNumber += 1
+        
         self.__AddToListOfAllImages()
 
     def __AddToListOfAllImages(self):
 
         detection.ListOfAllImages.append(self)
+        
+#----------------------------------------Take Photo-----------------------------------
+        
+    def TakePicture():
+       
+        camera = PiCamera()
+        camera.resolution = (1024, 768)
+    
+        camera.shutter_speed = 10000
+        camera.awb_mode ='fluorescent'
+        camera.brightness = 50 
+      
+        camera.start_preview()
+        camera.capture('/media/pi/9E401DB5401D94DD/Pictures/{:%Y-%m-%d %H:%M:%S}.png'.format(datetime.datetime.now()))
+        camera.close()
+    
+        time.sleep(wait.PictureInterval)
+        print(wait.PictureInterval)
+        
+#----------------------------------------Functions for initializing images-----------------------------------
+
+
+    def PrepareAllImagesForDetection():
+
+        DirectoryOfAllImages = detection.__PathToAllImages()
+    
+        for BGR_image in DirectoryOfAllImages:
+        
+            BGR_image = cv2.imread(BGR_image)
+            BlurredBGRImage = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
+
+            if detection.SaveBilateralfilterImage == True:
+                cv2.imwrite('/media/pi/9E401DB5401D94DD/test/bilateral_{}.png'.format(detection.ImageNumber), BlurredBGRImage)
+
+            detection(BlurredBGRImage)
+        
+    def __PathToAllImages():
+    
+        path = '/media/pi/9E401DB5401D94DD/Pictures/*.png'
+        DirectoryOfAllImages = glob.glob(path)
+    
+        return DirectoryOfAllImages
+
+    def RemoveAllImages():
+    
+        DirectoryOfAllImages = detection.__PathToAllImages()
+    
+        for BGR_image in DirectoryOfAllImages:
+            os.remove(BGR_image)
+            
+#----------------------------------------Start Detection---------------------------------------
 
     def StartColorDetection(self):
 
@@ -89,7 +156,7 @@ class detection:
             if self.__CheckIfPixelIsWhite(HSV_Pixel) == True:
                 self.__AddWhitePixelToAmountOfWhitePixels()
             elif self.__CheckIfPixelIsGrey(HSV_Pixel) == True:
-                self.__AddBlackPixelToAmountOfGreyPixels()
+                self.__AddGreyPixelToAmountOfGreyPixels()
             else: 
                 self.__AddGreyPixelToAmountOfBlackPixels()
         else:
@@ -112,7 +179,7 @@ class detection:
                         CurrentColor.AmountOfDetectedPixels += 1
                         return 
 
-    def __CheckIfPixelIsColor(HSV_Pixel):
+    def __CheckIfPixelIsColor(self, HSV_Pixel):
 
         if detection.MaxSaturation <= HSV_Pixel[1]:
             return True
@@ -199,7 +266,10 @@ class detection:
         return ((CurrentColor.AmountOfDetectedPixels / detection.TotalAmountPlasticPixels) * 100)
 
 #----------------------------------------SETTERS----------------------------------------
-
+    
+    def SetAmountOfPicturestToBeTaken(AmountOfPicturestToBeTaken):
+    
+        detection.AmountOfPicturestToBeTaken = AmountOfPicturestToBeTaken 
 
     def SetBeltValue(BeltValue):
         
@@ -222,25 +292,28 @@ class detection:
         detection.MaxSaturation = MaxSaturation/100
 
 #----------------------------------------GETTERS----------------------------------------
+        
+    def GetAmountOfPicturesToBeTaken():
+        
+        return detection.AmountOfPicturestToBeTaken 
 
-
-    def GetBeltValue(BeltValue):
+    def GetBeltValue():
         
         return detection.BeltValue 
 
-    def GetWhiteValue(WhiteValue):
+    def GetWhiteValue():
 
         return detection.WhiteValue
 
-    def GetBlackValue(BlackValue):
+    def GetBlackValue():
 
         return detection.BlackValue 
 
-    def GetNumberOfDecimals(NumberOfDecimals):
+    def GetNumberOfDecimals():
         
         return detection.NumberOfDecimals 
         
-    def GetMaxSaturation(MaxSaturation):
+    def GetMaxSaturation():
         
         return detection.MaxSaturation 
 
@@ -277,16 +350,19 @@ class detection:
 
 #----------------------------------------Save image with detected flakes----------------------------------------
         
-
+    def SaveBilateralfilterImage(x):
+    
+        detection.SaveBilateralfilterImage = x
+    
     def SaveDetectedPlasticImage(x):
         
-        detection.WriteDetectedPlasticImage = x
+        detection.SaveDetectedPlasticImage = x
 
     def SaveBinaryImage(self, BinaryArrayOfDetectedPixels):
         
         BinaryArrayOfDetectedPixels.dtype = 'uint8'
         BinaryArrayOfDetectedPixels[BinaryArrayOfDetectedPixels > 0] = 255
-        cv2.imwrite('/media/pi/9E401DB5401D94DD/test/detectedplastic.png', BinaryArrayOfDetectedPixels)
+        cv2.imwrite('/media/pi/9E401DB5401D94DD/test/detected_plastic_{}.png'.format(self.ImageNumber), BinaryArrayOfDetectedPixels)
         
 
 

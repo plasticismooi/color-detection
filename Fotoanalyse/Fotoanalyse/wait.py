@@ -15,7 +15,7 @@ class wait:
     def SetBeltSetting(BeltSetting):
 
         if BeltSetting == 0:
-            wait.BeltSpeed = 0.53
+            wait.BeltSpeed = 0.054
         elif BeltSetting == 1:
             wait.BeltSpeed = 0.065
         elif BeltSetting == 2:
