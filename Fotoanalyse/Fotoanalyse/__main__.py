@@ -21,9 +21,10 @@ from detection import detection
 from color import color
 from wait import wait
 
-start_time = time.time()
+
 
 #----------------------------------------Functions for initializing camera and taking pictures-----------------------------------
+
 
 def TakePicture():
        
@@ -42,6 +43,7 @@ def TakePicture():
     
     #----------------------------------------Functions for initializing images-----------------------------------
 
+
 def PrepareAllImagesForDetection():
 
     DirectoryOfAllImages = PathToAllImages()
@@ -50,7 +52,10 @@ def PrepareAllImagesForDetection():
         
         BGR_image = cv2.imread(BGR_image)
         BlurredBGRImage = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
-        cv2.imwrite('/media/pi/9E401DB5401D94DD/test/bilateral.png', BlurredBGRImage)
+
+        if SaveBilateralfilterImage == True:
+            cv2.imwrite('/media/pi/9E401DB5401D94DD/test/bilateral.png', BlurredBGRImage)
+
         detection(BlurredBGRImage)
         
 def PathToAllImages():
@@ -67,8 +72,8 @@ def RemoveAllImages():
     for BGR_image in DirectoryOfAllImages:
         os.remove(BGR_image)
    
-
 #----------------------------------------Function for writing data to text file---------------------------------------
+
 
 def WriteDataTotxtFile():
     DataFile = open('/media/pi/9E401DB5401D94DD/Color-detection-data/data.txt', 'w')
@@ -80,25 +85,31 @@ def WriteDataTotxtFile():
         DataFile.write('{} % is {} \n'.format(CurrentColor.Percentage, CurrentColor.name))
 
 #----------------------------------------initialize class-values----------------------------------------
-        
+
+
+print('Preparing Detection...')
+
 AmountOfPicturestToBeTaken = 1
+SaveBilateralfilterImage = True
+
 
 detection.SetNumberOfDecimals(2) #max 14
-detection.WriteDetectedplasticImage(True)
+detection.SaveDetectedPlasticImage(True)
 
-detection.SetBeltValue(40)
+detection.SetBeltValue(40) # 40 corresponds with light setting 2
 
-detection.SetBlackValue(24)
+detection.SetBlackValue(20)
 detection.SetWhiteValue(75)
 detection.SetMaxSaturation(25)
-
 
 wait.SetBeltSetting(1)
 wait.SetPictureWidth(0.165)
 wait.CalculateWaitingTime()
 
-
 #----------------------------------------color definitions----------------------------------------
+
+
+print('Preparing Colors...')
 
 color('red', 340, 15)
 color('orange', 16, 40)
@@ -110,6 +121,9 @@ color('purple', 271, 339)
 
 #----------------------------------------START PROGRAM----------------------------------------
 
+
+start_time = time.time()
+print('Started Detecting...')
 RemoveAllImages()
 
 for x in range(0, AmountOfPicturestToBeTaken):
@@ -119,6 +133,8 @@ PrepareAllImagesForDetection()
 
 for image in detection.ListOfAllImages:
     image.StartColorDetection()
+
+print('Done Detecting')
     
 detection.CalcAllPercentages()
 detection.PrintAllPercentages()
