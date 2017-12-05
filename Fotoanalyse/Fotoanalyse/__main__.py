@@ -9,11 +9,15 @@ import cv2
 import time
 import math
 import numpy.ma as ma
+from time import sleep
+
 
 #project .py files
 from detection import detection
 from color import color
 from wait import wait
+
+
 
 
 #----------------------------------------Function for writing data to text file---------------------------------------
@@ -28,7 +32,7 @@ def WriteDataTotxtFile():
     for CurrentColor in color.AllColors:
         DataFile.write('{} % is {} \n'.format(CurrentColor.Percentage, CurrentColor.name))
 
-#----------------------------------------initialize class-values----------------------------------------
+#----------------------------------------config settings----------------------------------------
 
 
 print('Preparing Detection...')
@@ -36,8 +40,8 @@ print('Preparing Detection...')
 detection.SetAmountOfPicturestToBeTaken(30)
 detection.SetNumberOfDecimals(2) #max 14
 
-detection.SaveDetectedPlasticImage(True)
-detection.SaveBilateralfilterImage(True)
+detection.SaveDetectedPlasticImage(False)
+detection.SaveBilateralfilterImage(False)
 
 
 detection.SetBeltValue(40) # 40 corresponds with light setting 2
@@ -64,30 +68,95 @@ color('light blue', 161, 190)
 color('dark blue', 191, 270)
 color('purple', 271, 339)
 
-#----------------------------------------START PROGRAM----------------------------------------
+
+#----------------------------------------read image----------------------------------------
 
 
-start_time = time.time()
+
+#----------------------------------------Kivy----------------------------------------
+import kivy
+import kivy.event
+
+from kivy.uix.button import Button
+from kivy.uix.popup import Popup
+from kivy.app import App
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.stacklayout import StackLayout
+from kivy.lang import Builder
+from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
+from kivy.uix.dropdown import DropDown
+from kivy.properties import ObjectProperty
+from kivy import clock
+from kivy.clock import CyClockBase
+from kivy.uix.widget import Widget
+
+from functools import partial
+
+class ScreenManagement(ScreenManager):
+
+    pass
+
+class WaitingScreen(Screen):
+
+    def __init__(self,*args, **kwargs):
+        super(WaitingScreen, self).__init__(*args, **kwargs)
+       
 
 
-detection.RemoveAllImages()
-print('Started Taking Pictures...')
-for x in range(0, detection.AmountOfPicturestToBeTaken):
-    detection.TakePicture()
-    
-print('done Taking Pictures...')
-print('start detecing colors')
 
-detection.PrepareAllImagesForDetection()
 
-for image in detection.ListOfAllImages:
-    image.StartColorDetection()
-    
-print('\n''%s seconds run-time' %round((time.time() - start_time), detection.NumberOfDecimals))
-print('Done Detecting''\n')
-    
-detection.CalcAllPercentages()
-detection.PrintAllPercentages()
+
+class StartScreen(Screen):
+
+    def __init__(self, *args, **kwargs):
+        super(StartScreen, self).__init__(*args, **kwargs)
+
+    def StartTakingPictures(self):
+
+        CyClockBase.schedule_interval(lambda: self.TakePicture(), wait.PictureInterval)
+
+    def TakePicture(self):
+
+        image = cv2.imread('C:\\Users\\tom_l\\OneDrive\\HHS\\Jaar_3\\stage_2\\test_image.png')
+        detection(image)
+        print('picture taken' )
+
+    def StopTakingPictures(self):
+
+       pass
+
+
+        
+         
+class ResultScreen(Screen):
+
+    pass
+
+class ConfigurationScreen(Screen):
+
+    def __init__(self, *args, **kwargs):
+        super(ConfigurationScreen, self).__init__(*args, **kwargs)
+        self.drop_down = DropDown()
+        
+
+class DropDown(DropDown):
+
+    pass
+               
+interface = Builder.load_file('interface.kv')
+
+
+class ColorApp(App):
+
+    def build(self):
+       
+        return interface
+
+ColorApp().run()
 
 
 

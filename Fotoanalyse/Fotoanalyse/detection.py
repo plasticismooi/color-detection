@@ -10,7 +10,7 @@ import numpy.ma as ma
 import numpy as np
 import glob
 import os
-from picamera import PiCamera
+#from picamera import PiCamera
 import datetime
 from time import sleep
 import time
@@ -63,22 +63,20 @@ class detection:
         detection.ListOfAllImages.append(self)
         
 #----------------------------------------Take Photo-----------------------------------
-        
+
     def TakePicture():
-       
-        camera = PiCamera()
-        camera.resolution = (1024, 768)
-    
-        camera.shutter_speed = 10000
-        camera.awb_mode ='fluorescent'
-        camera.brightness = 50 
-      
-        camera.start_preview()
-        camera.capture('/media/pi/9E401DB5401D94DD/Pictures/{:%Y-%m-%d %H:%M:%S}.png'.format(datetime.datetime.now()))
-        camera.close()
-    
-        time.sleep(wait.PictureInterval)
-        print(wait.PictureInterval)
+
+        image = cv2.imread('C:\\Users\\tom_l\\OneDrive\\HHS\\Jaar_3\\stage_2\\test_image.png')
+
+        detection(image)
+
+        print('picture taken' )
+
+        
+
+
+        
+
         
 #----------------------------------------Functions for initializing images-----------------------------------
 
@@ -114,6 +112,8 @@ class detection:
 #----------------------------------------Start Detection---------------------------------------
 
     def StartColorDetection(self):
+
+        print('started detecting')
 
         ArrayWithDetectedPixels = self.__ReturnArrayWithDetectedPixels(self.HSV_Image)
         detection.TotalAmountPlasticPixels = detection.TotalAmountPlasticPixels + len(ArrayWithDetectedPixels)

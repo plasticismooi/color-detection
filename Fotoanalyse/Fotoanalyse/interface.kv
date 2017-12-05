@@ -1,0 +1,100 @@
+ScreenManagement:
+
+    StartScreen:
+	ConfigurationScreen:
+    WaitingScreen:
+	ResultScreen:
+
+<StartScreen>:
+
+	name: 'Start'
+	
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+
+		Button:
+			background_color: 0.5, 0.5, 0.5, 1
+			on_release : app.root.current = 'Configuration'
+			text: 'To config settings'
+			font_size: 25
+	
+		Button:
+			background_color: 0.5, 0.5, 0.5, 1
+			on_press: root.StartTakingPictures()
+			
+			text: 'Start taking pictures'
+			font_size: 25
+
+		Button:
+			background_color: 0.5, 0.5, 0.5, 1
+			on_press: root.StopTakingPictures()
+			text: 'Stop taking pictures'
+			font_size: 25
+
+<ConfigurationScreen>:
+
+	name : 'Configuration'
+    GridLayout:
+        cols: 3
+        orientation: 'vertical'
+  
+		Button:
+			on_release: app.root.current = 'Start'
+			text: 'Return'
+			font_size: 25
+
+		Button:
+			text: 'dropdown'
+			on_release: root.drop_down.open(self)
+
+		Button:
+			text: 'next option'
+
+		TextInput:
+			text:""
+			input_filter: 'int'
+		    multiline: False
+		    color:1,0,0,1
+			id: user_text
+
+			
+<WaitingScreen>:
+    name: 'Waiting'
+
+	Button:
+		
+		on_release: app.root.current = 'Result'
+		text: 'Stop Taking Pictures'
+		font_size: 25
+	
+<ResultScreen>:
+	name : 'Result'
+
+	Label:
+		text: 'Print results here'
+
+<DropDown>:
+
+    Button:
+        text: 'True'
+        size_hint_y: None
+        height: 44
+        on_release: root.select('item1')
+    Button:
+        text: 'False'
+        size_hint_y: None
+        height: 44
+        on_release: root.select('item2')
+
+
+
+
+
+
+
+
+
+
+
+
