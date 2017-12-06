@@ -74,6 +74,7 @@ color('purple', 271, 339)
 
 
 #----------------------------------------Kivy----------------------------------------
+
 import kivy
 import kivy.event
 
@@ -91,47 +92,39 @@ from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.uix.dropdown import DropDown
 from kivy.properties import ObjectProperty
 from kivy import clock
-from kivy.clock import CyClockBase
+from kivy.clock import Clock
 from kivy.uix.widget import Widget
 
-from functools import partial
 
-class ScreenManagement(ScreenManager):
 
-    pass
+
 
 class WaitingScreen(Screen):
 
-    def __init__(self,*args, **kwargs):
-        super(WaitingScreen, self).__init__(*args, **kwargs)
-       
-
-
-
+    pass
 
 
 class StartScreen(Screen):
-
-    def __init__(self, *args, **kwargs):
-        super(StartScreen, self).__init__(*args, **kwargs)
-
+        
     def StartTakingPictures(self):
+      
+        Clock.schedule_interval(self.TakePicture, 1)
+         
+    def TakePicture(self, interval):
 
-        CyClockBase.schedule_interval(lambda: self.TakePicture(), wait.PictureInterval)
-
-    def TakePicture(self):
-
-        image = cv2.imread('C:\\Users\\tom_l\\OneDrive\\HHS\\Jaar_3\\stage_2\\test_image.png')
-        detection(image)
-        print('picture taken' )
+        print('picture taken')
 
     def StopTakingPictures(self):
 
-       pass
+        try:
+            
+            Clock.unschedule(self.TakePicture)
+            print('stopped taking pictures')
+
+        except NameError:
+            pass
 
 
-        
-         
 class ResultScreen(Screen):
 
     pass
@@ -147,14 +140,20 @@ class DropDown(DropDown):
 
     pass
                
-interface = Builder.load_file('interface.kv')
+Builder.load_file('interface.kv')
+
+sm = ScreenManager()
+Start = StartScreen(name = 'Start')
+Configuration = ConfigurationScreen(name = 'Configuration')
+sm.add_widget(Start)
+sm.add_widget(Configuration)
 
 
 class ColorApp(App):
 
     def build(self):
        
-        return interface
+        return sm
 
 ColorApp().run()
 
