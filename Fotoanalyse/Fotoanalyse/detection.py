@@ -64,20 +64,7 @@ class detection:
         
 #----------------------------------------Take Photo-----------------------------------
 
-    def TakePicture():
-
-        image = cv2.imread('C:\\Users\\tom_l\\OneDrive\\HHS\\Jaar_3\\stage_2\\test_image.png')
-
-        detection(image)
-
-        print('picture taken' )
-
-        
-
-
-        
-
-        
+       
 #----------------------------------------Functions for initializing images-----------------------------------
 
 
@@ -113,13 +100,15 @@ class detection:
 
     def StartColorDetection(self):
 
-        print('started detecting')
+        print('started analyzing pictures')
 
         ArrayWithDetectedPixels = self.__ReturnArrayWithDetectedPixels(self.HSV_Image)
         detection.TotalAmountPlasticPixels = detection.TotalAmountPlasticPixels + len(ArrayWithDetectedPixels)
 
         for HSV_Pixel in ArrayWithDetectedPixels:
             self.__AddPixelToCorrespondingColor(HSV_Pixel)
+
+        print('done analyzing plastic flakes')
 
 #----------------------------------------Detect pixels----------------------------------------
 
@@ -158,7 +147,7 @@ class detection:
             elif self.__CheckIfPixelIsGrey(HSV_Pixel) == True:
                 self.__AddGreyPixelToAmountOfGreyPixels()
             else: 
-                self.__AddGreyPixelToAmountOfBlackPixels()
+                self.__AddBlackPixelToAmountOfBlackPixels()
         else:
             self.__AddPixelToCorrectColor(HSV_Pixel)
 
@@ -238,7 +227,10 @@ class detection:
                 CurrentColor.Percentage = round(CurrentColor.percentage, detection.NumberOfDecimals)
 
         except ZeroDivisionError:
-            print('NO PLASTIC DETECTED')
+            
+            pass
+
+        return True
             
     def PrintAllPercentages():
         print(detection.PercentageWhite, '% is white')

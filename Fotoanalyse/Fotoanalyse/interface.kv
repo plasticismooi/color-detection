@@ -1,4 +1,3 @@
-
 <StartScreen>:
 
 	name: 'Start'
@@ -9,22 +8,59 @@
 
 		Button:
 			background_color: 0.5, 0.5, 0.5, 1
-			on_release : app.root.current = 'Configuration'
+			on_release: app.root.current = 'Configuration'
 			text: 'To config settings'
 			font_size: 25
 	
 		Button:
+
 			background_color: 0.5, 0.5, 0.5, 1
-			on_press: root.StartTakingPictures()
+			on_release: app.root.current = 'TakingPicturesScreen'
 			text: 'Start taking pictures'
 			font_size: 25
+
+<TakingPicturesScreen>:
+
+	name: 'TakingPictures'
+	on_enter: root.StartTakingPictures()
+
+	BoxLayout:
+		size: root.size
+		pos: root.pos
 
 		Button:
 			background_color: 0.5, 0.5, 0.5, 1
 			on_press: root.StopTakingPictures()
+			on_release: app.root.current = 'Calculating'
 			text: 'Stop taking pictures'
 			font_size: 25
+			
+<CalculationScreen>:
+	name: 'Calculating'
+	on_enter: root.CaculateResults()
 
+	GridLayout:
+		cols: 1
+        orientation: 'horizontal'
+
+		Label:
+			text: 'calculating...'
+
+
+<ResultScreen>:
+
+	name: 'Results'	
+
+	GridLayout:
+		cols: 1
+        orientation: 'horizontal'
+				
+		Label:
+			text: 'print results here'
+			font_size: 20
+
+
+			
 <ConfigurationScreen>:
 
 	name : 'Configuration'
@@ -54,20 +90,6 @@
 			id: user_text
 
 			
-<WaitingScreen>:
-    name: 'Waiting'
-
-	Button:
-		
-		on_release: app.root.current = 'Result'
-		text: 'Stop Taking Pictures'
-		font_size: 25
-	
-<ResultScreen>:
-	name : 'Result'
-
-	Label:
-		text: 'Print results here'
 
 <DropDown>:
 

@@ -44,7 +44,7 @@ detection.SaveDetectedPlasticImage(False)
 detection.SaveBilateralfilterImage(False)
 
 
-detection.SetBeltValue(40) # 40 corresponds with light setting 2
+detection.SetBeltValue(1) # 40 corresponds with light setting 2
 
 detection.SetBlackValue(20)
 detection.SetWhiteValue(75)
@@ -95,23 +95,49 @@ from kivy import clock
 from kivy.clock import Clock
 from kivy.uix.widget import Widget
 
-
-
-
-
-class WaitingScreen(Screen):
-
-    pass
-
-
 class StartScreen(Screen):
         
+   def __init__(self, *args, **kwargs):
+        super(StartScreen, self).__init__(*args, **kwargs)
+
+
+class ResultScreen(Screen):
+
+    def __init__(self, *args, **kwargs):
+        super(ResultScreen, self).__init__(*args, **kwargs)
+
+        #add labels with color.percentages
+
+
+
+class CalculationScreen(Screen):
+
+    def __init__(self, *args, **kwargs):
+        super(CalculationScreen, self).__init__(*args, **kwargs)
+
+    def CaculateResults(self):
+
+        for image in detection.ListOfAllImages:
+            image.StartColorDetection()
+
+        detection.CalcAllPercentages()
+
+        interface.switch_to(ResultScreen())
+        
+
+class TakingPicturesScreen(Screen):
+
+    def __init__(self, *args, **kwargs):
+        super(TakingPicturesScreen, self).__init__(*args, **kwargs)
+
     def StartTakingPictures(self):
       
-        Clock.schedule_interval(self.TakePicture, 1)
+        Clock.schedule_interval(self.TakePicture, wait.PictureInterval)
          
     def TakePicture(self, interval):
 
+        image = cv2.imread('C:\\Users\\tom_l\\OneDrive\\HHS\\Jaar_3\\stage_2\\test_image.png')
+        detection(image)
         print('picture taken')
 
     def StopTakingPictures(self):
@@ -123,11 +149,6 @@ class StartScreen(Screen):
 
         except NameError:
             pass
-
-
-class ResultScreen(Screen):
-
-    pass
 
 class ConfigurationScreen(Screen):
 
@@ -142,18 +163,25 @@ class DropDown(DropDown):
                
 Builder.load_file('interface.kv')
 
-sm = ScreenManager()
+interface = ScreenManager()
+
 Start = StartScreen(name = 'Start')
 Configuration = ConfigurationScreen(name = 'Configuration')
-sm.add_widget(Start)
-sm.add_widget(Configuration)
+TakingPictures = TakingPicturesScreen(name = 'TakingPicturesScreen')
+Results = ResultScreen(name = 'Results')
+Calculating = CalculationScreen(name = 'Calculating')
 
+interface.add_widget(Start)
+interface.add_widget(Configuration)
+interface.add_widget(TakingPictures)
+interface.add_widget(Results)
+interface.add_widget(Calculating)
 
 class ColorApp(App):
 
     def build(self):
        
-        return sm
+        return interface
 
 ColorApp().run()
 
