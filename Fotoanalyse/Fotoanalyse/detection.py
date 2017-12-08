@@ -100,15 +100,13 @@ class detection:
 
     def StartColorDetection(self):
 
-        print('started analyzing pictures')
-
         ArrayWithDetectedPixels = self.__ReturnArrayWithDetectedPixels(self.HSV_Image)
         detection.TotalAmountPlasticPixels = detection.TotalAmountPlasticPixels + len(ArrayWithDetectedPixels)
 
         for HSV_Pixel in ArrayWithDetectedPixels:
             self.__AddPixelToCorrespondingColor(HSV_Pixel)
 
-        print('done analyzing plastic flakes')
+        
 
 #----------------------------------------Detect pixels----------------------------------------
 

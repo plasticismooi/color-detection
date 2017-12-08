@@ -1,23 +1,6 @@
 <StartScreen>:
 
 	name: 'Start'
-	
-    BoxLayout:
-        size: root.size
-        pos: root.pos
-
-		Button:
-			background_color: 0.5, 0.5, 0.5, 1
-			on_release: app.root.current = 'Configuration'
-			text: 'To config settings'
-			font_size: 25
-	
-		Button:
-
-			background_color: 0.5, 0.5, 0.5, 1
-			on_release: app.root.current = 'TakingPicturesScreen'
-			text: 'Start taking pictures'
-			font_size: 25
 
 <TakingPicturesScreen>:
 
@@ -46,63 +29,32 @@
 		Label:
 			text: 'calculating...'
 
-
 <ResultScreen>:
 
 	name: 'Results'	
 
-	GridLayout:
-		cols: 1
-        orientation: 'horizontal'
-				
-		Label:
-			text: 'print results here'
-			font_size: 20
+<ShowPercentages>:
 
+	name: 'ShowPercentages'
+	orientation: 'vertical'
+	spacing: 1
 
-			
 <ConfigurationScreen>:
 
 	name : 'Configuration'
-    GridLayout:
-        cols: 3
-        orientation: 'vertical'
+
+<ConfigurationScreenLayout>:
+
+	name: 'ConfigurationLayout'
+	
+
+
   
-		Button:
-			on_release: app.root.current = 'Start'
-			text: 'Return'
-			font_size: 25
 
-		Button:
-			text: 'Save bilateral image'
-			on_release: root.drop_down.open(self)
 
-		Button:
-			text: 'Save detected plastic image'
-			on_release: root.drop_down.open(self)
 
-		TextInput:
-			text:""
-			
-			input_filter: 'int'
-		    multiline: False
-		    color:1,0,0,1
-			id: user_text
 
-			
 
-<DropDown>:
-
-    Button:
-        text: 'True'
-        size_hint_y: None
-        height: 44
-        on_release: root.select('item1')
-    Button:
-        text: 'False'
-        size_hint_y: None
-        height: 44
-        on_release: root.select('item2')
 
 
 

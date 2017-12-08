@@ -40,11 +40,7 @@ print('Preparing Detection...')
 detection.SetAmountOfPicturestToBeTaken(30)
 detection.SetNumberOfDecimals(2) #max 14
 
-detection.SaveDetectedPlasticImage(False)
-detection.SaveBilateralfilterImage(False)
-
-
-detection.SetBeltValue(1) # 40 corresponds with light setting 2
+detection.SetBeltValue(40) # 40 corresponds with light setting 2
 
 detection.SetBlackValue(20)
 detection.SetWhiteValue(75)
@@ -69,6 +65,7 @@ color('dark blue', 191, 270)
 color('purple', 271, 339)
 
 
+
 #----------------------------------------read image----------------------------------------
 
 
@@ -81,6 +78,7 @@ import kivy.event
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.app import App
+from kivy.uix.switch import Switch
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
@@ -95,20 +93,24 @@ from kivy import clock
 from kivy.clock import Clock
 from kivy.uix.widget import Widget
 
+
+#-----------------------------------Screen definitions-----------------------------------
+
 class StartScreen(Screen):
         
    def __init__(self, *args, **kwargs):
         super(StartScreen, self).__init__(*args, **kwargs)
 
+        layout = StartScreenLayout()
+        self.add_widget(layout)
 
 class ResultScreen(Screen):
 
-    def __init__(self, *args, **kwargs):
-        super(ResultScreen, self).__init__(*args, **kwargs)
-
-        #add labels with color.percentages
-
-
+    def __init__(self, **kwargs):
+        super(ResultScreen, self).__init__(**kwargs)
+        
+        self.AllPercentages = ShowPercentages()
+        self.add_widget(self.AllPercentages)
 
 class CalculationScreen(Screen):
 
@@ -154,13 +156,96 @@ class ConfigurationScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         super(ConfigurationScreen, self).__init__(*args, **kwargs)
-        self.drop_down = DropDown()
+       
+        Layout = ConfigurationScreenLayout()
+        self.add_widget(Layout)
+
+#-----------------------------------Layout definitions-----------------------------------
+
+class StartScreenLayout(GridLayout):
+
+    def __init__(self, **kwargs):
+        super(StartScreenLayout, self).__init__(**kwargs)
+
+        self.rows = 3
+        self.cols = 2
+
+        self.StartColorDetectionButton = Button(text = 'Start taking picture')
+        self.StartColorDetectionButton.bind(on_press = self.GoToTakingPicuresScreen)
+
+        self.GoToConfigButton = Button(text = 'Go to config settings' )
+        self.GoToConfigButton.bind(on_press = self.GoToConfigurationScreen)
+        
+        self.add_widget(self.GoToConfigButton)
+        self.add_widget(self.StartColorDetectionButton)
+
+    def GoToTakingPicuresScreen(self, instance):
+        interface.switch_to(TakingPicturesScreen())
+
+    def GoToConfigurationScreen(self, instance):
+        interface.switch_to(ConfigurationScreen())
+
+
+class ConfigurationScreenLayout(GridLayout):
+
+    def __init__(self, *args, **kwargs):
+        super(ConfigurationScreenLayout, self).__init__(*args, **kwargs)
+
+        self.rows = 3
+        self.cols = 2
+
+        self.SaveDetectedPlasticImageSwitch = Switch()
+        self.SaveDetectedPlasticImageSwitch.bind(active = self.TurnSaveDetectedPlasticImageOn)
+        self.SaveBilateralfilterImageSwitch = Switch()
+        self.SaveBilateralfilterImageSwitch.bind(active = self.TurnSaveBilateralfilterImageOn)
+
+        self.ReturnToStartScreenButton = Button(text = 'Return to startscreen' )
+        self.ReturnToStartScreenButton.bind(on_press = self.GoToStartScreen)
+
+        self.SaveDetectedPlasticImageSwitchLabel = Label(text = 'Save picture with detected plastic for each picture: ')
+        self.SaveBilateralfilterImageSwitchLabel = Label(text = 'Save picture with bilateral filter for each image:')
         
 
-class DropDown(DropDown):
+        self.add_widget(self.SaveDetectedPlasticImageSwitchLabel)
+        self.add_widget(self.SaveDetectedPlasticImageSwitch)
 
-    pass
-               
+        self.add_widget(self.SaveBilateralfilterImageSwitchLabel)
+        self.add_widget(self.SaveBilateralfilterImageSwitch)
+
+        self.add_widget(self.ReturnToStartScreenButton)
+
+    def GoToStartScreen(self, instance):
+        interface.switch_to(StartScreen())
+
+
+    def TurnSaveBilateralfilterImageOn(self, instance, value):
+        detection.SaveBilateralfilterImage(True)
+
+
+    def TurnSaveDetectedPlasticImageOn(self, instance, value):
+        detection.SaveDetectedPlasticImage(True)
+
+
+class ShowPercentages(BoxLayout):
+
+    def __init__(self, **kwargs):
+        super(ShowPercentages, self).__init__(**kwargs)
+
+        self.LabelBlack = Label(text = '{}% is black'.format(detection.PercentageBlack))
+        self.LabelGrey = Label(text = '{}% is grey'.format(detection.PercentageGrey))
+        self.LabelWhite = Label(text = '{}% is white'.format(detection.PercentageWhite))
+
+        self.add_widget(self.LabelBlack)
+        self.add_widget(self.LabelGrey)
+        self.add_widget(self.LabelWhite)
+
+        for CurrentColor in color.AllColors:
+            self.CurrentLabel = Label(text = '{}% is {}'.format(CurrentColor.Percentage, CurrentColor.name))
+            self.add_widget(self.CurrentLabel)
+
+      
+#-----------------------------------Top level kivy, screenmanager-----------------------------------             
+          
 Builder.load_file('interface.kv')
 
 interface = ScreenManager()
