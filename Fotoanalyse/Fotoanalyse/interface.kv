@@ -1,3 +1,7 @@
+# Tom Landzaat student @ EE THUAS
+# student ID : 14073595
+# date : 11-12-2017
+
 <StartScreen>:
 
 	name: 'Start'
@@ -6,17 +10,6 @@
 
 	name: 'TakingPictures'
 	on_enter: root.StartTakingPictures()
-
-	BoxLayout:
-		size: root.size
-		pos: root.pos
-
-		Button:
-			background_color: 0.5, 0.5, 0.5, 1
-			on_press: root.StopTakingPictures()
-			on_release: app.root.current = 'Calculating'
-			text: 'Stop taking pictures'
-			font_size: 25
 			
 <CalculationScreen>:
 	name: 'Calculating'
@@ -46,6 +39,11 @@
 <ConfigurationScreenLayout>:
 
 	name: 'ConfigurationLayout'
+
+
+		
+		
+		
 	
 
 

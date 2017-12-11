@@ -1,6 +1,6 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 28-11-2017
+# date : 11-12-2017
 
 #----------------------------------------Import needed librarys------------------------------------
 
@@ -17,39 +17,6 @@ from detection import detection
 from color import color
 from wait import wait
 
-
-
-
-#----------------------------------------Function for writing data to text file---------------------------------------
-
-
-def WriteDataTotxtFile():
-    DataFile = open('/media/pi/9E401DB5401D94DD/Color-detection-data/data.txt', 'w')
-    
-    DataFile.write('Analysed all pictures in folder /media/pi/9E401DB5401D94DD/Pictures''\n')
-    DataFile.write('{} % is white \n{} % is grey \n{} % is black \n\n'.format(detection.PercentageWhite, detection.PercentageGrey, detection.PercentageBlack))
-    
-    for CurrentColor in color.AllColors:
-        DataFile.write('{} % is {} \n'.format(CurrentColor.Percentage, CurrentColor.name))
-
-#----------------------------------------config settings----------------------------------------
-
-
-print('Preparing Detection...')
-
-detection.SetAmountOfPicturestToBeTaken(30)
-detection.SetNumberOfDecimals(2) #max 14
-
-detection.SetBeltValue(40) # 40 corresponds with light setting 2
-
-detection.SetBlackValue(20)
-detection.SetWhiteValue(75)
-detection.SetMaxSaturation(25)
-
-wait.SetBeltSetting(0)
-wait.SetPictureWidth(0.1675)
-wait.CalculateWaitingTime()
-
 #----------------------------------------color definitions----------------------------------------
 
 
@@ -63,12 +30,6 @@ color('green', 71, 160)
 color('light blue', 161, 190)
 color('dark blue', 191, 270)
 color('purple', 271, 339)
-
-
-
-#----------------------------------------read image----------------------------------------
-
-
 
 #----------------------------------------Kivy----------------------------------------
 
@@ -124,17 +85,25 @@ class CalculationScreen(Screen):
 
         detection.CalcAllPercentages()
 
-        interface.switch_to(ResultScreen())
+        if detection.EnableWriteDataToTXTfile == True:
+            detection.WriteDataToTXTfile()
+
+        Interface.switch_to(ResultScreen())
         
 
 class TakingPicturesScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         super(TakingPicturesScreen, self).__init__(*args, **kwargs)
+        
+        self.StopTakingPicturesButton = Button(text = 'Stop Taking Pictures')
+        self.StopTakingPicturesButton.bind(on_press = self.StopTakingPictures)
+
+        self.add_widget(self.StopTakingPicturesButton)
 
     def StartTakingPictures(self):
       
-        Clock.schedule_interval(self.TakePicture, wait.PictureInterval)
+        Clock.schedule_interval(self.TakePicture, 1)
          
     def TakePicture(self, interval):
 
@@ -142,7 +111,7 @@ class TakingPicturesScreen(Screen):
         detection(image)
         print('picture taken')
 
-    def StopTakingPictures(self):
+    def StopTakingPictures(self, interval):
 
         try:
             
@@ -151,6 +120,8 @@ class TakingPicturesScreen(Screen):
 
         except NameError:
             pass
+
+        Interface.switch_to(CalculationScreen())
 
 class ConfigurationScreen(Screen):
 
@@ -167,7 +138,7 @@ class StartScreenLayout(GridLayout):
     def __init__(self, **kwargs):
         super(StartScreenLayout, self).__init__(**kwargs)
 
-        self.rows = 3
+        self.rows = 1
         self.cols = 2
 
         self.StartColorDetectionButton = Button(text = 'Start taking picture')
@@ -180,10 +151,10 @@ class StartScreenLayout(GridLayout):
         self.add_widget(self.StartColorDetectionButton)
 
     def GoToTakingPicuresScreen(self, instance):
-        interface.switch_to(TakingPicturesScreen())
+        Interface.switch_to(TakingPicturesScreen())
 
     def GoToConfigurationScreen(self, instance):
-        interface.switch_to(ConfigurationScreen())
+        Interface.switch_to(ConfigurationScreen())
 
 
 class ConfigurationScreenLayout(GridLayout):
@@ -191,39 +162,151 @@ class ConfigurationScreenLayout(GridLayout):
     def __init__(self, *args, **kwargs):
         super(ConfigurationScreenLayout, self).__init__(*args, **kwargs)
 
-        self.rows = 3
+        self.rows = 11
         self.cols = 2
 
+        #switches
+        self.SaveDetectedPlasticImageSwitchLabel = Label(text = 'Save image with detected plastic for each picture: ')
         self.SaveDetectedPlasticImageSwitch = Switch()
         self.SaveDetectedPlasticImageSwitch.bind(active = self.TurnSaveDetectedPlasticImageOn)
+
+        self.SaveBilateralfilterImageSwitchLabel = Label(text = 'Save image with bilateral filter for each picture: ')
         self.SaveBilateralfilterImageSwitch = Switch()
         self.SaveBilateralfilterImageSwitch.bind(active = self.TurnSaveBilateralfilterImageOn)
 
-        self.ReturnToStartScreenButton = Button(text = 'Return to startscreen' )
+        self.WriteDataToTXTfileSwitchLabel = Label(text = 'Write data to .txt file: ')
+        self.WriteDatatoTXTfileSwitch = Switch()
+        self.WriteDatatoTXTfileSwitch.bind(active = self.WriteDataToTXTfile)
+
+        #integer textinput
+        self.InputNumberOfDecimalLabel = Label(text = 'Set the number of decimals for the calculation: ')
+        self.InputNumberOfDecimals = TextInput(text = '2', multiline = False, input_filter = 'int')
+        self.InputNumberOfDecimals.bind(text = self.SetNumberOfDecimals)
+
+        self.InputBeltValueLabel = Label(text = 'Set the value of the belt in "value" from HSV: ')
+        self.InputBeltValue = TextInput(text = '40', multiline = False, input_filter = 'int')
+        self.InputBeltValue.bind(text = self.SetBeltValue)
+
+        self.InputBlackValueLabel = Label(text = 'Set the value of the color black in "value" from HSV: ')
+        self.InputBlackValue = TextInput(text = '20', multiline = False, input_filter = 'int')
+        self.InputBlackValue.bind(text = self.SetBlackValue)
+
+        self.InputWhiteValueLabel = Label(text = 'Set the value of the color white in "value" from HSV: ')
+        self.InputWhiteValue = TextInput(text = '75', multiline = False, input_filter = 'int')
+        self.InputWhiteValue.bind(text = self.SetWhiteValue)
+        
+        self.InputMaxSaturationValueLabel = Label(text = 'The maximal saturation of "S" in HSV for a color the to be \ndefined as white/grey/black: ')
+        self.InputMaxSaturationValue = TextInput(text = '25', multiline = False, input_filter = 'int')
+        self.InputMaxSaturationValue.bind(text = self.SetMaxSaturation)
+
+        self.InputBeltSpeedSettingLabel = Label(text = 'Input the setting of the belt')
+        self.InputBeltSpeedSetting = TextInput(text = '0', multiline = False, input_filter = 'int')
+        self.InputBeltSpeedSetting.bind(text = self.SetBeltSpeedSetting)
+
+        self.InputPictureWidthLabel = Label(text = 'Input the width of the pictures in meters')
+        self.InputPictureWidth = TextInput(text = '0.165', multiline = False, input_filter = 'int')
+        self.InputPictureWidth.bind(text = self.SetPictureWidth)
+        
+        #buttons
+        self.ReturnToStartScreenButton = Button(text = 'Return to startscreen')
         self.ReturnToStartScreenButton.bind(on_press = self.GoToStartScreen)
 
-        self.SaveDetectedPlasticImageSwitchLabel = Label(text = 'Save picture with detected plastic for each picture: ')
-        self.SaveBilateralfilterImageSwitchLabel = Label(text = 'Save picture with bilateral filter for each image:')
-        
-
+        #IMPORTANT: first add label, then the widgets
         self.add_widget(self.SaveDetectedPlasticImageSwitchLabel)
         self.add_widget(self.SaveDetectedPlasticImageSwitch)
 
         self.add_widget(self.SaveBilateralfilterImageSwitchLabel)
         self.add_widget(self.SaveBilateralfilterImageSwitch)
 
+        self.add_widget(self.WriteDataToTXTfileSwitchLabel)
+        self.add_widget(self.WriteDatatoTXTfileSwitch)
+
+        self.add_widget(self.InputNumberOfDecimalLabel)
+        self.add_widget(self.InputNumberOfDecimals)
+
+        self.add_widget(self.InputBeltValueLabel)
+        self.add_widget(self.InputBeltValue)
+
+        self.add_widget(self.InputBlackValueLabel)
+        self.add_widget(self.InputBlackValue)
+
+        self.add_widget(self.InputWhiteValueLabel)
+        self.add_widget(self.InputWhiteValue)
+
+        self.add_widget(self.InputMaxSaturationValueLabel)
+        self.add_widget(self.InputMaxSaturationValue)
+
+        self.add_widget(self.InputBeltSpeedSettingLabel)
+        self.add_widget(self.InputBeltSpeedSetting)
+
+        self.add_widget(self.InputPictureWidthLabel)
+        self.add_widget(self.InputPictureWidth)
+        
         self.add_widget(self.ReturnToStartScreenButton)
 
     def GoToStartScreen(self, instance):
-        interface.switch_to(StartScreen())
+        Interface.switch_to(StartScreen())
+
+    def WriteDataToTXTfile(self, instance, value):
+
+        if value == True:
+            detection.WriteDataToTXTfile = True
+
+        else:
+            detection.WriteDataToTXTfile = False
+
+
+    def SetPictureWidth(self, instance, value):
+
+        wait.PictureWidth = value
+        wait.CalculateWaitingTime()
+
+    def SetBeltSpeedSetting(self, instance, value):
+
+        wait.BeltSpeed = value
+        wait.CalculateWaitingTime()
+
+    def SetMaxSaturation(self, instance, value):
+
+        detection.SetMaxSaturation = value
+        
+
+    def SetWhiteValue(self, instnace, value):
+
+        detection.WhiteValue = value
+        
+
+    def SetBlackValue(self, instance, value):
+
+        detection.BlackValue = value
+        
+
+    def SetBeltValue(self, instance, value):
+
+        detection.AmountOfPicturestToBeTaken = value
+        
+
+    def SetNumberOfDecimals(self, instance, value):
+
+        detection.NumberOfDecimals = value
+        
 
 
     def TurnSaveBilateralfilterImageOn(self, instance, value):
-        detection.SaveBilateralfilterImage(True)
-
-
+        if value == True:
+            detection.SaveBilateralfilterImage = True
+            print('saving all images with bilateral filter')
+        else: 
+            detection.SaveBilateralfilterImage = False
+            print('deactivated saving all images with bilateral filter')
+  
     def TurnSaveDetectedPlasticImageOn(self, instance, value):
-        detection.SaveDetectedPlasticImage(True)
+        if value == True:
+            detection.SaveDetectedPlasticImage = True 
+            print('saving all images with detected plastic flakes')
+        else:
+            detection.SaveBilateralfilterImage = False 
+            print('deactivated saving all images with detected plastic flakes')
 
 
 class ShowPercentages(BoxLayout):
@@ -248,7 +331,7 @@ class ShowPercentages(BoxLayout):
           
 Builder.load_file('interface.kv')
 
-interface = ScreenManager()
+Interface = ScreenManager()
 
 Start = StartScreen(name = 'Start')
 Configuration = ConfigurationScreen(name = 'Configuration')
@@ -256,17 +339,19 @@ TakingPictures = TakingPicturesScreen(name = 'TakingPicturesScreen')
 Results = ResultScreen(name = 'Results')
 Calculating = CalculationScreen(name = 'Calculating')
 
-interface.add_widget(Start)
-interface.add_widget(Configuration)
-interface.add_widget(TakingPictures)
-interface.add_widget(Results)
-interface.add_widget(Calculating)
+
+Interface.add_widget(Start)
+Interface.add_widget(Configuration)
+Interface.add_widget(TakingPictures)
+Interface.add_widget(Calculating)
+Interface.add_widget(Results)
+
 
 class ColorApp(App):
 
     def build(self):
        
-        return interface
+        return Interface
 
 ColorApp().run()
 

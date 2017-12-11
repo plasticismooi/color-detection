@@ -1,7 +1,7 @@
 # OOP approach for color detection
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 29-11-2017
+# date : 11-12-2017
 
 import cv2
 from color import color
@@ -25,8 +25,9 @@ class detection:
     
     NumberOfDecimals = 2
     
-    SaveDetectedPlasticImage = False
-    SaveBilateralfilterImage = False
+    SaveDetectedPlasticImage = None
+    SaveBilateralfilterImage = None
+    EnableWriteDataToTXTfile = False
     
     BeltValue = 0.8
 
@@ -338,15 +339,8 @@ class detection:
          
         print('number of white pixels is', detection.TotalAmountWhitePixels, '\n')
 
-#----------------------------------------Save image with detected flakes----------------------------------------
+#----------------------------------------additional functions----------------------------------------
         
-    def SaveBilateralfilterImage(x):
-    
-        detection.SaveBilateralfilterImage = x
-    
-    def SaveDetectedPlasticImage(x):
-        
-        detection.SaveDetectedPlasticImage = x
 
     def SaveBinaryImage(self, BinaryArrayOfDetectedPixels):
         
@@ -355,14 +349,13 @@ class detection:
         cv2.imwrite('/media/pi/9E401DB5401D94DD/test/detected_plastic_{}.png'.format(self.ImageNumber), BinaryArrayOfDetectedPixels)
         
 
+    def WriteDataToTXTfile():
 
-        
+        DataFile = open('/media/pi/9E401DB5401D94DD/Color-detection-data/data.txt', 'w')
+    
+        DataFile.write('Analysed all pictures in folder /media/pi/9E401DB5401D94DD/Pictures''\n')
+        DataFile.write('{} % is white \n{} % is grey \n{} % is black \n\n'.format(detection.PercentageWhite, detection.PercentageGrey, detection.PercentageBlack))
+    
+        for CurrentColor in color.AllColors:
+             DataFile.write('{} % is {} \n'.format(CurrentColor.Percentage, CurrentColor.name))
 
-        
-
-
-
-
-
-
-       
