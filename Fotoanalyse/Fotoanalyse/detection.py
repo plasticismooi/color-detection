@@ -29,11 +29,11 @@ class detection:
     SaveBilateralfilterImage = None
     EnableWriteDataToTXTfile = False
     
-    BeltValue = 0.8
+    BeltValue = 0.4
 
-    WhiteValue = 0.8
-    BlackValue = 0.1
-    MaxSaturation = 0.15
+    WhiteValue = 0.75
+    BlackValue = 0.2
+    MaxSaturation = 0.25
     
     TotalAmountPlasticPixels= 0
 
@@ -63,9 +63,6 @@ class detection:
 
         detection.ListOfAllImages.append(self)
         
-#----------------------------------------Take Photo-----------------------------------
-
-       
 #----------------------------------------Functions for initializing images-----------------------------------
 
 
@@ -76,16 +73,16 @@ class detection:
         for BGR_image in DirectoryOfAllImages:
         
             BGR_image = cv2.imread(BGR_image)
-            BlurredBGRImage = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
+            #BGRImage = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
 
             if detection.SaveBilateralfilterImage == True:
-                cv2.imwrite('/media/pi/9E401DB5401D94DD/test/bilateral_{}.png'.format(detection.ImageNumber), BlurredBGRImage)
+                cv2.imwrite('C:\\Users\\tom_l\\testresults\\bilateralfilter_{}.png'.format(detection.ImageNumber), BGR_image)
 
-            detection(BlurredBGRImage)
+            detection(BGR_image)
         
     def __PathToAllImages():
     
-        path = '/media/pi/9E401DB5401D94DD/Pictures/*.png'
+        path = 'C:\\Users\\tom_l\\images\\*.png'
         DirectoryOfAllImages = glob.glob(path)
     
         return DirectoryOfAllImages
@@ -346,14 +343,14 @@ class detection:
         
         BinaryArrayOfDetectedPixels.dtype = 'uint8'
         BinaryArrayOfDetectedPixels[BinaryArrayOfDetectedPixels > 0] = 255
-        cv2.imwrite('/media/pi/9E401DB5401D94DD/test/detected_plastic_{}.png'.format(self.ImageNumber), BinaryArrayOfDetectedPixels)
+        cv2.imwrite('C:\\Users\\tom_l\\testresults\\binaryimage_{}.png'.format(self.ImageNumber), BinaryArrayOfDetectedPixels)
         
 
     def WriteDataToTXTfile():
 
-        DataFile = open('/media/pi/9E401DB5401D94DD/Color-detection-data/data.txt', 'w')
+        DataFile = open('C:\\Users\\tom_l\\testresults\\data.txt', 'w')
     
-        DataFile.write('Analysed all pictures in folder /media/pi/9E401DB5401D94DD/Pictures''\n')
+        DataFile.write('Analysed all pictures in folder\n')
         DataFile.write('{} % is white \n{} % is grey \n{} % is black \n\n'.format(detection.PercentageWhite, detection.PercentageGrey, detection.PercentageBlack))
     
         for CurrentColor in color.AllColors:

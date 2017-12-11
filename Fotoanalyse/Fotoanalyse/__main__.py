@@ -11,17 +11,12 @@ import math
 import numpy.ma as ma
 from time import sleep
 
-
 #project .py files
 from detection import detection
 from color import color
 from wait import wait
 
 #----------------------------------------color definitions----------------------------------------
-
-
-print('Preparing Colors...')
-
 
 color('red', 340, 15)
 color('orange', 16, 40)
@@ -78,7 +73,9 @@ class CalculationScreen(Screen):
     def __init__(self, *args, **kwargs):
         super(CalculationScreen, self).__init__(*args, **kwargs)
 
-    def CaculateResults(self):
+    def CalculateResults(self):
+
+        detection.PrepareAllImagesForDetection()
 
         for image in detection.ListOfAllImages:
             image.StartColorDetection()
@@ -102,13 +99,13 @@ class TakingPicturesScreen(Screen):
         self.add_widget(self.StopTakingPicturesButton)
 
     def StartTakingPictures(self):
-      
-        Clock.schedule_interval(self.TakePicture, 1)
+
+    	wait.CalculateWaitingTime()
+        Clock.schedule_interval(self.TakePicture, wait.PictureInterval)
          
     def TakePicture(self, interval):
 
-        image = cv2.imread('C:\\Users\\tom_l\\OneDrive\\HHS\\Jaar_3\\stage_2\\test_image.png')
-        detection(image)
+        image = cv2.imread('C:\\Users\\tom_l\\images\\test_image.png')
         print('picture taken')
 
     def StopTakingPictures(self, interval):
@@ -250,10 +247,10 @@ class ConfigurationScreenLayout(GridLayout):
     def WriteDataToTXTfile(self, instance, value):
 
         if value == True:
-            detection.WriteDataToTXTfile = True
+            detection.EnableWriteDataToTXTfile = True
 
         else:
-            detection.WriteDataToTXTfile = False
+            detection.EnableWriteDataToTXTfile = False
 
 
     def SetPictureWidth(self, instance, value):
@@ -267,27 +264,27 @@ class ConfigurationScreenLayout(GridLayout):
         wait.CalculateWaitingTime()
 
     def SetMaxSaturation(self, instance, value):
-
+        value = int(value)
         detection.SetMaxSaturation = value
         
 
     def SetWhiteValue(self, instnace, value):
-
-        detection.WhiteValue = value
+        value = int(value)
+        detection.SetWhiteValue(value)
         
 
     def SetBlackValue(self, instance, value):
-
-        detection.BlackValue = value
+        value = int(value)
+        detection.SetBlackValue(value)
         
 
     def SetBeltValue(self, instance, value):
-
-        detection.AmountOfPicturestToBeTaken = value
+        value = int(value)
+        detection.SetBeltValue(value)
         
 
     def SetNumberOfDecimals(self, instance, value):
-
+        
         detection.NumberOfDecimals = value
         
 
