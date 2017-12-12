@@ -87,7 +87,6 @@ class CalculationScreen(Screen):
 
         Interface.switch_to(ResultScreen())
         
-
 class TakingPicturesScreen(Screen):
 
     def __init__(self, *args, **kwargs):
@@ -100,8 +99,8 @@ class TakingPicturesScreen(Screen):
 
     def StartTakingPictures(self):
 
-    	wait.CalculateWaitingTime()
-        Clock.schedule_interval(self.TakePicture, wait.PictureInterval)
+    	
+        Clock.schedule_interval(self.TakePicture, 1)
          
     def TakePicture(self, interval):
 
@@ -128,6 +127,14 @@ class ConfigurationScreen(Screen):
         Layout = ConfigurationScreenLayout()
         self.add_widget(Layout)
 
+class ColorScreen(Screen):
+
+    def __init__(self, *args, **kwargs):
+        super(ColorScreen, self).__init__(*args, **kwargs)
+
+        Layout  = ColorScreenLayout()
+        self.add_widget(Layout)
+
 #-----------------------------------Layout definitions-----------------------------------
 
 class StartScreenLayout(GridLayout):
@@ -152,7 +159,6 @@ class StartScreenLayout(GridLayout):
 
     def GoToConfigurationScreen(self, instance):
         Interface.switch_to(ConfigurationScreen())
-
 
 class ConfigurationScreenLayout(GridLayout):
 
@@ -196,7 +202,7 @@ class ConfigurationScreenLayout(GridLayout):
         self.InputMaxSaturationValue = TextInput(text = '25', multiline = False, input_filter = 'int')
         self.InputMaxSaturationValue.bind(text = self.SetMaxSaturation)
 
-        self.InputBeltSpeedSettingLabel = Label(text = 'Input the setting of the belt')
+        self.InputBeltSpeedSettingLabel = Label(text = 'Input the speed setting of the belt')
         self.InputBeltSpeedSetting = TextInput(text = '0', multiline = False, input_filter = 'int')
         self.InputBeltSpeedSetting.bind(text = self.SetBeltSpeedSetting)
 
@@ -207,6 +213,9 @@ class ConfigurationScreenLayout(GridLayout):
         #buttons
         self.ReturnToStartScreenButton = Button(text = 'Return to startscreen')
         self.ReturnToStartScreenButton.bind(on_press = self.GoToStartScreen)
+
+        self.GoToColorSettings = Button(text = 'Set color definitions')
+        self.GoToColorSettings.bind(on_press = self.GoToColorScreen)
 
         #IMPORTANT: first add label, then the widgets
         self.add_widget(self.SaveDetectedPlasticImageSwitchLabel)
@@ -239,10 +248,14 @@ class ConfigurationScreenLayout(GridLayout):
         self.add_widget(self.InputPictureWidthLabel)
         self.add_widget(self.InputPictureWidth)
         
+        self.add_widget(self.GoToColorSettings)
         self.add_widget(self.ReturnToStartScreenButton)
 
     def GoToStartScreen(self, instance):
         Interface.switch_to(StartScreen())
+
+    def GoToColorScreen(self, instance):
+        Interface.switch_to(ColorScreen())
 
     def WriteDataToTXTfile(self, instance, value):
 
@@ -305,7 +318,6 @@ class ConfigurationScreenLayout(GridLayout):
             detection.SaveBilateralfilterImage = False 
             print('deactivated saving all images with detected plastic flakes')
 
-
 class ShowPercentages(BoxLayout):
 
     def __init__(self, **kwargs):
@@ -323,7 +335,56 @@ class ShowPercentages(BoxLayout):
             self.CurrentLabel = Label(text = '{}% is {}'.format(CurrentColor.Percentage, CurrentColor.name))
             self.add_widget(self.CurrentLabel)
 
-      
+class ColorScreenLayout(GridLayout):
+
+    def __init__(self, **kwargs):
+        super(ColorScreenLayout, self).__init__(**kwargs)
+
+        self.cols = 3
+        self.rows = 100
+
+        for CurrentColor in color.AllColors:
+
+            #color labels
+            self.ColorLabel = Label(text = 'Set left and right boundary for {}: '.format(CurrentColor.name))
+            self.InputLeftColorValue = TextInput(text = '{}'.format(CurrentColor.LeftAngle), multiline = False, input_filter = 'int')
+            self.InputRightColorValue = TextInput(text = '{}'.format(CurrentColor.RightAngle), multiline = False, input_filter = 'int')
+            self.InputLeftColorValue.bind(text = self.SetLeftColor)
+            self.InputRightColorValue.bind(text = self.SetRigthColor)
+
+            self.add_widget(self.ColorLabel)
+            self.add_widget(self.InputLeftColorValue)
+            self.add_widget(self.InputRightColorValue)
+
+        #buttons
+        self.ReturnToConfigScreenButton = Button(text = 'Return to configscreen')
+        self.ReturnToConfigScreenButton.bind(on_press = self.GoToConfigScreen)
+
+        self.AddColorButton = Button(text = 'Add Color')
+        self.AddColorButton.bind(on_press = self.AddColor)
+
+        self.add_widget(self.AddColorButton)
+        self.add_widget(self.ReturnToConfigScreenButton)
+
+
+    def AddColor(self, instance):
+
+        pass
+
+    def GoToConfigScreen(self , instance):
+
+        Interface.switch_to(ConfigurationScreen())
+
+    def SetLeftColor(self, instance, value):
+
+       pass
+
+    def SetRigthColor(self, instance, value):
+
+        pass
+    
+
+
 #-----------------------------------Top level kivy, screenmanager-----------------------------------             
           
 Builder.load_file('interface.kv')
@@ -335,6 +396,7 @@ Configuration = ConfigurationScreen(name = 'Configuration')
 TakingPictures = TakingPicturesScreen(name = 'TakingPicturesScreen')
 Results = ResultScreen(name = 'Results')
 Calculating = CalculationScreen(name = 'Calculating')
+Color = ColorScreen(name = 'name' )
 
 
 Interface.add_widget(Start)
@@ -342,6 +404,7 @@ Interface.add_widget(Configuration)
 Interface.add_widget(TakingPictures)
 Interface.add_widget(Calculating)
 Interface.add_widget(Results)
+Interface.add_widget(Color)
 
 
 class ColorApp(App):
@@ -351,8 +414,6 @@ class ColorApp(App):
         return Interface
 
 ColorApp().run()
-
-
 
 #----------------------------------------END PROGRAM----------------------------------------
 
