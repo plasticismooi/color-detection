@@ -33,6 +33,25 @@ class color:
         print('RightAngle is : ', self.RightAngle)
 
 
+        # functions called by colorscreen class
+    def SetLeftAngle(self, instance, value):
+
+        self.LeftAngle = value
+        print('the left angle of {} is set to {}'.format(self.name, value))
+
+    def SetrightAngle(self, instance, value):
+
+        self.RightAngle = value
+        print('the rigth angle of {} is set to {}'.format(self.name, value))
+
+    def RemoveColor(self, instance):
+        
+        print('color {} removed'.format(self.name))
+        del self
+           
+
+
+
 
 
 

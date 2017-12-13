@@ -26,6 +26,7 @@ color('light blue', 161, 190)
 color('dark blue', 191, 270)
 color('purple', 271, 339)
 
+
 #----------------------------------------Kivy----------------------------------------
 
 import kivy
@@ -340,21 +341,12 @@ class ColorScreenLayout(GridLayout):
     def __init__(self, **kwargs):
         super(ColorScreenLayout, self).__init__(**kwargs)
 
-        self.cols = 3
+        self.cols = 4
         self.rows = 100
 
-        for CurrentColor in color.AllColors:
-
-            #color labels
-            self.ColorLabel = Label(text = 'Set left and right boundary for {}: '.format(CurrentColor.name))
-            self.InputLeftColorValue = TextInput(text = '{}'.format(CurrentColor.LeftAngle), multiline = False, input_filter = 'int')
-            self.InputRightColorValue = TextInput(text = '{}'.format(CurrentColor.RightAngle), multiline = False, input_filter = 'int')
-            self.InputLeftColorValue.bind(text = self.SetLeftColor)
-            self.InputRightColorValue.bind(text = self.SetRigthColor)
-
-            self.add_widget(self.ColorLabel)
-            self.add_widget(self.InputLeftColorValue)
-            self.add_widget(self.InputRightColorValue)
+        #labels
+        self.LeftAngleLabel = Label(text = 'Insert left angle below')
+        self.RightAngleLabel = Label(text = 'Insert right angle below')
 
         #buttons
         self.ReturnToConfigScreenButton = Button(text = 'Return to configscreen')
@@ -363,28 +355,80 @@ class ColorScreenLayout(GridLayout):
         self.AddColorButton = Button(text = 'Add Color')
         self.AddColorButton.bind(on_press = self.AddColor)
 
+        #adding to screen
         self.add_widget(self.AddColorButton)
+        self.add_widget(self.LeftAngleLabel)
+        self.add_widget(self.RightAngleLabel)
         self.add_widget(self.ReturnToConfigScreenButton)
 
 
+        for CurrentColor in color.AllColors:
+            #spaceholder
+            self.RemoveColorButton = Button(text = 'Remove color')
+
+            #color labels
+            self.ColorLabel = Label(text = '{}: '.format(CurrentColor.name))
+            self.InputLeftColorValue = TextInput(text = '{}'.format(CurrentColor.LeftAngle), multiline = False, input_filter = 'int')
+            self.InputRightColorValue = TextInput(text = '{}'.format(CurrentColor.RightAngle), multiline = False, input_filter = 'int')
+
+            self.InputLeftColorValue.bind(text = CurrentColor.SetLeftAngle)
+            self.InputRightColorValue.bind(text = CurrentColor.SetrightAngle)
+            self.RemoveColorButton.bind(on_press = CurrentColor.RemoveColor) 
+
+            #adding to screen
+            self.add_widget(self.ColorLabel)
+            self.add_widget(self.InputLeftColorValue)
+            self.add_widget(self.InputRightColorValue)
+            self.add_widget(self.RemoveColorButton)
+
     def AddColor(self, instance):
+        #spaceholder
+        self.SaveColorButton = Button(text = 'Save color')
+  
+        #textinput
+        self.InputColorName = TextInput(text = 'Input color name')
+        self.InputLeftColorValue = TextInput(text = '{Input left angle}', multiline = False, input_filter = 'int')
+        self.InputRightColorValue = TextInput(text = '{Input right angle}', multiline = False, input_filter = 'int')
+        
+        self.InputColorName.bind(text = self.SetColorName)
+        self.InputLeftColorValue.bind(text = self.SetLeftAngle)
+        self.InputRightColorValue.bind(text = self.SetRightAngle)    
+        self.SaveColorButton.bind(on_press = self.SaveColor)
+          
+        #adding to screen
+        self.add_widget(self.InputColorName)
+        self.add_widget(self.InputLeftColorValue)
+        self.add_widget(self.InputRightColorValue) 
+        self.add_widget(self.SaveColorButton)
+
+
+
+    def SaveColor(self, instance):
+
+        ColorName = self.SetColorName 
+        LeftAngle = self.SetLeftAngle 
+        RightAngle = self.SetRightAngle 
+
+
+        
+    def SetColorName(self, instance, value):
+
+        ColorName = value
+        
+       
+    def SetLeftAngle(self, instance, value):
 
         pass
 
-    def GoToConfigScreen(self , instance):
+    def SetRightAngle(self, instance, value):
+
+        pass
+
+    def GoToConfigScreen(self, instance):
 
         Interface.switch_to(ConfigurationScreen())
 
-    def SetLeftColor(self, instance, value):
-
-       pass
-
-    def SetRigthColor(self, instance, value):
-
-        pass
-    
-
-
+   
 #-----------------------------------Top level kivy, screenmanager-----------------------------------             
           
 Builder.load_file('interface.kv')
@@ -396,7 +440,7 @@ Configuration = ConfigurationScreen(name = 'Configuration')
 TakingPictures = TakingPicturesScreen(name = 'TakingPicturesScreen')
 Results = ResultScreen(name = 'Results')
 Calculating = CalculationScreen(name = 'Calculating')
-Color = ColorScreen(name = 'name' )
+Color = ColorScreen(name = 'name')
 
 
 Interface.add_widget(Start)
