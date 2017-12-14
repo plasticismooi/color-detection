@@ -44,10 +44,19 @@ class color:
         self.RightAngle = value
         print('the rigth angle of {} is set to {}'.format(self.name, value))
 
-    def RemoveColor(self, instance):
+    def SetName(self, instance, value):
+
+        self.name = value
+        print('name changed to {}'.format(value))
+
+    def RemoveColor(self):
+
+        color.AllColors.remove(self)
+
         
-        print('color {} removed'.format(self.name))
-        del self
+
+    
+
            
 
 
