@@ -136,8 +136,11 @@ class ColorScreen(Screen):
     def __init__(self, *args, **kwargs):
         super(ColorScreen, self).__init__(*args, **kwargs)
 
-        self.Layout  = ColorScreenLayout()
-        self.add_widget(self.Layout)
+        self.rows = 1
+        self.cols = 1
+
+        self.ColorScreenLayoutInstance = ColorScreenLayout()
+        self.add_widget(self.ColorScreenLayoutInstance)
 
 #-----------------------------------Layout classes-----------------------------------
 
@@ -339,37 +342,27 @@ class ShowPercentages(BoxLayout):
             self.CurrentLabel = Label(text = '{}% is {}'.format(CurrentColor.Percentage, CurrentColor.name))
             self.add_widget(self.CurrentLabel)
 
-class ColorScreenLayout(GridLayout):
+class ColorScreenLayout(BoxLayout):
 
-    def __init__(self, **kwargs):
-        super(ColorScreenLayout, self).__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super(ColorScreenLayout, self).__init__(*args, **kwargs)
 
-        self.rows = 100
-        self.cols = 1
+        self.orientation = 'vertical'
 
-        
-        self.RefreshColorScreen()
-
-    def RefreshColorScreen(self):
-
-        self.Settings = SettingsColorMenu()
+        self.Settings = SettingsColorScreen()
         self.add_widget(self.Settings)
 
-        for CurrentColor in color.AllColors:
+        self.Color = ColorWidget()
+        self.add_widget(self.Color)
 
-            self.Color = ColorWidget(CurrentColor)
-            self.add_widget(self.Color)
+#-----------------------------------ColorScreen Class-Widgets----------------------------------- 
 
+class SettingsColorScreen(BoxLayout):
 
-#-----------------------------------ColorScreen Class Widgets----------------------------------- 
+    def __init__(self, *args, **kwargs):
+        super(SettingsColorScreen, self).__init__(*args, **kwargs)   
 
-class SettingsColorMenu(GridLayout):
-
-    def __init__(self,  **kwargs):
-        super(SettingsColorMenu, self).__init__(**kwargs)   
-
-        self.rows = 1
-        self.cols = 4
+        self.orientation = 'horizontal' 
 
         #labels
         self.LeftAngleLabel = Label(text = 'Insert left angle below')
@@ -382,7 +375,7 @@ class SettingsColorMenu(GridLayout):
         self.AddColorButton = Button(text = 'Add Color')
         self.AddColorButton.bind(on_press = self.AddColorWidget)
 
-        #adding to screen
+        #adding to widget
         self.add_widget(self.AddColorButton)
         self.add_widget(self.LeftAngleLabel)
         self.add_widget(self.RightAngleLabel)
@@ -390,35 +383,33 @@ class SettingsColorMenu(GridLayout):
 
     def AddColorWidget(self, instance):
         
-        self.NewColor = ColorWidget()
-        self.add_widget(self.NewColor)
+        self.ColorWidgetInstance = ColorWidget()
+        Color.ColorScreenLayoutInstance.add_widget(self.ColorWidgetInstance)
 
     def GoToConfigScreen(self, instance):
 
         Interface.switch_to(ConfigurationScreen())
 
-class ColorWidget(GridLayout):
+class ColorWidget(BoxLayout):
 
-    tempcolorarray = [0,0,0]
-    
-    def __init__(self, CurrentColor):
-        super(ColorWidget, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(ColorWidget, self).__init__(*args, **kwargs)
 
-        self.cols = 4
-        self.rows = 1
-            
+        self.orientation = 'horizontal'
+        self.ColorArray = ['enter name' ,0 ,0 ]
+
+        #button
         self.RemoveColorButton = Button(text = 'Remove color')
 
         #color labels
-        self.InputColorName = TextInput(text = '{}'.format(CurrentColor.name), multiline = False,)
-        self.InputLeftColorValue = TextInput(text = '{}'.format(CurrentColor.LeftAngle), multiline = False, input_filter = 'int')
-        self.InputRightColorValue = TextInput(text = '{}'.format(CurrentColor.RightAngle), multiline = False, input_filter = 'int')
+        self.InputColorName = TextInput(text = '{}'.format(self.ColorArray[0]), multiline = False,)
+        self.InputLeftColorValue = TextInput(text = '{}'.format(self.ColorArray[1]), multiline = False, input_filter = 'int')
+        self.InputRightColorValue = TextInput(text = '{}'.format(self.ColorArray[2]), multiline = False, input_filter = 'int')
 
-
-        self.InputColorName.bind(text = CurrentColor.SetName)
-        self.InputLeftColorValue.bind(text = CurrentColor.SetLeftAngle)
-        self.InputRightColorValue.bind(text = CurrentColor.SetrightAngle)
-        self.RemoveColorButton.bind(on_press = partial(self.RemoveColor, CurrentColor)) 
+        self.InputColorName.bind(text = self.SaveColorName)
+        self.InputLeftColorValue.bind(text = self.SaveLeftAngle)
+        self.InputRightColorValue.bind(text = self.SaveRightAngle)
+        self.RemoveColorButton.bind(on_press = self.RemoveColor) 
 
         #adding to screen
         self.add_widget(self.InputColorName)
@@ -426,10 +417,9 @@ class ColorWidget(GridLayout):
         self.add_widget(self.InputRightColorValue)
         self.add_widget(self.RemoveColorButton)
 
-    def RemoveColor(self, CurrentColor, instance):
+    def RemoveColor(self, instance):
 
-        CurrentColor.RemoveColor()
-        ColorScreenLayout.RefreshColorScreen(self)
+        pass
         
     def SaveColor(self, instance):
 
@@ -438,17 +428,17 @@ class ColorWidget(GridLayout):
     def SaveColorName(self, instance, value):
 
         ColorName = value
-        self.tempcolorarray[0] = ColorName
+        self.ColorArray[0] = ColorName
         
     def SaveLeftAngle(self, instance, value):
 
         LeftAngle = value
-        self.tempcolorarray[1] = LeftAngle
+        self.ColorArray[1] = LeftAngle
 
     def SaveRightAngle(self, instance, value):
 
         RightAngle = value
-        self.tempcolorarray[2] = RightAngle 
+        self.ColorArray[2] = RightAngle 
 
    
 #-----------------------------------Screenmanager setup & class-----------------------------------             
