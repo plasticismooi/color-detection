@@ -21,7 +21,6 @@ class detection:
     
     ListOfAllImages = []
     ImageNumber = 0
-    AmountOfPicturestToBeTaken = 1
     
     NumberOfDecimals = 2
     
@@ -254,11 +253,7 @@ class detection:
         return ((CurrentColor.AmountOfDetectedPixels / detection.TotalAmountPlasticPixels) * 100)
 
 #----------------------------------------SETTERS----------------------------------------
-    
-    def SetAmountOfPicturestToBeTaken(AmountOfPicturestToBeTaken):
-    
-        detection.AmountOfPicturestToBeTaken = AmountOfPicturestToBeTaken 
-
+ 
     def SetBeltValue(BeltValue):
         
         detection.BeltValue = BeltValue/100
