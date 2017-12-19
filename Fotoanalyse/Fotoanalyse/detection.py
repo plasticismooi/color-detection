@@ -72,7 +72,7 @@ class detection:
         for BGR_image in DirectoryOfAllImages:
         
             BGR_image = cv2.imread(BGR_image)
-            #BGRImage = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
+            BGRImage = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
 
             if detection.SaveBilateralfilterImage == True:
                 cv2.imwrite('C:\\Users\\tom_l\\testresults\\bilateralfilter_{}.png'.format(detection.ImageNumber), BGR_image)
@@ -105,7 +105,7 @@ class detection:
 
         
 
-#----------------------------------------Detect pixels----------------------------------------
+#----------------------------------------Detect plastic----------------------------------------
 
     def __ReturnBinaryArrayOfDetectedPixels(self, HSV_Image):
 

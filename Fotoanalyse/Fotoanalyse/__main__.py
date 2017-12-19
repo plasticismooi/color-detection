@@ -1,6 +1,6 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 14-12-2017
+# date : 19-12-2017
 
 #----------------------------------------Import needed librarys------------------------------------
 
@@ -46,7 +46,7 @@ from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.stacklayout import StackLayout
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
+from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition, SwapTransition
 from kivy.uix.dropdown import DropDown
 from kivy.properties import ObjectProperty
 from kivy import clock
@@ -372,8 +372,6 @@ class ColorScreenLayout(BoxLayout):
         self.NewColorWidget = ColorWidget()
         Color.ColorScreenLayoutInstance.RefreshColorScreenLayout()
 
-
-
 #-----------------------------------Custom Widgets----------------------------------- 
 
 class ShowAllSetColors(GridLayout):
@@ -525,11 +523,11 @@ class ColorWidget(BoxLayout):
         self.ColorArray[2] = RightAngle 
         print(self.ColorArray)
    
-#-----------------------------------Screenmanager setup & class-----------------------------------             
+#-----------------------------------Screenmanager-----------------------------------             
           
 Builder.load_file('interface.kv')
 
-Interface = ScreenManager(transition = FadeTransition())
+Interface = ScreenManager(transition = SwapTransition())
 
 Start = StartScreen(name = 'Start')
 Configuration = ConfigurationScreen(name = 'Configuration')
