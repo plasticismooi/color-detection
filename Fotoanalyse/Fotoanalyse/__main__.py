@@ -61,16 +61,16 @@ class StartScreen(Screen):
    def __init__(self, *args, **kwargs):
         super(StartScreen, self).__init__(*args, **kwargs)
 
-        layout = StartScreenLayout()
-        self.add_widget(layout)
+        StartScreenLayoutInstance = StartScreenLayout()
+        self.add_widget(StartScreenLayoutInstance)
 
 class ResultScreen(Screen):
 
     def __init__(self, **kwargs):
         super(ResultScreen, self).__init__(**kwargs)
         
-        self.AllPercentages = ShowPercentages()
-        self.add_widget(self.AllPercentages)
+        ShowPercentgesInstance = ShowPercentages()
+        self.add_widget(ShowPercentgesInstance)
 
 class CalculationScreen(Screen):
 
@@ -89,7 +89,7 @@ class CalculationScreen(Screen):
         if detection.EnableWriteDataToTXTfile == True:
             detection.WriteDataToTXTfile()
 
-        Interface.switch_to(ResultScreen())
+        ColorDetectionInterface.switch_to(ResultScreen())
         
 class TakingPicturesScreen(Screen):
 
@@ -121,7 +121,7 @@ class TakingPicturesScreen(Screen):
         except NameError:
             pass
 
-        Interface.switch_to(CalculationScreen())
+        ColorDetectionInterface.switch_to(CalculationScreen())
 
 class ConfigurationScreen(Screen):
 
@@ -140,6 +140,7 @@ class ColorScreen(Screen):
 
         self.ColorScreenLayoutInstance = ColorScreenLayout()
         self.add_widget(self.ColorScreenLayoutInstance)
+
 
 #-----------------------------------Layout classes-----------------------------------
 
@@ -165,10 +166,10 @@ class StartScreenLayout(GridLayout):
         self.add_widget(self.StartColorDetectionButton)
 
     def GoToTakingPicuresScreen(self, instance):
-        Interface.switch_to(TakingPicturesScreen())
+        ColorDetectionInterface.switch_to(TakingPicturesScreen())
 
     def GoToConfigurationScreen(self, instance):
-        Interface.switch_to(ConfigurationScreen())
+        ColorDetectionInterface.switch_to(ConfigurationScreen())
 
 class ConfigurationScreenLayout(GridLayout):
 
@@ -262,10 +263,10 @@ class ConfigurationScreenLayout(GridLayout):
         self.add_widget(self.ReturnToStartScreenButton)
 
     def GoToStartScreen(self, instance):
-        Interface.switch_to(StartScreen())
+        ColorDetectionInterface.switch_to(StartScreen())
 
     def GoToColorScreen(self, instance):
-        Interface.switch_to(ColorScreen())
+        ColorDetectionInterface.switch_to(ColorScreen())
 
     def WriteDataToTXTfile(self, instance, value):
 
@@ -351,22 +352,20 @@ class ColorScreenLayout(BoxLayout):
         super(ColorScreenLayout, self).__init__(*args, **kwargs)
 
         self.orientation = 'vertical'
-       
+        self.RefreshColorScreenLayout()
+        
+    def RefreshColorScreenLayout(self):
+
+        self.clear_widgets()
+
         self.Settings = SettingsColorScreen()
         self.add_widget(self.Settings)
-
-        self.ColorWidgetInstance = ColorWidget()
-        self.add_widget(self.ColorWidgetInstance)
-
-        #self.RefreshColorScreenLayout()
-
-    def RefreshColorScreenLayout(self):
 
         for CurrentColorWidget in ColorWidget.AllColorWidgets:
 
             self.CurrentColorWidget = CurrentColorWidget
             self.add_widget(self.CurrentColorWidget)
-
+        
     def AddColorWidget(self):
 
         self.NewColorWidget = ColorWidget()
@@ -432,7 +431,7 @@ class SettingsColorScreen(BoxLayout):
         
     def GoToConfigScreen(self, instance):
 
-        Interface.switch_to(ConfigurationScreen())
+        ColorDetectionInterface.switch_to(ConfigurationScreen())
 
 class ColorWidget(BoxLayout):
 
@@ -472,18 +471,10 @@ class ColorWidget(BoxLayout):
         self.add_widget(self.SaveColorButton)
         self.add_widget(self.RemoveWidgetButton)
 
-    def __RemoveAllWidgets(self):
-
-        self.remove_widget(self.InputColorName)
-        self.remove_widget(self.InputLeftColorValue)
-        self.remove_widget(self.InputRightColorValue)
-        self.remove_widget(self.SaveColorButton)
-        self.remove_widget(self.RemoveWidgetButton)
-        self.remove_widget(self.RemoveColorButton)
-
     def RemoveWidget(self, instance):
 
-        self.__RemoveAllWidgets()
+        ColorWidget.AllColorWidgets.remove(self)
+        Color.ColorScreenLayoutInstance.RefreshColorScreenLayout()
 
     def RemoveColor(self, instance):
 
@@ -527,7 +518,7 @@ class ColorWidget(BoxLayout):
           
 Builder.load_file('interface.kv')
 
-Interface = ScreenManager(transition = SwapTransition())
+ColorDetectionInterface = ScreenManager(transition = SwapTransition())
 
 Start = StartScreen(name = 'Start')
 Configuration = ConfigurationScreen(name = 'Configuration')
@@ -537,19 +528,19 @@ Calculating = CalculationScreen(name = 'Calculating')
 Color = ColorScreen(name = 'Color')
 
 
-Interface.add_widget(Start)
-Interface.add_widget(Configuration)
-Interface.add_widget(TakingPictures)
-Interface.add_widget(Calculating)
-Interface.add_widget(Results)
-Interface.add_widget(Color)
+ColorDetectionInterface.add_widget(Start)
+ColorDetectionInterface.add_widget(Configuration)
+ColorDetectionInterface.add_widget(TakingPictures)
+ColorDetectionInterface.add_widget(Calculating)
+ColorDetectionInterface.add_widget(Results)
+ColorDetectionInterface.add_widget(Color)
 
 
 class ColorApp(App):
 
     def build(self):
        
-        return Interface
+        return ColorDetectionInterface
 
 ColorApp().run()
 
