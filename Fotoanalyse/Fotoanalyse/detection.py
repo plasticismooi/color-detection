@@ -26,7 +26,7 @@ class detection:
     
     SaveDetectedPlasticImage = None
     SaveBilateralfilterImage = None
-    EnableWriteDataToTXTfile = False
+    EnableWriteDataToTXTfile = True
     
     BeltValue = 0.4
 
