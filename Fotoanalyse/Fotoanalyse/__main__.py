@@ -1,6 +1,6 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 19-12-2017
+# date : 3-1-2018
 
 #----------------------------------------Import needed librarys------------------------------------
 
@@ -36,7 +36,6 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.stacklayout import StackLayout
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition, SwapTransition
-from kivy.uix.dropdown import DropDown
 from kivy.properties import ObjectProperty
 from kivy import clock
 from kivy.clock import Clock
@@ -52,10 +51,11 @@ class StartScreen(Screen):
         for line in txtfile:
 
             line = line.strip() 
-            Name, LeftAngle, RightAngle = line.split(" ")
-       
-            color(Name, int(LeftAngle), int(RightAngle))
 
+            if line:
+
+                Name, LeftAngle, RightAngle = line.split(" ")
+                color(Name, int(LeftAngle), int(RightAngle))
 
     def __init__(self, *args, **kwargs):
         super(StartScreen, self).__init__(*args, **kwargs)
@@ -94,33 +94,11 @@ class TakingPicturesScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         super(TakingPicturesScreen, self).__init__(*args, **kwargs)
+
+        self.TakingPicturesScreenLayoutInstance = TakingPicturesScreenLayout()
+        self.add_widget(self.TakingPicturesScreenLayoutInstance)
+
         
-        self.StopTakingPicturesButton = Button(text = 'Stop Taking Pictures')
-        self.StopTakingPicturesButton.bind(on_press = self.StopTakingPictures)
-
-        self.add_widget(self.StopTakingPicturesButton)
-
-    def StartTakingPictures(self):
-
-    	
-        Clock.schedule_interval(self.TakePicture, 1)
-         
-    def TakePicture(self, interval):
-
-        image = cv2.imread('C:\\Users\\tom_l\\images\\test_image.png')
-        print('picture taken')
-
-    def StopTakingPictures(self, interval):
-
-        try:
-            
-            Clock.unschedule(self.TakePicture)
-            print('stopped taking pictures')
-
-        except NameError:
-            pass
-
-        ColorDetectionInterface.switch_to(CalculationScreen())
 
 class SettingsScreen(Screen):
 
@@ -141,6 +119,54 @@ class ColorScreen(Screen):
         self.add_widget(self.ColorScreenLayoutInstance)
 
 #-----------------------------------Layout classes-----------------------------------
+class TakingPicturesScreenLayout(BoxLayout):
+
+    def __init__(self, *args, **kwargs):
+        super(TakingPicturesScreenLayout, self).__init__(*args, **kwargs)
+
+        self.orientation = 'vertical'
+        
+        self.StartCalculationButton = Button(text = 'Stop taking pictures and start calculation', size_hint=(1, 0.9))
+        self.StartCalculationButton.bind(on_press = self.StartCalculation)
+
+        self.GoToStartScreenButton = Button(text = 'Stop taking pictures and return to start', size_hint=(1, 0.1))
+        self.GoToStartScreenButton.bind(on_press = self.GoToStartScreen)
+
+        self.add_widget(self.StartCalculationButton)
+        self.add_widget(self.GoToStartScreenButton)
+
+    def StartTakingPictures(self):
+        #called on enter via .kv
+        Clock.schedule_interval(self.TakePicture, 1)
+         
+    def TakePicture(self, interval):
+
+        image = cv2.imread('C:\\Users\\tom_l\\images\\test_image.png')
+        print('picture taken')
+
+    def GoToStartScreen(self, instance):
+
+        try:
+            Clock.unschedule(self.TakePicture)
+            print('stopped taking pictures')
+
+        except NameError:
+            pass
+
+        #remove all taken pictures
+
+        ColorDetectionInterface.switch_to(StartScreen())
+
+    def StartCalculation(self, interval):
+
+        try:
+            Clock.unschedule(self.TakePicture)
+            print('stopped taking pictures')
+
+        except NameError:
+            pass
+
+        ColorDetectionInterface.switch_to(CalculationScreen())
 
 class StartScreenLayout(GridLayout):
 
@@ -317,7 +343,7 @@ class ResultScreenLayout(BoxLayout):
 
         self.ShowPercentgesInstance = ShowPercentages()
 
-        self.ToStartScreenButton = Button(text = 'To Startscreen')
+        self.ToStartScreenButton = Button(text = 'To Startscreen', size_hint=(1, 0.1))
         self.ToStartScreenButton.bind(on_press = self.ToStartScreen)
 
         self.add_widget(self.ShowPercentgesInstance)
@@ -568,6 +594,8 @@ class ShowPercentages(BoxLayout):
 
     def __init__(self, **kwargs):
         super(ShowPercentages, self).__init__(**kwargs)
+        
+        self.orientation = 'vertical'
 
         self.LabelBlack = Label(text = '{}% is black'.format(detection.PercentageBlack))
         self.LabelGrey = Label(text = '{}% is grey'.format(detection.PercentageGrey))
