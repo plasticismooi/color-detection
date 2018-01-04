@@ -557,19 +557,17 @@ class SettingsColorScreen(BoxLayout):
 
     def RaiseOverlapPopup(self, OverlapArray):
         
-        OverlapPopup = Popup(title='Overlap!', content=Label(text='There is overlap on {}'.format(OverlapArray)), size_hint=(None, None), size=(400, 400))
+        OverlapPopup = Popup(title='OVERLAPPING VALUES! ', content=Label(text='There is overlap on {}\nPress Esc to leave'.format(OverlapArray[0])), title_color = [1,0,0,1])
         OverlapPopup.open()
         
     def RaiseMissingPopup(self, MissingArray):
 
-        MissingPopup = Popup(title='Missing values!', content=Label(text='Value(s) {} are missing'.format(MissingArray)), size_hint=(None, None), size=(400, 400))
+        MissingPopup = Popup(title='MISSING VALUES! ', content=Label(text='Value(s) {} are missing \nPress Esc to leave'.format(MissingArray[0])), title_color = [1,0,0,1], size_hint=(None, None), size=(400, 400))
         MissingPopup.open()   
 
     def RaiseIndexErrorPopup(self):
 
-        print('indexerror popup called')  
-        
-        IndexErrorPopup = Popup(title='IndexError!', content=Label(text='values must be in range 0-359'), size_hint=(None, None), size=(400, 400))
+        IndexErrorPopup = Popup(title='INDEX ERROR! ', content=Label(text='values must be in range 0-359 \nPress Esc to leave'), title_color = [1,0,0,1], size_hint=(None, None), size=(400, 400))
         IndexErrorPopup.open()  
 
 class ColorWidget(BoxLayout):
