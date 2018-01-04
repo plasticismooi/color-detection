@@ -98,8 +98,6 @@ class TakingPicturesScreen(Screen):
         self.TakingPicturesScreenLayoutInstance = TakingPicturesScreenLayout()
         self.add_widget(self.TakingPicturesScreenLayoutInstance)
 
-        
-
 class SettingsScreen(Screen):
 
     def __init__(self, *args, **kwargs):
@@ -119,6 +117,7 @@ class ColorScreen(Screen):
         self.add_widget(self.ColorScreenLayoutInstance)
 
 #-----------------------------------Layout classes-----------------------------------
+
 class TakingPicturesScreenLayout(BoxLayout):
 
     def __init__(self, *args, **kwargs):
@@ -126,10 +125,10 @@ class TakingPicturesScreenLayout(BoxLayout):
 
         self.orientation = 'vertical'
         
-        self.StartCalculationButton = Button(text = 'Stop taking pictures and start calculation', size_hint=(1, 0.9))
+        self.StartCalculationButton = Button(text = 'Calculate results', size_hint=(1, 0.9))
         self.StartCalculationButton.bind(on_press = self.StartCalculation)
 
-        self.GoToStartScreenButton = Button(text = 'Stop taking pictures and return to start', size_hint=(1, 0.1))
+        self.GoToStartScreenButton = Button(text = 'CANCEL', size_hint=(1, 0.1))
         self.GoToStartScreenButton.bind(on_press = self.GoToStartScreen)
 
         self.add_widget(self.StartCalculationButton)
@@ -360,8 +359,8 @@ class ColorScreenLayout(BoxLayout):
 
         self.orientation = 'vertical'
 
-        self.Settings = SettingsColorScreen()
-        self.add_widget(self.Settings)
+        self.SettingsColorScreenInstance = SettingsColorScreen()
+        self.add_widget(self.SettingsColorScreenInstance)
 
         for CurrentColor in color.AllColors:
 
@@ -422,7 +421,9 @@ class ShowAllSetColors(GridLayout):
 class SettingsColorScreen(BoxLayout):
 
     def __init__(self, *args, **kwargs):
-        super(SettingsColorScreen, self).__init__(*args, **kwargs)   
+        super(SettingsColorScreen, self).__init__(*args, **kwargs)  
+        
+        self.CorrectIndicator = True 
 
         self.orientation = 'horizontal' 
 
@@ -444,16 +445,137 @@ class SettingsColorScreen(BoxLayout):
         
     def GoToConfigScreen(self, instance):
 
-        ColorDetectionInterface.switch_to(StartScreen())
+        self.CorrectIndicator = True
+        if self.CheckIfColorsAreCorrect() == True:
+
+            ColorDetectionInterface.switch_to(StartScreen())
+
+    def CheckIfColorsAreCorrect(self):
+
+        IndexArray = self.PopulateIndexArray()
+
+        if self.CorrectIndicator == False:
+
+            return
+
+        OverlapArray = self.ReturnOverlapArray(IndexArray) 
+        MissingArray = self.ReturnMissingArray(IndexArray)
+
+        if self.CheckForOverlap(OverlapArray) == True:
+
+            self.RaiseOverlapPopup(OverlapArray)
+            self.CorrectIndicator = False
+
+        if self.CheckForMissingAngles(MissingArray) == True:
+
+            self.RaiseMissingPopup(MissingArray)
+            self.CorrectIndicator = False
+
+        return self.CorrectIndicator
+
+    def PopulateIndexArray(self):
+
+        try:
+
+            IndexArray = np.zeros(360, dtype = np.int8)
+        
+            for CurrentColor in color.AllColors:
+
+                if CurrentColor.LeftAngle <= CurrentColor.RightAngle:
+
+                    for x in range(CurrentColor.LeftAngle, CurrentColor.RightAngle + 1):
+
+                        IndexArray[x] += 1
+
+                else: 
+                    if CurrentColor.LeftAngle >= 360:
+
+                        raise IndexError
+
+                    for x in range(0, CurrentColor.RightAngle + 1):
+
+                        IndexArray[x] += 1
+
+                    for x in range(CurrentColor.LeftAngle, 360):
+
+                    
+                        IndexArray[x]  += 1
+
+            return IndexArray
+
+        except IndexError:
+
+            self.CorrectIndicator = False
+            self.RaiseIndexErrorPopup()
+            return
+
+    def ReturnOverlapArray(self, IndexArray):
+
+        OverlapValue = 2
+        OverlapIndexArray = np.nonzero(IndexArray >= OverlapValue)
+
+        if OverlapIndexArray[0].size == 0:
+
+            return False
+
+        else: 
+
+            return OverlapIndexArray
+
+    def ReturnMissingArray(self, IndexArray):
+
+        MissingValue = 0
+        MissingIndexArray = np.nonzero(IndexArray == MissingValue)
+
+        if MissingIndexArray[0].size == 0:
+
+            return False
+
+        else: 
+
+            return MissingIndexArray
+
+    def CheckForOverlap(self, OverlapArray):
+
+        if OverlapArray == False:
+
+            return False
+
+        else: 
+
+            return True
+
+    def CheckForMissingAngles(self, MissingArray):
+
+        if MissingArray == False:
+
+            return False
+
+        else: 
+
+            return True
+
+    def RaiseOverlapPopup(self, OverlapArray):
+        
+        OverlapPopup = Popup(title='Overlap!', content=Label(text='There is overlap on {}'.format(OverlapArray)), size_hint=(None, None), size=(400, 400))
+        OverlapPopup.open()
+        
+    def RaiseMissingPopup(self, MissingArray):
+
+        MissingPopup = Popup(title='Missing values!', content=Label(text='Value(s) {} are missing'.format(MissingArray)), size_hint=(None, None), size=(400, 400))
+        MissingPopup.open()   
+
+    def RaiseIndexErrorPopup(self):
+
+        print('indexerror popup called')  
+        
+        IndexErrorPopup = Popup(title='IndexError!', content=Label(text='values must be in range 0-359'), size_hint=(None, None), size=(400, 400))
+        IndexErrorPopup.open()  
 
 class ColorWidget(BoxLayout):
 
-    AllColorWidgets = []
-
     def __init__(self, *args, **kwargs):
         super(ColorWidget, self).__init__(*args, **kwargs)
-
-        ColorWidget.AllColorWidgets.append(self)
 
         self.orientation = 'horizontal'
         self.ColorArray = ['enter name' ,0 ,0 ]
@@ -495,6 +617,7 @@ class ColorWidget(BoxLayout):
 
         self.remove_widget(self.SaveColorButton)
         self.add_widget(self.RemoveColorButton)
+        self.SetInputToReadOnly()
 
     def SaveColorName(self, instance, value):
 
@@ -513,6 +636,12 @@ class ColorWidget(BoxLayout):
         RightAngle = value
         self.ColorArray[2] = RightAngle 
         print(self.ColorArray)
+
+    def SetInputToReadOnly(self):
+
+        self.InputColorName = TextInput(readonly = True)
+        self.InputLeftColorValue = TextInput(readonly = True)
+        self.InputRightColorValue = TextInput(readonly = True)
 
 class PreSetColorWidget(BoxLayout):
 
@@ -534,9 +663,9 @@ class PreSetColorWidget(BoxLayout):
         self.RemoveColorButton.bind(on_release = self.RemoveColor)
 
         #color labels
-        self.InputColorName = TextInput(text = '{}'.format(self.ColorArray[0]), multiline = False,)
-        self.InputLeftColorValue = TextInput(text = '{}'.format(self.ColorArray[1]), multiline = False, input_filter = 'int')
-        self.InputRightColorValue = TextInput(text = '{}'.format(self.ColorArray[2]), multiline = False, input_filter = 'int')
+        self.InputColorName = TextInput(text = '{}'.format(self.ColorArray[0]), multiline = False, readonly = True)
+        self.InputLeftColorValue = TextInput(text = '{}'.format(self.ColorArray[1]), multiline = False, input_filter = 'int', readonly = True)
+        self.InputRightColorValue = TextInput(text = '{}'.format(self.ColorArray[2]), multiline = False, input_filter = 'int', readonly = True)
 
         self.InputColorName.bind(text = self.SaveColorName)
         self.InputLeftColorValue.bind(text = self.SaveLeftAngle)
@@ -555,6 +684,7 @@ class PreSetColorWidget(BoxLayout):
 
         self.remove_widget(self.RemovePreSetColorButton)
         self.add_widget(self.SaveColorButton)
+        self.SetTextInputToWrite()
 
     def RemoveColor(self, instance):
 
@@ -563,14 +693,14 @@ class PreSetColorWidget(BoxLayout):
 
         self.remove_widget(self.RemoveColorButton)
         self.add_widget(self.SaveColorButton)
+        self.SetTextInputToWrite()
     
     def SaveColor(self, instance):
 
         self.ColorInstance = color(self.ColorArray[0], int(self.ColorArray[1]), int(self.ColorArray[2]))
         print(self.ColorArray, 'saved')
 
-        self.remove_widget(self.SaveColorButton)
-        self.add_widget(self.RemoveColorButton)
+        self.SetTextInputToRead()
 
     def SaveColorName(self, instance, value):
 
@@ -589,6 +719,40 @@ class PreSetColorWidget(BoxLayout):
         RightAngle = value
         self.ColorArray[2] = RightAngle 
         print(self.ColorArray)
+
+    def SetTextInputToWrite(self):
+
+        self.clear_widgets()
+
+        self.InputColorName = TextInput(text = '{}'.format(self.ColorArray[0]), multiline = False, readonly = False)
+        self.InputLeftColorValue = TextInput(text = '{}'.format(self.ColorArray[1]), multiline = False, input_filter = 'int', readonly = False)
+        self.InputRightColorValue = TextInput(text = '{}'.format(self.ColorArray[2]), multiline = False, input_filter = 'int', readonly = False)
+
+        self.InputColorName.bind(text = self.SaveColorName)
+        self.InputLeftColorValue.bind(text = self.SaveLeftAngle)
+        self.InputRightColorValue.bind(text = self.SaveRightAngle)
+
+        self.add_widget(self.InputColorName)
+        self.add_widget(self.InputLeftColorValue)
+        self.add_widget(self.InputRightColorValue)
+        self.add_widget(self.SaveColorButton)
+
+    def SetTextInputToRead(self):
+
+        self.clear_widgets()
+
+        self.InputColorName = TextInput(text = '{}'.format(self.ColorArray[0]), multiline = False, readonly = True)
+        self.InputLeftColorValue = TextInput(text = '{}'.format(self.ColorArray[1]), multiline = False, input_filter = 'int', readonly = True)
+        self.InputRightColorValue = TextInput(text = '{}'.format(self.ColorArray[2]), multiline = False, input_filter = 'int', readonly = True)
+
+        self.InputColorName.bind(text = self.SaveColorName)
+        self.InputLeftColorValue.bind(text = self.SaveLeftAngle)
+        self.InputRightColorValue.bind(text = self.SaveRightAngle)
+
+        self.add_widget(self.InputColorName)
+        self.add_widget(self.InputLeftColorValue)
+        self.add_widget(self.InputRightColorValue)
+        self.add_widget(self.RemoveColorButton)
 
 class ShowPercentages(BoxLayout):
 

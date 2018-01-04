@@ -1,7 +1,11 @@
 red 340 15
+
 orange 16 40
 yellow 41 70
+
 green 71 160
+
 light-blue 161 190
+
 dark-blue 191 270
 purple 271 339
