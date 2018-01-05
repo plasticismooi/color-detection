@@ -10,7 +10,7 @@ import numpy.ma as ma
 import numpy as np
 import glob
 import os
-#from picamera import PiCamera
+
 import datetime
 from time import sleep
 import time
@@ -74,25 +74,18 @@ class detection:
             BGR_image = cv2.imread(BGR_image)
             BGRImage = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
 
-            if detection.SaveBilateralfilterImage == True:
-                cv2.imwrite('C:\\Users\\tom_l\\testresults\\bilateralfilter_{}.png'.format(detection.ImageNumber), BGR_image)
-
             detection(BGR_image)
-        
+
+            if detection.SaveBilateralfilterImage == True:
+                cv2.imwrite('C:\\Users\\tom_l\\color-detection-data\\testresults\\bilateralfilter_{}.png'.format(detection.ImageNumber), BGR_image)
+
     def __PathToAllImages():
     
-        path = 'C:\\Users\\tom_l\\images\\*.png'
+        path = 'C:\\Users\\tom_l\\color-detection-data\\images\\*.png'
         DirectoryOfAllImages = glob.glob(path)
-    
+
         return DirectoryOfAllImages
 
-    def RemoveAllImages():
-    
-        DirectoryOfAllImages = detection.__PathToAllImages()
-    
-        for BGR_image in DirectoryOfAllImages:
-            os.remove(BGR_image)
-            
 #----------------------------------------Start Detection---------------------------------------
 
     def StartColorDetection(self):
@@ -338,12 +331,12 @@ class detection:
         
         BinaryArrayOfDetectedPixels.dtype = 'uint8'
         BinaryArrayOfDetectedPixels[BinaryArrayOfDetectedPixels > 0] = 255
-        cv2.imwrite('C:\\Users\\tom_l\\testresults\\binaryimage_{}.png'.format(self.ImageNumber), BinaryArrayOfDetectedPixels)
+        cv2.imwrite('C:\\Users\\tom_l\\color-detection-data\\testresults\\binaryimage_{}.png'.format(self.ImageNumber), BinaryArrayOfDetectedPixels)
         
 
     def WriteDataToTXTfile():
 
-        DataFile = open('C:\\Users\\tom_l\\testresults\\data.txt', 'w')
+        DataFile = open('C:\\Users\\tom_l\\color-detection-data\\testresults\\data.txt', 'w')
     
         DataFile.write('Analysed all pictures in folder\n')
         DataFile.write('{} % is white \n{} % is grey \n{} % is black \n\n'.format(detection.PercentageWhite, detection.PercentageGrey, detection.PercentageBlack))

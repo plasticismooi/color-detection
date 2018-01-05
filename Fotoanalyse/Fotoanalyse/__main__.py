@@ -1,6 +1,6 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 3-1-2018
+# date : 5-1-2018
 
 #----------------------------------------Import needed librarys------------------------------------
 
@@ -10,9 +10,11 @@ import time
 import math
 import numpy.ma as ma
 from time import sleep
-
+import os
+import glob
 from functools import partial
 import gc
+import datetime
 
 #project .py files
 from detection import detection
@@ -35,12 +37,11 @@ from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.stacklayout import StackLayout
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition, SwapTransition
+from kivy.uix.screenmanager import ScreenManager, Screen, SwapTransition
 from kivy.properties import ObjectProperty
 from kivy import clock
 from kivy.clock import Clock
 from kivy.uix.widget import Widget
-
 
 #-----------------------------------Screen classes-----------------------------------
 
@@ -134,38 +135,70 @@ class TakingPicturesScreenLayout(BoxLayout):
         self.add_widget(self.StartCalculationButton)
         self.add_widget(self.GoToStartScreenButton)
 
+        self.camera = cv2.VideoCapture(1)
+        self.PictureNumber = 0
+
     def StartTakingPictures(self):
+
+        self.RemoveAllImages()
+        
         #called on enter via .kv
         Clock.schedule_interval(self.TakePicture, 1)
          
     def TakePicture(self, interval):
 
-        image = cv2.imread('C:\\Users\\tom_l\\images\\test_image.png')
-        print('picture taken')
+        ret, frame = self.camera.read()
+        if not ret:
+
+            return
+           
+        ImageName = 'C:\\Users\\tom_l\\color-detection-data\\images\\image_{}.png'.format(self.PictureNumber)
+        cv2.imwrite(ImageName, frame)
+        print("{} saved".format(ImageName))
+        self.PictureNumber += 1
 
     def GoToStartScreen(self, instance):
 
         try:
             Clock.unschedule(self.TakePicture)
+            self.PictureNumber = 0
             print('stopped taking pictures')
 
         except NameError:
             pass
 
-        #remove all taken pictures
-
+        self.RemoveAllImages()
         ColorDetectionInterface.switch_to(StartScreen())
 
     def StartCalculation(self, interval):
 
         try:
+
             Clock.unschedule(self.TakePicture)
             print('stopped taking pictures')
+
+            self.camera.release()
+
+
 
         except NameError:
             pass
 
         ColorDetectionInterface.switch_to(CalculationScreen())
+
+    def PathToAllImages(self):
+    
+        path = 'C:\\Users\\tom_l\\color-detection-data\\images\\*.png'
+        DirectoryOfAllImages = glob.glob(path)
+    
+        return DirectoryOfAllImages
+
+    def RemoveAllImages(self):
+    
+        DirectoryOfAllImages = self.PathToAllImages()
+    
+        for BGR_image in DirectoryOfAllImages:
+            os.remove(BGR_image)
 
 class StartScreenLayout(GridLayout):
 
@@ -175,7 +208,7 @@ class StartScreenLayout(GridLayout):
         self.rows = 1
         self.cols = 3
 
-        self.StartColorDetectionButton = Button(text = 'Start taking picture')
+        self.StartColorDetectionButton = Button(text = 'Start color-detection')
         self.StartColorDetectionButton.bind(on_press = self.GoToTakingPicuresScreen)
 
         self.OptionButtonsStartScreen = OptionButtonsStartScreen()
@@ -367,7 +400,7 @@ class ColorScreenLayout(BoxLayout):
             self.PreSetColorWidgetInstance = PreSetColorWidget(CurrentColor)
             self.add_widget(self.PreSetColorWidgetInstance)
 
-        RemainingSlots =  20 - len(color.AllColors)
+        RemainingSlots =  15 - len(color.AllColors)
 
         for x in range(0, RemainingSlots):
 
@@ -406,10 +439,16 @@ class ShowAllSetColors(GridLayout):
         super(ShowAllSetColors, self).__init__(*args, **kwargs)  
 
         self.cols = 1
-        self.rows = 1
+        self.rows = 2
+
+        self.TopLabel = Label(text = 'Colors that will be used to scan are shown below', text_size =  self.size)
+        self.add_widget(self.TopLabel)
 
         if not color.AllColors:
             self.add_widget(Label(text = 'no colors set'))
+
+
+        
 
         else:
              for CurrentColor in color.AllColors:
@@ -498,7 +537,6 @@ class SettingsColorScreen(BoxLayout):
 
                     for x in range(CurrentColor.LeftAngle, 360):
 
-                    
                         IndexArray[x]  += 1
 
             return IndexArray
@@ -557,17 +595,17 @@ class SettingsColorScreen(BoxLayout):
 
     def RaiseOverlapPopup(self, OverlapArray):
         
-        OverlapPopup = Popup(title='OVERLAPPING VALUES! ', content=Label(text='There is overlap on {}\nPress Esc to leave'.format(OverlapArray[0])), title_color = [1,0,0,1])
+        OverlapPopup = Popup(title='OVERLAPPING VALUES! ', content=Label(text='Colors are overlapping on {}\nEnter correct values to start scanning\nPress Esc to leave'.format(OverlapArray[0])), title_color = [1,0,0,1])
         OverlapPopup.open()
         
     def RaiseMissingPopup(self, MissingArray):
 
-        MissingPopup = Popup(title='MISSING VALUES! ', content=Label(text='Value(s) {} are missing \nPress Esc to leave'.format(MissingArray[0])), title_color = [1,0,0,1], size_hint=(None, None), size=(400, 400))
+        MissingPopup = Popup(title='MISSING VALUES! ', content=Label(text='Value(s) {} are missing \nEnter correct values to start scanning\nPress Esc to leave'.format(MissingArray[0])), title_color = [1,0,0,1])
         MissingPopup.open()   
 
     def RaiseIndexErrorPopup(self):
 
-        IndexErrorPopup = Popup(title='INDEX ERROR! ', content=Label(text='values must be in range 0-359 \nPress Esc to leave'), title_color = [1,0,0,1], size_hint=(None, None), size=(400, 400))
+        IndexErrorPopup = Popup(title='INPUT ERROR! ', content=Label(text='Values must be in range 0-359 \nEnter correct values to start scanning\nPress Esc to leave'), title_color = [1,0,0,1])
         IndexErrorPopup.open()  
 
 class ColorWidget(BoxLayout):
