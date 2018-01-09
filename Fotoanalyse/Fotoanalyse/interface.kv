@@ -8,19 +8,21 @@
 
     on_enter: root.CalculateResults()
 
-<ResultScreen>:
+<OptionButtonsStartScreen>:
 
-<ShowPercentages>:
+    BoxLayout:
+        Button:
+               
+            on_press: root.GoToColorScreen()
+            text: 'To color definitions'
+            
+        Button:
+        
+            on_press: root.GoToSettingsScreen()
+            text: 'To Settings'
+            
 
-<ConfigurationScreen>:
 
-<ConfigurationScreenLayout>:
-
-<ColorScreenLayout>:
-
-<SettingsColorScreen>:
-  
-<ColorWidget>:
 
 <smallcircle>:
     FloatLayout:
@@ -30,7 +32,7 @@
             Ellipse:
                 pos: 395, 300
                 size: 250, 250
-                source: 'C:/Users/tom_l/hsv.png'
+                source: 'C:/Users/tom_l/color-detection/Fotoanalyse/Fotoanalyse/program-files/hsv-small.png'
 
 <bigcircle>:
     FloatLayout:
@@ -40,7 +42,7 @@
             Ellipse:
                 pos: 370, 275
                 size: 300, 300
-                source: 'C:/Users/tom_l/hsv.png'
+                source: 'C:/Users/tom_l/color-detection/Fotoanalyse/Fotoanalyse/program-files/hsv-big.png'
                 angle_start: root.LeftAngle
                 angle_end: root.RightAngle
 

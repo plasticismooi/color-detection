@@ -64,7 +64,7 @@ from kivy.uix.widget import Widget
 
 LoadPreSetColors()
 
-Config.set('graphics', 'resizable', '0') #0 being off 1 being on as in true/false
+Config.set('graphics', 'resizable', '0') 
 Config.set('graphics', 'width', '700')
 Config.set('graphics', 'height', '600')
 
@@ -214,23 +214,21 @@ class TakingPicturesScreenLayout(BoxLayout):
         for BGR_image in DirectoryOfAllImages:
             os.remove(BGR_image)
 
-class LayoutStartScreen(GridLayout):
+class LayoutStartScreen(BoxLayout):
 
     def __init__(self, **kwargs):
         super(LayoutStartScreen, self).__init__(**kwargs)
 
-        self.rows = 1
-        self.cols = 3
+        self.orientation = 'vertical'
 
-        self.StartColorDetectionButton = Button(text = 'Start color-detection')
+        self.StartColorDetectionButton = Button(text = 'Start color-detection',  size_hint=(1, 0.9))
         self.StartColorDetectionButton.bind(on_press = self.GoToTakingPicuresScreen)
 
-        self.OptionButtonsStartScreen = OptionButtonsStartScreen()
-        self.AllCurrentColors = ShowAllSetColors()
-
-        self.add_widget(self.OptionButtonsStartScreen)
-        self.add_widget(self.AllCurrentColors)
+        self.OptionButtonsStartScreen = OptionButtonsStartScreen( size_hint=(1, 0.1))
+ 
+        
         self.add_widget(self.StartColorDetectionButton)
+        self.add_widget(self.OptionButtonsStartScreen)
 
     def GoToTakingPicuresScreen(self, instance):
         ColorDetectionInterface.switch_to(TakingPicturesScreen())
@@ -257,19 +255,19 @@ class LayoutSettingsScreen(GridLayout):
         self.WriteDatatoTXTfileSwitch.bind(active = self.WriteDataToTXTfile)
 
         #integer textinput
-        self.InputBeltValueLabel = Label(text = 'Set the value of the belt in "value/brightness" from HSV: ')
+        self.InputBeltValueLabel = Label(text = 'Set the value of the belt in \n"value/brightness" from HSV: ')
         self.InputBeltValue = TextInput(text = '{}'.format(detection.BeltValue), multiline = False, input_filter = 'float')
         self.InputBeltValue.bind(text = self.SetBeltValue)
 
-        self.InputBlackValueLabel = Label(text = 'Set the value of the color black in "value/brightness" from HSV: ')
+        self.InputBlackValueLabel = Label(text = 'Set the value of the color black in "\nvalue/brightness" from HSV: ')
         self.InputBlackValue = TextInput(text = '{}'.format(detection.BlackValue), multiline = False, input_filter = 'float')
         self.InputBlackValue.bind(text = self.SetBlackValue)
 
-        self.InputWhiteValueLabel = Label(text = 'Set the value of the color white in "value/brightness" from HSV: ')
+        self.InputWhiteValueLabel = Label(text = 'Set the value of the color white in \n"value/brightness" from HSV: ')
         self.InputWhiteValue = TextInput(text = '{}'.format(detection.WhiteValue), multiline = False, input_filter = 'float')
         self.InputWhiteValue.bind(text = self.SetWhiteValue)
         
-        self.InputMaxSaturationValueLabel = Label(text = 'The maximal saturation of "S" in HSV for a color the to be defined as white/grey/black: ')
+        self.InputMaxSaturationValueLabel = Label(text = 'The maximal saturation of "S" in HSV for a color\nthe to be defined as white/grey/black: ')
         self.InputMaxSaturationValue = TextInput(text = '{}'.format(detection.MaxSaturation), multiline = False, input_filter = 'float')
         self.InputMaxSaturationValue.bind(text = self.SetMaxSaturation)
 
@@ -431,45 +429,21 @@ class OptionButtonsStartScreen(BoxLayout):
     def __init__(self, *args, **kwargs):
         super(OptionButtonsStartScreen, self).__init__(*args, **kwargs) 
         
-        self.orientation = 'vertical' 
+        self.orientation = 'horizontal' 
 
-        self.GoToColorScreenButton = Button(text = 'To color definitions')
-        self.GoToColorScreenButton.bind(on_press = self.GoToColorScreen)
+
 
         self.GoToSettingsScreenButton = Button(text = 'To settings')
         self.GoToSettingsScreenButton.bind(on_press = self.GoToSettingsScreen)
 
-        self.add_widget(self.GoToSettingsScreenButton)
-        self.add_widget(self.GoToColorScreenButton)
 
-    def GoToColorScreen(self, instance):
+    def GoToColorScreen(self):
 
         ColorDetectionInterface.switch_to(ColorScreen())
 
-    def GoToSettingsScreen(self, instance):
+    def GoToSettingsScreen(self):
 
         ColorDetectionInterface.switch_to(SettingsScreen())
-
-class ShowAllSetColors(GridLayout):
-
-    def __init__(self, *args, **kwargs):
-        super(ShowAllSetColors, self).__init__(*args, **kwargs)  
-
-        self.cols = 1
-        self.rows = 2
-
-        self.TopLabel = Label(text = 'All Set Colors: ', text_size = self.size)
-        self.add_widget(self.TopLabel)
-
-        if not color.AllColors:
-            self.add_widget(Label(text = 'no colors set'))
-
-        else:
-             for CurrentColor in color.AllColors:
-
-                self.CurrentColorDataLabel = Label(text = '{} : {}-{}'.format(CurrentColor.name, CurrentColor.LeftAngle, CurrentColor.RightAngle))
-                self.rows += 1
-                self.add_widget(self.CurrentColorDataLabel)
 
 class SettingsColorScreen(BoxLayout):
 
@@ -481,23 +455,33 @@ class SettingsColorScreen(BoxLayout):
         self.orientation = 'horizontal' 
 
         #labels
+        self.NameLabel = Label(text = 'Name')
         self.LeftAngleLabel = Label(text = 'Left')
         self.RightAngleLabel = Label(text = 'Right')
-        self.PlaceHolder = Label(text = 'niks')
+
 
         #buttons
-        self.ReturnToConfigScreenButton = Button(text = 'To Start')
+        self.ReturnToConfigScreenButton = Button(text = 'Back')
         self.ReturnToConfigScreenButton.bind(on_press = self.GoToConfigScreen)
 
-        self.NameLabel = Label(text = 'Name')
+        self.ResetColorsButton = Button(text = 'Reset')
+        self.ResetColorsButton.bind(on_press = self.ResetColorsToBase)
      
         #adding to widget
         self.add_widget(self.NameLabel)
         self.add_widget(self.LeftAngleLabel)
         self.add_widget(self.RightAngleLabel)
+        self.add_widget(self.ResetColorsButton)
         self.add_widget(self.ReturnToConfigScreenButton)
-        self.add_widget(self.PlaceHolder)
+
         
+
+    def ResetColorsToBase(self, instance):
+
+        color.AllColors[:] = []
+        self.LoadPreSetColors()
+        ColorDetectionInterface.switch_to(ColorScreen())
+
     def GoToConfigScreen(self, instance):
 
         self.CorrectIndicator = True
@@ -624,6 +608,20 @@ class SettingsColorScreen(BoxLayout):
         IndexErrorPopup = Popup(title='INPUT ERROR! ', content=Label(text='Values must be in range 0-359 \nEnter correct values to start scanning\nPress Esc to leave'), title_color = [1,0,0,1])
         IndexErrorPopup.open()  
 
+    def LoadPreSetColors(self):
+
+        with open('basecolors.txt', 'r') as txtfile:
+
+            for line in txtfile:
+
+                 line = line.strip() 
+
+                 if line:
+
+                        Name, LeftAngle, RightAngle = line.split(" ")
+
+                        color(Name, int(LeftAngle), int(RightAngle))
+
 class ColorWidget(BoxLayout):
 
     def __init__(self, *args, **kwargs):
@@ -647,6 +645,8 @@ class ColorWidget(BoxLayout):
         self.InputLeftColorValue = TextInput(text = '{}'.format(self.ColorArray[1]), multiline = False, input_filter = 'int')
         self.InputRightColorValue = TextInput(text = '{}'.format(self.ColorArray[2]), multiline = False, input_filter = 'int')
 
+        self.Placeholder = Label(text = '')
+
         self.InputColorName.bind(text = self.SaveColorName)
         self.InputLeftColorValue.bind(text = self.SaveLeftAngle)
         self.InputRightColorValue.bind(text = self.SaveRightAngle)
@@ -656,12 +656,19 @@ class ColorWidget(BoxLayout):
         self.add_widget(self.InputLeftColorValue)
         self.add_widget(self.InputRightColorValue)
         self.add_widget(self.SaveColorButton)
-        self.add_widget(self.VisualizeColorButton)
+        self.add_widget(self.Placeholder)
 
     def VisualizeColor(self, instance):
 
-        bigcircle.LeftAngle = int(self.ColorArray[1])
-        bigcircle.RightAngle = int(self.ColorArray[2])
+        if int(self.ColorArray[1]) > int(self.ColorArray[2]):
+
+            bigcircle.LeftAngle = int(self.ColorArray[1]) - 360
+            bigcircle.RightAngle = int(self.ColorArray[2])
+
+        else:
+
+            bigcircle.LeftAngle = int(self.ColorArray[1])
+            bigcircle.RightAngle = int(self.ColorArray[2])
 
         ColorDetectionInterface.switch_to(ColorScreen())
 
@@ -670,24 +677,28 @@ class ColorWidget(BoxLayout):
         color.AllColors.remove(self.ColorInstance)
         print(self.ColorArray, 'removed')
 
+        self.SetTextInputToWrite()
+
+        
         self.remove_widget(self.RemoveColorButton)
         self.remove_widget(self.VisualizeColorButton)
 
         self.add_widget(self.SaveColorButton)
-        self.add_widget(self.VisualizeColorButton)
+        self.add_widget(self.Placeholder)
+
 
     def SaveColor(self, instance):
 
         self.ColorInstance = color(self.ColorArray[0], int(self.ColorArray[1]), int(self.ColorArray[2]))
         print(self.ColorArray, 'saved')
 
-        self.remove_widget(self.SaveColorButton)
-        self.remove_widget(self.VisualizeColorButton)
+        self.SetTextInputToRead()
 
+        self.remove_widget(self.SaveColorButton)
+        self.remove_widget(self.Placeholder)
+        
         self.add_widget(self.RemoveColorButton)
         self.add_widget(self.VisualizeColorButton)
-
-        self.SetInputToReadOnly()
 
     def SaveColorName(self, instance, value):
 
@@ -707,11 +718,41 @@ class ColorWidget(BoxLayout):
         self.ColorArray[2] = RightAngle 
         print(self.ColorArray)
 
-    def SetInputToReadOnly(self):
+    def SetTextInputToWrite(self):
 
-        self.InputColorName = TextInput(readonly = True)
-        self.InputLeftColorValue = TextInput(readonly = True)
-        self.InputRightColorValue = TextInput(readonly = True)
+        self.remove_widget(self.InputColorName)
+        self.remove_widget(self.InputLeftColorValue)
+        self.remove_widget(self.InputRightColorValue)
+
+        self.InputColorName = TextInput(text = '{}'.format(self.ColorArray[0]), multiline = False, readonly = False)
+        self.InputLeftColorValue = TextInput(text = '{}'.format(self.ColorArray[1]), multiline = False, input_filter = 'int', readonly = False)
+        self.InputRightColorValue = TextInput(text = '{}'.format(self.ColorArray[2]), multiline = False, input_filter = 'int', readonly = False)
+
+        self.InputColorName.bind(text = self.SaveColorName)
+        self.InputLeftColorValue.bind(text = self.SaveLeftAngle)
+        self.InputRightColorValue.bind(text = self.SaveRightAngle)
+
+        self.add_widget(self.InputColorName)
+        self.add_widget(self.InputLeftColorValue)
+        self.add_widget(self.InputRightColorValue)
+
+    def SetTextInputToRead(self):
+
+        self.remove_widget(self.InputColorName)
+        self.remove_widget(self.InputLeftColorValue)
+        self.remove_widget(self.InputRightColorValue)
+
+        self.InputColorName = TextInput(text = '{}'.format(self.ColorArray[0]), multiline = False, readonly = True)
+        self.InputLeftColorValue = TextInput(text = '{}'.format(self.ColorArray[1]), multiline = False, input_filter = 'int', readonly = True)
+        self.InputRightColorValue = TextInput(text = '{}'.format(self.ColorArray[2]), multiline = False, input_filter = 'int', readonly = True)
+
+        self.InputColorName.bind(text = self.SaveColorName)
+        self.InputLeftColorValue.bind(text = self.SaveLeftAngle)
+        self.InputRightColorValue.bind(text = self.SaveRightAngle)
+
+        self.add_widget(self.InputColorName)
+        self.add_widget(self.InputLeftColorValue)
+        self.add_widget(self.InputRightColorValue)
 
 class PreSetColorWidget(BoxLayout):
 
@@ -753,7 +794,7 @@ class PreSetColorWidget(BoxLayout):
 
     def VisualizeColor(self, instance):
 
-        if self.ColorArray[1] > self.ColorArray[2]:
+        if int(self.ColorArray[1]) > int(self.ColorArray[2]):
 
             bigcircle.LeftAngle = int(self.ColorArray[1]) - 360
             bigcircle.RightAngle = int(self.ColorArray[2])
@@ -770,25 +811,30 @@ class PreSetColorWidget(BoxLayout):
         color.AllColors.remove(self.CurrentColor)
         print(self.ColorArray, 'removed')
 
+        self.remove_widget(self.VisualizeColorButton)
+        self.SetTextInputToWrite()
         self.remove_widget(self.RemovePreSetColorButton)
         self.add_widget(self.SaveColorButton)
-        self.SetTextInputToWrite()
-
+  
     def RemoveColor(self, instance):
 
         color.AllColors.remove(self.ColorInstance)
         print(self.ColorArray, 'removed')
 
+        self.remove_widget(self.VisualizeColorButton)
+        self.SetTextInputToWrite()
         self.remove_widget(self.RemoveColorButton)
         self.add_widget(self.SaveColorButton)
-        self.SetTextInputToWrite()
-    
+
     def SaveColor(self, instance):
 
         self.ColorInstance = color(self.ColorArray[0], int(self.ColorArray[1]), int(self.ColorArray[2]))
         print(self.ColorArray, 'saved')
 
+        self.remove_widget(self.SaveColorButton)
         self.SetTextInputToRead()
+        self.add_widget(self.RemoveColorButton)
+        self.add_widget(self.VisualizeColorButton)
 
     def SaveColorName(self, instance, value):
 
@@ -810,7 +856,9 @@ class PreSetColorWidget(BoxLayout):
 
     def SetTextInputToWrite(self):
 
-        self.clear_widgets()
+        self.remove_widget(self.InputColorName)
+        self.remove_widget(self.InputLeftColorValue)
+        self.remove_widget(self.InputRightColorValue)
 
         self.InputColorName = TextInput(text = '{}'.format(self.ColorArray[0]), multiline = False, readonly = False)
         self.InputLeftColorValue = TextInput(text = '{}'.format(self.ColorArray[1]), multiline = False, input_filter = 'int', readonly = False)
@@ -823,12 +871,13 @@ class PreSetColorWidget(BoxLayout):
         self.add_widget(self.InputColorName)
         self.add_widget(self.InputLeftColorValue)
         self.add_widget(self.InputRightColorValue)
-        self.add_widget(self.SaveColorButton)
-        self.add_widget(self.VisualizeColorButton)
+
 
     def SetTextInputToRead(self):
 
-        self.clear_widgets()
+        self.remove_widget(self.InputColorName)
+        self.remove_widget(self.InputLeftColorValue)
+        self.remove_widget(self.InputRightColorValue)
 
         self.InputColorName = TextInput(text = '{}'.format(self.ColorArray[0]), multiline = False, readonly = True)
         self.InputLeftColorValue = TextInput(text = '{}'.format(self.ColorArray[1]), multiline = False, input_filter = 'int', readonly = True)
@@ -841,8 +890,6 @@ class PreSetColorWidget(BoxLayout):
         self.add_widget(self.InputColorName)
         self.add_widget(self.InputLeftColorValue)
         self.add_widget(self.InputRightColorValue)
-        self.add_widget(self.RemoveColorButton)
-        self.add_widget(self.VisualizeColorButton)
 
 class ShowPercentages(BoxLayout):
 
@@ -875,10 +922,9 @@ class ColorCircle(BoxLayout):
         self.small = smallcircle()
         self.big = bigcircle()
 
-        self.add_widget(self.small)
         self.add_widget(self.big)
-        
-        
+        self.add_widget(self.small)
+
 #-----------------------------------Class Sub-Widgets----------------------------------- 
 
 class smallcircle(GridLayout):
@@ -921,47 +967,14 @@ ColorDetectionInterface.add_widget(CalculatingScreenInstance)
 ColorDetectionInterface.add_widget(ResultsScreenInstance)
 ColorDetectionInterface.add_widget(ColorScreenInstance)
 
-class ColorApp(App):
+class ColorDetectionApp(App):
 
     def build(self):
        
         return ColorDetectionInterface
 
-ColorApp().run()
+ColorDetectionApp().run()
 
 #----------------------------------------END PROGRAM----------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-                
-               
 
 
