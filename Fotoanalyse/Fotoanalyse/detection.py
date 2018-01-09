@@ -249,23 +249,19 @@ class detection:
  
     def SetBeltValue(BeltValue):
         
-        detection.BeltValue = BeltValue/100
+        detection.BeltValue = BeltValue 
 
     def SetWhiteValue(WhiteValue):
 
-        detection.WhiteValue = WhiteValue/100
+        detection.WhiteValue = WhiteValue 
 
     def SetBlackValue(BlackValue):
 
-        detection.BlackValue = BlackValue/100
-
-    def SetNumberOfDecimals(NumberOfDecimals):
-        
-        detection.NumberOfDecimals = NumberOfDecimals
+        detection.BlackValue = BlackValue 
         
     def SetMaxSaturation(MaxSaturation):
         
-        detection.MaxSaturation = MaxSaturation/100
+        detection.MaxSaturation = MaxSaturation 
 
 #----------------------------------------GETTERS----------------------------------------
         

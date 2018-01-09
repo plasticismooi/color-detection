@@ -1,11 +1,12 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 28-11-2017
+# date : 9-1-2018
 
 class wait:
 
-    BeltSpeed = None
-    PictureWidth = None
+    BeltSetting = 0
+    BeltSpeed = 0.054
+    PictureWidth = 0.165
     PictureInterval = 1
 
     def __init__(self):
@@ -13,7 +14,6 @@ class wait:
         pass
 
     def SetBeltSetting(BeltSetting):
-
 
         BeltspeedDict = {0: 0.054, 1: 0.065, 2: 0.078, 3: 0.091, 4: 0.104, 5: 0.120, 6: 0.135}
 

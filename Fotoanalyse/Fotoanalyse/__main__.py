@@ -20,6 +20,22 @@ import datetime
 from detection import detection
 from color import color
 from wait import wait
+from kivy.config import Config
+
+#-----------------------------------Functions----------------------------------- 
+def LoadPreSetColors():
+
+    with open('basecolors.txt', 'r') as txtfile:
+
+        for line in txtfile:
+
+             line = line.strip() 
+
+             if line:
+
+                    Name, LeftAngle, RightAngle = line.split(" ")
+
+                    color(Name, int(LeftAngle), int(RightAngle))
 
 #----------------------------------------INTERFACE----------------------------------------
 
@@ -44,6 +60,14 @@ from kivy import clock
 from kivy.clock import Clock
 from kivy.uix.widget import Widget
 
+#-----------------------------------init-----------------------------------
+
+LoadPreSetColors()
+
+Config.set('graphics', 'resizable', '0') #0 being off 1 being on as in true/false
+Config.set('graphics', 'width', '700')
+Config.set('graphics', 'height', '600')
+
 #-----------------------------------Screen classes-----------------------------------
 
 class StartScreen(Screen):
@@ -51,24 +75,8 @@ class StartScreen(Screen):
     def __init__(self, *args, **kwargs):
         super(StartScreen, self).__init__(*args, **kwargs)
 
-        self.LoadBaseColors()
-
         LayoutStartScreenInstance = LayoutStartScreen()
         self.add_widget(LayoutStartScreenInstance)
-
-    def LoadBaseColors(self):
-
-        with open('basecolors.txt', 'r') as txtfile:
-
-            for line in txtfile:
-
-                line = line.strip() 
-
-                if line:
-
-                    Name, LeftAngle, RightAngle = line.split(" ")
-
-                    color(Name, int(LeftAngle), int(RightAngle))
 
 class ResultScreen(Screen):
 
@@ -249,32 +257,28 @@ class LayoutSettingsScreen(GridLayout):
         self.WriteDatatoTXTfileSwitch.bind(active = self.WriteDataToTXTfile)
 
         #integer textinput
-        self.InputNumberOfDecimalLabel = Label(text = 'Set the number of decimals for the calculation: ')
-        self.InputNumberOfDecimals = TextInput(text = '{}', multiline = False, input_filter = 'int')
-        self.InputNumberOfDecimals.bind(text = self.SetNumberOfDecimals)
-
         self.InputBeltValueLabel = Label(text = 'Set the value of the belt in "value/brightness" from HSV: ')
-        self.InputBeltValue = TextInput(text = '40', multiline = False, input_filter = 'int')
+        self.InputBeltValue = TextInput(text = '{}'.format(detection.BeltValue), multiline = False, input_filter = 'float')
         self.InputBeltValue.bind(text = self.SetBeltValue)
 
         self.InputBlackValueLabel = Label(text = 'Set the value of the color black in "value/brightness" from HSV: ')
-        self.InputBlackValue = TextInput(text = '20', multiline = False, input_filter = 'int')
+        self.InputBlackValue = TextInput(text = '{}'.format(detection.BlackValue), multiline = False, input_filter = 'float')
         self.InputBlackValue.bind(text = self.SetBlackValue)
 
         self.InputWhiteValueLabel = Label(text = 'Set the value of the color white in "value/brightness" from HSV: ')
-        self.InputWhiteValue = TextInput(text = '75', multiline = False, input_filter = 'int')
+        self.InputWhiteValue = TextInput(text = '{}'.format(detection.WhiteValue), multiline = False, input_filter = 'float')
         self.InputWhiteValue.bind(text = self.SetWhiteValue)
         
-        self.InputMaxSaturationValueLabel = Label(text = 'The maximal saturation of "S" in HSV for a color the to be \ndefined as white/grey/black: ')
-        self.InputMaxSaturationValue = TextInput(text = '25', multiline = False, input_filter = 'int')
+        self.InputMaxSaturationValueLabel = Label(text = 'The maximal saturation of "S" in HSV for a color the to be defined as white/grey/black: ')
+        self.InputMaxSaturationValue = TextInput(text = '{}'.format(detection.MaxSaturation), multiline = False, input_filter = 'float')
         self.InputMaxSaturationValue.bind(text = self.SetMaxSaturation)
 
-        self.InputBeltSpeedSettingLabel = Label(text = 'Input the speed setting of the belt')
-        self.InputBeltSpeedSetting = TextInput(text = '0', multiline = False, input_filter = 'int')
-        self.InputBeltSpeedSetting.bind(text = self.SetBeltSpeedSetting)
+        self.InputBeltSettingLabel = Label(text = 'Input the speed setting of the belt')
+        self.InputBeltSetting = TextInput(text = '{}'.format(wait.BeltSetting), multiline = False, input_filter = 'int')
+        self.InputBeltSetting.bind(text = self.SetBeltSpeedSetting)
 
         self.InputPictureWidthLabel = Label(text = 'Input the width of the pictures in meters')
-        self.InputPictureWidth = TextInput(text = '0.165', multiline = False, input_filter = 'int')
+        self.InputPictureWidth = TextInput(text = '{}'.format(wait.PictureWidth), multiline = False, input_filter = 'float')
         self.InputPictureWidth.bind(text = self.SetPictureWidth)
         
         #buttons
@@ -291,9 +295,6 @@ class LayoutSettingsScreen(GridLayout):
         self.add_widget(self.WriteDataToTXTfileSwitchLabel)
         self.add_widget(self.WriteDatatoTXTfileSwitch)
 
-        self.add_widget(self.InputNumberOfDecimalLabel)
-        self.add_widget(self.InputNumberOfDecimals)
-
         self.add_widget(self.InputBeltValueLabel)
         self.add_widget(self.InputBeltValue)
 
@@ -306,8 +307,8 @@ class LayoutSettingsScreen(GridLayout):
         self.add_widget(self.InputMaxSaturationValueLabel)
         self.add_widget(self.InputMaxSaturationValue)
 
-        self.add_widget(self.InputBeltSpeedSettingLabel)
-        self.add_widget(self.InputBeltSpeedSetting)
+        self.add_widget(self.InputBeltSettingLabel)
+        self.add_widget(self.InputBeltSetting)
 
         self.add_widget(self.InputPictureWidthLabel)
         self.add_widget(self.InputPictureWidth)
@@ -328,33 +329,29 @@ class LayoutSettingsScreen(GridLayout):
 
     def SetPictureWidth(self, instance, value):
 
-        wait.PictureWidth = value
+        wait.PictureWidth = float(value)
         wait.CalculateWaitingTime()
 
     def SetBeltSpeedSetting(self, instance, value):
 
-        wait.BeltSpeed = value
+        wait.BeltSetting = int(value)
         wait.CalculateWaitingTime()
 
     def SetMaxSaturation(self, instance, value):
-        value = int(value)
+        value = float(value)
         detection.SetMaxSaturation = value
        
-    def SetWhiteValue(self, instnace, value):
-        value = int(value)
-        detection.SetWhiteValue(value)
+    def SetWhiteValue(self, instance, value):
+        WhiteValue = float(value) 
+        detection.SetWhiteValue(WhiteValue)
         
     def SetBlackValue(self, instance, value):
-        value = int(value)
+        value = float(value)
         detection.SetBlackValue(value)
         
     def SetBeltValue(self, instance, value):
-        value = int(value)
+        value = float(value)
         detection.SetBeltValue(value)
-
-    def SetNumberOfDecimals(self, instance, value):
-        
-        detection.NumberOfDecimals = value
         
     def TurnSaveBilateralfilterImageOn(self, instance, value):
         if value == True:
@@ -406,10 +403,7 @@ class LayoutColorScreen(BoxLayout):
         self.add_widget(self.ColorInputInstance)
         self.add_widget(self.ColorCircleInstance)
 
-
 #-----------------------------------Custom Widgets----------------------------------- 
-
-
 
 class ColorInput(BoxLayout):
 
@@ -464,7 +458,7 @@ class ShowAllSetColors(GridLayout):
         self.cols = 1
         self.rows = 2
 
-        self.TopLabel = Label(text = 'Colors that will be used to scan: ', text_size = self.size)
+        self.TopLabel = Label(text = 'All Set Colors: ', text_size = self.size)
         self.add_widget(self.TopLabel)
 
         if not color.AllColors:
@@ -473,7 +467,7 @@ class ShowAllSetColors(GridLayout):
         else:
              for CurrentColor in color.AllColors:
 
-                self.CurrentColorDataLabel = Label(text = '{} {} {}'.format(CurrentColor.name, CurrentColor.LeftAngle, CurrentColor.RightAngle))
+                self.CurrentColorDataLabel = Label(text = '{} : {}-{}'.format(CurrentColor.name, CurrentColor.LeftAngle, CurrentColor.RightAngle))
                 self.rows += 1
                 self.add_widget(self.CurrentColorDataLabel)
 
@@ -487,8 +481,8 @@ class SettingsColorScreen(BoxLayout):
         self.orientation = 'horizontal' 
 
         #labels
-        self.LeftAngleLabel = Label(text = 'Left Angle')
-        self.RightAngleLabel = Label(text = 'Right Angle')
+        self.LeftAngleLabel = Label(text = 'Left')
+        self.RightAngleLabel = Label(text = 'Right')
         self.PlaceHolder = Label(text = 'niks')
 
         #buttons
@@ -666,9 +660,11 @@ class ColorWidget(BoxLayout):
 
     def VisualizeColor(self, instance):
 
-        bigcircle.LeftAngle = self.ColorArray[1]
-        bigcircle.RightAngle = self.ColorArray[2]
- 
+        bigcircle.LeftAngle = int(self.ColorArray[1])
+        bigcircle.RightAngle = int(self.ColorArray[2])
+
+        ColorDetectionInterface.switch_to(ColorScreen())
+
     def RemoveColor(self, instance):
 
         color.AllColors.remove(self.ColorInstance)
@@ -757,10 +753,17 @@ class PreSetColorWidget(BoxLayout):
 
     def VisualizeColor(self, instance):
 
-        bigcircle.LeftAngle = self.ColorArray[1]
-        bigcircle.RightAngle = self.ColorArray[2]
+        if self.ColorArray[1] > self.ColorArray[2]:
 
-      
+            bigcircle.LeftAngle = int(self.ColorArray[1]) - 360
+            bigcircle.RightAngle = int(self.ColorArray[2])
+
+        else:
+
+            bigcircle.LeftAngle = int(self.ColorArray[1])
+            bigcircle.RightAngle = int(self.ColorArray[2])
+
+        ColorDetectionInterface.switch_to(ColorScreen())
 
     def RemovePreSetColor(self, instance):
 
@@ -821,6 +824,7 @@ class PreSetColorWidget(BoxLayout):
         self.add_widget(self.InputLeftColorValue)
         self.add_widget(self.InputRightColorValue)
         self.add_widget(self.SaveColorButton)
+        self.add_widget(self.VisualizeColorButton)
 
     def SetTextInputToRead(self):
 
@@ -838,6 +842,7 @@ class PreSetColorWidget(BoxLayout):
         self.add_widget(self.InputLeftColorValue)
         self.add_widget(self.InputRightColorValue)
         self.add_widget(self.RemoveColorButton)
+        self.add_widget(self.VisualizeColorButton)
 
 class ShowPercentages(BoxLayout):
 
@@ -872,8 +877,8 @@ class ColorCircle(BoxLayout):
 
         self.add_widget(self.small)
         self.add_widget(self.big)
-
-
+        
+        
 #-----------------------------------Class Sub-Widgets----------------------------------- 
 
 class smallcircle(GridLayout):
@@ -894,6 +899,7 @@ class bigcircle(GridLayout):
 
         self.rows = 1
         self.cols = 1
+
 
 #-----------------------------------Screenmanager-----------------------------------             
           
