@@ -75,8 +75,10 @@ class StartScreen(Screen):
     def __init__(self, *args, **kwargs):
         super(StartScreen, self).__init__(*args, **kwargs)
 
-        LayoutStartScreenInstance = LayoutStartScreen()
-        self.add_widget(LayoutStartScreenInstance)
+        self.LayoutStartScreenInstance = LayoutStartScreen()
+        self.add_widget(self.LayoutStartScreenInstance)
+
+
 
 class ResultScreen(Screen):
 
@@ -121,15 +123,7 @@ class SettingsScreen(Screen):
         self.LayoutSettingsScreenInstance = LayoutSettingsScreen()
         self.add_widget(self.LayoutSettingsScreenInstance)
 
-class ColorScreen(Screen):
 
-    def __init__(self, *args, **kwargs):
-        super(ColorScreen, self).__init__(*args, **kwargs)
-
-        self.orientation = 'horizontal'
-
-        self.LayoutColorScreenInstance = LayoutColorScreen()
-        self.add_widget(self.LayoutColorScreenInstance)
 
 #-----------------------------------Layout classes-----------------------------------
 
@@ -219,19 +213,14 @@ class LayoutStartScreen(BoxLayout):
     def __init__(self, **kwargs):
         super(LayoutStartScreen, self).__init__(**kwargs)
 
-        self.orientation = 'vertical'
+        self.orientation = 'horizontal'
 
-        self.StartColorDetectionButton = Button(text = 'Start color-detection',  size_hint=(1, 0.9))
-        self.StartColorDetectionButton.bind(on_press = self.GoToTakingPicuresScreen)
+        self.AllColorWidgetsInstance = AllColorWidgets()
+        self.ColorCicleAndButtons = StartCircleAndButtons()
 
-        self.OptionButtonsStartScreen = OptionButtonsStartScreen( size_hint=(1, 0.1))
- 
-        
-        self.add_widget(self.StartColorDetectionButton)
-        self.add_widget(self.OptionButtonsStartScreen)
+        self.add_widget(self.AllColorWidgetsInstance)
+        self.add_widget(self.ColorCicleAndButtons)
 
-    def GoToTakingPicuresScreen(self, instance):
-        ColorDetectionInterface.switch_to(TakingPicturesScreen())
 
 class LayoutSettingsScreen(GridLayout):
 
@@ -388,25 +377,62 @@ class LayoutResultScreen(BoxLayout):
 
         ColorDetectionInterface.switch_to(StartScreen())
 
-class LayoutColorScreen(BoxLayout):
+class StartCircleAndButtons(BoxLayout):
+
+    def __init__(self, **kwargs):
+        super(StartCircleAndButtons, self).__init__(**kwargs)
+
+        self.orientation = 'vertical'
+
+        self.ColorCircleInstance = ColorCircle()
+        self.AllStartScreenButtons = ButtonsStartScreen()
+
+        
+        self.add_widget(self.ColorCircleInstance)     
+        self.add_widget(self.AllStartScreenButtons)  
+
+#-----------------------------------Custom Widgets----------------------------------- 
+
+class AllColorWidgets(BoxLayout):
 
     def __init__(self, *args, **kwargs):
-        super(LayoutColorScreen, self).__init__(*args, **kwargs)
+        super(AllColorWidgets, self).__init__(*args, **kwargs)
 
         self.orientation = 'horizontal'
 
         self.ColorInputInstance = ColorInput()
-        self.ColorCircleInstance = ColorCircle()
 
         self.add_widget(self.ColorInputInstance)
-        self.add_widget(self.ColorCircleInstance)
 
-#-----------------------------------Custom Widgets----------------------------------- 
+class ButtonsStartScreen(GridLayout):
+
+    def __init__(self, *args, **kwargs):
+        super(ButtonsStartScreen, self).__init__(*args, **kwargs)
+
+        self.cols = 1
+        self.rows = 2
+
+        self.StartColorDetectionButton = Button(text = 'Start color-detection', )
+        self.StartColorDetectionButton.bind(on_press = self.GoToTakingPicuresScreen)
+
+        self.GoToSettingsButton = Button(text = 'to scan-settings', )
+        self.GoToSettingsButton.bind(on_press = self.GoToSettingsScreen)
+
+        self.add_widget(self.StartColorDetectionButton)
+        self.add_widget(self.GoToSettingsButton)
+
+    def GoToTakingPicuresScreen(self, instance):
+        ColorDetectionInterface.switch_to(TakingPicturesScreen())
+
+    def GoToSettingsScreen(self, instance):
+        ColorDetectionInterface.switch_to(SettingsScreen())
+
 
 class ColorInput(BoxLayout):
 
     def __init__(self, *args, **kwargs):
         super(ColorInput, self).__init__(*args, **kwargs)
+
         self.orientation = 'vertical'
 
         self.SettingsColorScreenInstance = SettingsColorScreen()
@@ -423,27 +449,6 @@ class ColorInput(BoxLayout):
 
             self.ColorWidgetInstance = ColorWidget()
             self.add_widget(self.ColorWidgetInstance)
-
-class OptionButtonsStartScreen(BoxLayout):
-
-    def __init__(self, *args, **kwargs):
-        super(OptionButtonsStartScreen, self).__init__(*args, **kwargs) 
-        
-        self.orientation = 'horizontal' 
-
-
-
-        self.GoToSettingsScreenButton = Button(text = 'To settings')
-        self.GoToSettingsScreenButton.bind(on_press = self.GoToSettingsScreen)
-
-
-    def GoToColorScreen(self):
-
-        ColorDetectionInterface.switch_to(ColorScreen())
-
-    def GoToSettingsScreen(self):
-
-        ColorDetectionInterface.switch_to(SettingsScreen())
 
 class SettingsColorScreen(BoxLayout):
 
@@ -670,7 +675,7 @@ class ColorWidget(BoxLayout):
             bigcircle.LeftAngle = int(self.ColorArray[1])
             bigcircle.RightAngle = int(self.ColorArray[2])
 
-        ColorDetectionInterface.switch_to(ColorScreen())
+        ColorDetectionInterface.switch_to(StartScreen())
 
     def RemoveColor(self, instance):
 
@@ -685,7 +690,6 @@ class ColorWidget(BoxLayout):
 
         self.add_widget(self.SaveColorButton)
         self.add_widget(self.Placeholder)
-
 
     def SaveColor(self, instance):
 
@@ -804,7 +808,7 @@ class PreSetColorWidget(BoxLayout):
             bigcircle.LeftAngle = int(self.ColorArray[1])
             bigcircle.RightAngle = int(self.ColorArray[2])
 
-        ColorDetectionInterface.switch_to(ColorScreen())
+        ColorDetectionInterface.switch_to(StartScreen())
 
     def RemovePreSetColor(self, instance):
 
@@ -958,14 +962,14 @@ SettingsScreenInstance = SettingsScreen(name = 'Configuration')
 TakingPicturesScreenInstance = TakingPicturesScreen(name = 'TakingPicturesScreen')
 ResultsScreenInstance = ResultScreen(name = 'Results')
 CalculatingScreenInstance = CalculationScreen(name = 'Calculating')
-ColorScreenInstance = ColorScreen(name = 'Color')
+
 
 ColorDetectionInterface.add_widget(StartScreenInstance)
 ColorDetectionInterface.add_widget(SettingsScreenInstance)
 ColorDetectionInterface.add_widget(TakingPicturesScreenInstance)
 ColorDetectionInterface.add_widget(CalculatingScreenInstance)
 ColorDetectionInterface.add_widget(ResultsScreenInstance)
-ColorDetectionInterface.add_widget(ColorScreenInstance)
+
 
 class ColorDetectionApp(App):
 
