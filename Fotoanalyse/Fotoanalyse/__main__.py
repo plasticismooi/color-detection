@@ -234,8 +234,8 @@ class LayoutSettingsScreen(GridLayout):
 
     def SetBeltSpeedSetting(self, instance, value):
 
-        wait.BeltSetting = int(value)
-        wait.CalculateWaitingTime()
+       wait.BeltSetting = int(value)
+       wait.CalculateWaitingTime()
 
     def SetMaxSaturation(self, instance, value):
         value = float(value)
@@ -728,7 +728,7 @@ class TakingPicturesScreenLayout(BoxLayout):
 
         self.orientation = 'vertical'
         
-        self.StartCalculationButton = Button(text = 'Calculate results', size_hint=(1, 0.9))
+        self.StartCalculationButton = Button(text = 'STOP SCANNING \nStart calculating results', size_hint=(1, 0.9))
         self.StartCalculationButton.bind(on_press = self.StartCalculation)
 
         self.GoToStartScreenButton = Button(text = 'CANCEL', size_hint=(1, 0.1))
@@ -737,13 +737,17 @@ class TakingPicturesScreenLayout(BoxLayout):
         self.add_widget(self.StartCalculationButton)
         self.add_widget(self.GoToStartScreenButton)
 
-        self.camera = cv2.VideoCapture(1)
+
+        self.camera = cv2.VideoCapture(0)
+
+        self.camera.set(3,1920)
+        self.camera.set(4,1080)
         self.PictureNumber = 0
 
     def StartTakingPictures(self):
 
         detection.RemoveAllImages()
-       
+        wait.CalculateWaitingTime()
         Clock.schedule_interval(self.TakePicture, wait.PictureInterval)
          
     def TakePicture(self, interval):
@@ -827,6 +831,11 @@ class LayoutResultScreen(BoxLayout):
         self.StartDetection()
         self.ShowPercentages()
 
+        self.ReturnToStartButton = Button(text = 'Return to home', size_hint = (1, 0.1))
+        self.ReturnToStartButton.bind(on_press = self.ToStartScreen)
+
+        self.add_widget(self.ReturnToStartButton)
+
     def StartDetection(self):
 
         detection.PrepareAllImagesForDetection()
@@ -839,7 +848,6 @@ class LayoutResultScreen(BoxLayout):
 
         if detection.EnableWriteDataToTXTfile == True:
             detection.WriteDataToTXTfile()
-
 
     def ShowPercentages(self):
 

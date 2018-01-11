@@ -17,7 +17,7 @@ class wait:
 
         BeltspeedDict = {0: 0.054, 1: 0.065, 2: 0.078, 3: 0.091, 4: 0.104, 5: 0.120, 6: 0.135}
 
-        BeltspeedDict[BeltSetting] = wait.BeltSpeed
+        wait.BeltSpeed = BeltspeedDict[BeltSetting] 
 
 
     def PrintBeltSpeed():
