@@ -4,22 +4,8 @@
 
     on_enter: root.TakingPicturesScreenLayoutInstance.StartTakingPictures()
     
-<LayoutCalculationScreen>:
-
-<OptionButtonsStartScreen>:
-
-    BoxLayout:
-        Button:
-               
-            on_press: root.GoToColorScreen()
-            text: 'To color definitions'
-            
-        Button:
-        
-            on_press: root.GoToSettingsScreen()
-            text: 'To Settings'
-            
-<smallcircle>:
+         
+<InnerColorCircle>:
     FloatLayout:
         canvas:
             Color:
@@ -29,7 +15,7 @@
                 size: 250, 250
                 source: 'C:/Users/tom_l/color-detection/Fotoanalyse/Fotoanalyse/program-files/hsv-small.png'
  
-<bigcircle>:
+<OuterColorCircle>:
     FloatLayout:
         canvas:
             Color:

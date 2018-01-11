@@ -86,6 +86,13 @@ class detection:
 
         return DirectoryOfAllImages
 
+    def RemoveAllImages():
+    
+        DirectoryOfAllImages = detection.__PathToAllImages()
+    
+        for BGR_image in DirectoryOfAllImages:
+            os.remove(BGR_image)
+
 #----------------------------------------Start Detection---------------------------------------
 
     def StartColorDetection(self):
