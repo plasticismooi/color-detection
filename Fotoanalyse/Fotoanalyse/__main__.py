@@ -1,6 +1,7 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 5-1-2018
+# company: Polytential B.V.
+# date : 9-1-2018
 
 #----------------------------------------Import needed librarys------------------------------------
 
@@ -20,7 +21,7 @@ import datetime
 from detection import detection
 from color import color
 from wait import wait
-from kivy.config import Config
+
 
 #-----------------------------------Functions----------------------------------- 
 def LoadPreSetColors():
@@ -39,10 +40,11 @@ def LoadPreSetColors():
 
 #----------------------------------------INTERFACE----------------------------------------
 
-import kivy
+
 import kivy.event
 
 from kivy.uix import *
+from kivy.config import Config
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.app import App
@@ -60,7 +62,7 @@ from kivy import clock
 from kivy.clock import Clock
 from kivy.uix.widget import Widget
 
-#-----------------------------------init-----------------------------------
+#-----------------------------------Initialize-----------------------------------
 
 LoadPreSetColors()
 
@@ -85,26 +87,7 @@ class ResultScreen(Screen):
 
         self.LayoutResultScreenInstance = LayoutResultScreen()
         self.add_widget(self.LayoutResultScreenInstance)
-        
-class CalculationScreen(Screen):
-
-    def __init__(self, *args, **kwargs):
-        super(CalculationScreen, self).__init__(*args, **kwargs)
-
-    def CalculateResults(self):
-
-        detection.PrepareAllImagesForDetection()
-
-        for image in detection.ListOfAllImages:
-            image.StartColorDetection()
-
-        detection.CalcAllPercentages()
-
-        if detection.EnableWriteDataToTXTfile == True:
-            detection.WriteDataToTXTfile()
-
-        ColorDetectionInterface.switch_to(ResultScreen())
-        
+      
 class TakingPicturesScreen(Screen):
 
     def __init__(self, *args, **kwargs):
@@ -121,12 +104,18 @@ class SettingsScreen(Screen):
         self.LayoutSettingsScreenInstance = LayoutSettingsScreen()
         self.add_widget(self.LayoutSettingsScreenInstance)
 
+class CalculationScreen(Screen):
+
+    def __init__(self, *args, **kwargs):
+        super(CalculationScreen, self).__init__(*args, **kwargs)
+        
+        self.LayoutCalculationsScreenInstance = LayoutCalculationScreen()
+        self.add_widget(self.LayoutCalculationsScreenInstance)
+
 class ColorScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         super(ColorScreen, self).__init__(*args, **kwargs)
-
-        self.orientation = 'horizontal'
 
         self.LayoutColorScreenInstance = LayoutColorScreen()
         self.add_widget(self.LayoutColorScreenInstance)
@@ -192,8 +181,6 @@ class TakingPicturesScreenLayout(BoxLayout):
             print('stopped taking pictures')
 
             self.camera.release()
-
-
 
         except NameError:
             pass
@@ -367,22 +354,52 @@ class LayoutSettingsScreen(GridLayout):
             detection.SaveBilateralfilterImage = False 
             print('deactivated saving all images with detected plastic flakes')
 
+class LayoutCalculationScreen(BoxLayout):
+
+    def __init__(self, *args, **kwargs):
+        super(LayoutCalculationScreen, self).__init__(*args, **kwargs)
+
+        self.CalculationLabel = Label(text = 'Caculating...')
+        self.add_widget(self.CalculationLabel)
+
+        Clock.schedule_once(self.GoToResultScreen, 1)
+
+    def GoToResultScreen(self, instance):
+
+        ColorDetectionInterface.switch_to(ResultScreen())
+
 class LayoutResultScreen(BoxLayout):
 
     def __init__(self, *args, **kwargs):
         super(LayoutResultScreen, self).__init__(*args, **kwargs)
 
         self.orientation = 'vertical'
+        self.StartDetection()
+        self.ShowPercentages()
 
-        self.ShowPercentgesInstance = ShowPercentages()
+    def StartDetection(self):
 
-        self.ToStartScreenButton = Button(text = 'To Startscreen', size_hint=(1, 0.1))
-        self.ToStartScreenButton.bind(on_press = self.ToStartScreen)
+        detection.PrepareAllImagesForDetection()
 
-        #add open txt file option button 
+        for image in detection.ListOfAllImages:
 
-        self.add_widget(self.ShowPercentgesInstance)
-        self.add_widget(self.ToStartScreenButton)
+            image.StartColorDetection()
+
+        detection.CalcAllPercentages()
+
+        if detection.EnableWriteDataToTXTfile == True:
+            detection.WriteDataToTXTfile()
+
+
+    def ShowPercentages(self):
+
+        self.clear_widgets()
+
+        self.TopLabels = TopLabelsResultScreen(size_hint = (1, 0.1))
+        self.add_widget(self.TopLabels)
+
+        self.ColorPercentageLabel = PercentageLabelResultScreen(size_hint = (1, 0.9))
+        self.add_widget(self.ColorPercentageLabel)
 
     def ToStartScreen(self, instance):
 
@@ -402,6 +419,52 @@ class LayoutColorScreen(BoxLayout):
         self.add_widget(self.ColorCircleInstance)
 
 #-----------------------------------Custom Widgets----------------------------------- 
+
+class TopLabelsResultScreen(BoxLayout):
+
+    def __init__(self, *args, **kwargs):
+        super(TopLabelsResultScreen, self).__init__(*args, **kwargs)
+
+        self.ColorNameLabel = Label(text = 'Name of color')
+        self.ColorPercentageLabel = Label(text = 'Percentage')
+
+        self.add_widget(self.ColorNameLabel)
+        self.add_widget(self.ColorPercentageLabel)
+
+class PercentageLabelResultScreen(GridLayout):
+    def __init__(self, *args, **kwargs):
+        super(PercentageLabelResultScreen, self).__init__(*args, **kwargs)
+
+        self.cols = 2
+        self.rows = 3
+
+        self.BlackLabel = Label(text = 'black')
+        self.PercentageBlackLabel = Label(text = '{}%'.format(detection.PercentageBlack))
+
+        self.GreyLabel = Label(text = 'grey')
+        self.PercentageGreyLabel = Label(text = '{}%'.format(detection.PercentageGrey))
+
+        self.WhiteLabel = Label(text = 'white')
+        self.PercentageWhiteLabel = Label(text = '{}%'.format(detection.PercentageWhite))
+
+        self.add_widget(self.BlackLabel)
+        self.add_widget(self.PercentageBlackLabel)
+
+        self.add_widget(self.GreyLabel)
+        self.add_widget(self.PercentageGreyLabel)
+
+        self.add_widget(self.WhiteLabel)
+        self.add_widget(self.PercentageWhiteLabel)
+        
+        for CurrentColor in color.AllColors:
+
+            self.rows += 1
+
+            self.ColorNameLabel = Label(text = '{}'.format(CurrentColor.name))
+            self.ColorPercentageLAbel = Label(text = '{}%'.format(CurrentColor.Percentage))
+
+            self.add_widget(self.ColorNameLabel)
+            self.add_widget(self.ColorPercentageLAbel)
 
 class ColorInput(BoxLayout):
 
@@ -473,8 +536,6 @@ class SettingsColorScreen(BoxLayout):
         self.add_widget(self.RightAngleLabel)
         self.add_widget(self.ResetColorsButton)
         self.add_widget(self.ReturnToConfigScreenButton)
-
-        
 
     def ResetColorsToBase(self, instance):
 
@@ -957,13 +1018,11 @@ StartScreenInstance = StartScreen(name = 'Start')
 SettingsScreenInstance = SettingsScreen(name = 'Configuration')
 TakingPicturesScreenInstance = TakingPicturesScreen(name = 'TakingPicturesScreen')
 ResultsScreenInstance = ResultScreen(name = 'Results')
-CalculatingScreenInstance = CalculationScreen(name = 'Calculating')
 ColorScreenInstance = ColorScreen(name = 'Color')
 
 ColorDetectionInterface.add_widget(StartScreenInstance)
 ColorDetectionInterface.add_widget(SettingsScreenInstance)
 ColorDetectionInterface.add_widget(TakingPicturesScreenInstance)
-ColorDetectionInterface.add_widget(CalculatingScreenInstance)
 ColorDetectionInterface.add_widget(ResultsScreenInstance)
 ColorDetectionInterface.add_widget(ColorScreenInstance)
 
