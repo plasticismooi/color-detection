@@ -1,6 +1,7 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 28-11-2017
+# company: Polytential B.V.
+# date : 12-1-2018
 
 
 class color:

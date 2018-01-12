@@ -1,7 +1,7 @@
-# OOP approach for color detection
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 11-12-2017
+# company: Polytential B.V.
+# date : 12-1-2018
 
 import cv2
 from color import color
@@ -24,7 +24,7 @@ class detection:
     
     NumberOfDecimals = 2
     
-    SaveDetectedPlasticImage = None
+    SaveDetectedPlasticImage = True
     SaveBilateralfilterImage = None
     EnableWriteDataToTXTfile = True
     

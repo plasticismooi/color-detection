@@ -1,7 +1,7 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
 # company: Polytential B.V.
-# date : 9-1-2018
+# date : 12-1-2018
 
 #----------------------------------------Import needed librarys------------------------------------
 
@@ -146,7 +146,7 @@ class LayoutSettingsScreen(GridLayout):
 
         #switches
         self.SaveDetectedPlasticImageSwitchLabel = Label(text = 'Save image with detected plastic for each picture: ')
-        self.SaveDetectedPlasticImageSwitch = Switch()
+        self.SaveDetectedPlasticImageSwitch = Switch(active = True)
         self.SaveDetectedPlasticImageSwitch.bind(active = self.TurnSaveDetectedPlasticImageOn)
 
         self.SaveBilateralfilterImageSwitchLabel = Label(text = 'Save image with bilateral filter for each picture: ')
@@ -239,7 +239,7 @@ class LayoutSettingsScreen(GridLayout):
 
     def SetMaxSaturation(self, instance, value):
         value = float(value)
-        detection.SetMaxSaturation = value
+        detection.SetMaxSaturation(value)
        
     def SetWhiteValue(self, instance, value):
         WhiteValue = float(value) 
@@ -742,6 +742,7 @@ class TakingPicturesScreenLayout(BoxLayout):
 
         self.camera.set(3,1920)
         self.camera.set(4,1080)
+
         self.PictureNumber = 0
 
     def StartTakingPictures(self):
