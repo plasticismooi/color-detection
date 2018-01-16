@@ -1,0 +1,59 @@
+# Tom Landzaat student @ EE THUAS
+# student ID : 14073595
+# company: Polytential B.V.
+# date : 12-1-2018
+
+<TakingPicturesScreen>:
+
+    on_enter: root.TakingPicturesScreenLayoutInstance.StartTakingPictures()
+    
+         
+<InnerColorCircle>:
+    FloatLayout:
+        canvas:
+            Color:
+                rgb: 1, 1, 1
+            Ellipse:
+                pos: 375, 290
+                size: 300, 300
+                source: 'C:/Users/tom_l/color-detection/Fotoanalyse/Fotoanalyse/program-files/hsv-small.png'
+ 
+<OuterColorCircle>:
+    FloatLayout:
+        canvas:
+            Color:
+                rgb: 1, 1, 1
+            Ellipse:
+                pos: 350, 265
+                size: 350 , 350
+                source: 'C:/Users/tom_l/color-detection/Fotoanalyse/Fotoanalyse/program-files/hsv-big.png'
+                angle_start: root.LeftAngle
+                angle_end: root.RightAngle
+
+
+
+
+		
+		
+		
+	
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

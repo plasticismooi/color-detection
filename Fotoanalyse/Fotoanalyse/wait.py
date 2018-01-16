@@ -1,12 +1,14 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 28-11-2017
+# company: Polytential B.V.
+# date : 12-1-2018
 
 class wait:
 
-    BeltSpeed = None
-    PictureWidth = None
-    PictureInterval = None
+    BeltSetting = 0
+    BeltSpeed = 0.054
+    PictureWidth = 0.1
+    PictureInterval = 1
 
     def __init__(self):
 
@@ -14,28 +16,9 @@ class wait:
 
     def SetBeltSetting(BeltSetting):
 
-        if BeltSetting == 0:
-            wait.BeltSpeed = 0.054
-        elif BeltSetting == 1:
-            wait.BeltSpeed = 0.065
-        elif BeltSetting == 2:
-            wait.BeltSpeed = 0.078
-        elif BeltSetting == 3:
-            wait.BeltSpeed = 0.091
-        elif BeltSetting == 4:
-            wait.BeltSpeed = 0.104
-        elif BeltSetting == 5:
-            wait.BeltSpeed = 0.120
-        elif BeltSetting == 6:
-            wait.BeltSpeed = 0.135
-        elif BeltSetting == 7:
-            wait.BeltSpeed = 0
-        elif BeltSetting == 8:
-            wait.BeltSpeed = 0
-        elif BeltSetting == 9:
-            wait.BeltSpeed = 0
-        else:
-            wait.BeltSpeed = 0
+        BeltspeedDict = {0: 0.054, 1: 0.065, 2: 0.078, 3: 0.091, 4: 0.104, 5: 0.120, 6: 0.135}
+
+        wait.BeltSpeed = BeltspeedDict[BeltSetting] 
 
     def PrintBeltSpeed():
 
@@ -52,8 +35,7 @@ class wait:
 
         except TypeError:
 
-            print ('WARNING')
-            print ('set value for picture width and or belt setting')
+            pass
         
         
 

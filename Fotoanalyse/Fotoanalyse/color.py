@@ -1,6 +1,7 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 28-11-2017
+# company: Polytential B.V.
+# date : 12-1-2018
 
 
 class color:
@@ -31,6 +32,34 @@ class color:
 
     def PrintRightAngle(self):
         print('RightAngle is : ', self.RightAngle)
+
+
+        # functions called by colorscreen class
+    def SetLeftAngle(self, instance, value):
+
+        self.LeftAngle = value
+        print('the left angle of {} is set to {}'.format(self.name, value))
+
+    def SetrightAngle(self, instance, value):
+
+        self.RightAngle = value
+        print('the rigth angle of {} is set to {}'.format(self.name, value))
+
+    def SetName(self, instance, value):
+
+        self.name = value
+        print('name changed to {}'.format(value))
+
+    def RemoveColor(self):
+
+        color.AllColors.remove(self)
+
+        
+
+    
+
+           
+
 
 
 

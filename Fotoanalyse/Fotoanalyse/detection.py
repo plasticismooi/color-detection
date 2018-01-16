@@ -1,7 +1,7 @@
-# OOP approach for color detection
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
-# date : 29-11-2017
+# company: Polytential B.V.
+# date : 12-1-2018
 
 import cv2
 from color import color
@@ -10,7 +10,7 @@ import numpy.ma as ma
 import numpy as np
 import glob
 import os
-from picamera import PiCamera
+
 import datetime
 from time import sleep
 import time
@@ -21,18 +21,18 @@ class detection:
     
     ListOfAllImages = []
     ImageNumber = 0
-    AmountOfPicturestToBeTaken = 1
     
     NumberOfDecimals = 2
     
-    SaveDetectedPlasticImage = False
-    SaveBilateralfilterImage = False
+    SaveDetectedPlasticImage = True
+    SaveBilateralfilterImage = None
+    EnableWriteDataToTXTfile = True
     
-    BeltValue = 0.8
+    BeltValue = 0.4
 
-    WhiteValue = 0.8
-    BlackValue = 0.1
-    MaxSaturation = 0.15
+    WhiteValue = 0.65
+    BlackValue = 0.2
+    MaxSaturation = 0.25
     
     TotalAmountPlasticPixels= 0
 
@@ -62,24 +62,6 @@ class detection:
 
         detection.ListOfAllImages.append(self)
         
-#----------------------------------------Take Photo-----------------------------------
-        
-    def TakePicture():
-       
-        camera = PiCamera()
-        camera.resolution = (1024, 768)
-    
-        camera.shutter_speed = 10000
-        camera.awb_mode ='fluorescent'
-        camera.brightness = 50 
-      
-        camera.start_preview()
-        camera.capture('/media/pi/9E401DB5401D94DD/Pictures/{:%Y-%m-%d %H:%M:%S}.png'.format(datetime.datetime.now()))
-        camera.close()
-    
-        time.sleep(wait.PictureInterval)
-        print(wait.PictureInterval)
-        
 #----------------------------------------Functions for initializing images-----------------------------------
 
 
@@ -88,20 +70,26 @@ class detection:
         DirectoryOfAllImages = detection.__PathToAllImages()
     
         for BGR_image in DirectoryOfAllImages:
-        
+
             BGR_image = cv2.imread(BGR_image)
-            BlurredBGRImage = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
+            BGRImage = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
+
+            detection(BGR_image)
 
             if detection.SaveBilateralfilterImage == True:
-                cv2.imwrite('/media/pi/9E401DB5401D94DD/test/bilateral_{}.png'.format(detection.ImageNumber), BlurredBGRImage)
+                cv2.imwrite('C:\\Users\\tom_l\\color-detection-data\\testresults\\bilateralfilter_{}.png'.format(detection.ImageNumber), BGR_image)
+ 
+        for image in detection.ListOfAllImages:
 
-            detection(BlurredBGRImage)
-        
+            if image.ImageNumber == 0:
+
+                detection.ListOfAllImages.remove(image)
+
     def __PathToAllImages():
     
-        path = '/media/pi/9E401DB5401D94DD/Pictures/*.png'
+        path = 'C:\\Users\\tom_l\\color-detection-data\\images\\*.png'
         DirectoryOfAllImages = glob.glob(path)
-    
+
         return DirectoryOfAllImages
 
     def RemoveAllImages():
@@ -110,7 +98,7 @@ class detection:
     
         for BGR_image in DirectoryOfAllImages:
             os.remove(BGR_image)
-            
+
 #----------------------------------------Start Detection---------------------------------------
 
     def StartColorDetection(self):
@@ -121,7 +109,9 @@ class detection:
         for HSV_Pixel in ArrayWithDetectedPixels:
             self.__AddPixelToCorrespondingColor(HSV_Pixel)
 
-#----------------------------------------Detect pixels----------------------------------------
+        
+
+#----------------------------------------Detect plastic----------------------------------------
 
     def __ReturnBinaryArrayOfDetectedPixels(self, HSV_Image):
 
@@ -158,7 +148,7 @@ class detection:
             elif self.__CheckIfPixelIsGrey(HSV_Pixel) == True:
                 self.__AddGreyPixelToAmountOfGreyPixels()
             else: 
-                self.__AddGreyPixelToAmountOfBlackPixels()
+                self.__AddBlackPixelToAmountOfBlackPixels()
         else:
             self.__AddPixelToCorrectColor(HSV_Pixel)
 
@@ -238,7 +228,10 @@ class detection:
                 CurrentColor.Percentage = round(CurrentColor.percentage, detection.NumberOfDecimals)
 
         except ZeroDivisionError:
-            print('NO PLASTIC DETECTED')
+            
+            pass
+
+        return True
             
     def PrintAllPercentages():
         print(detection.PercentageWhite, '% is white')
@@ -266,30 +259,22 @@ class detection:
         return ((CurrentColor.AmountOfDetectedPixels / detection.TotalAmountPlasticPixels) * 100)
 
 #----------------------------------------SETTERS----------------------------------------
-    
-    def SetAmountOfPicturestToBeTaken(AmountOfPicturestToBeTaken):
-    
-        detection.AmountOfPicturestToBeTaken = AmountOfPicturestToBeTaken 
-
+ 
     def SetBeltValue(BeltValue):
         
-        detection.BeltValue = BeltValue/100
+        detection.BeltValue = BeltValue 
 
     def SetWhiteValue(WhiteValue):
 
-        detection.WhiteValue = WhiteValue/100
+        detection.WhiteValue = WhiteValue 
 
     def SetBlackValue(BlackValue):
 
-        detection.BlackValue = BlackValue/100
-
-    def SetNumberOfDecimals(NumberOfDecimals):
-        
-        detection.NumberOfDecimals = NumberOfDecimals
+        detection.BlackValue = BlackValue 
         
     def SetMaxSaturation(MaxSaturation):
         
-        detection.MaxSaturation = MaxSaturation/100
+        detection.MaxSaturation = MaxSaturation 
 
 #----------------------------------------GETTERS----------------------------------------
         
@@ -348,31 +333,23 @@ class detection:
          
         print('number of white pixels is', detection.TotalAmountWhitePixels, '\n')
 
-#----------------------------------------Save image with detected flakes----------------------------------------
+#----------------------------------------additional functions----------------------------------------
         
-    def SaveBilateralfilterImage(x):
-    
-        detection.SaveBilateralfilterImage = x
-    
-    def SaveDetectedPlasticImage(x):
-        
-        detection.SaveDetectedPlasticImage = x
 
     def SaveBinaryImage(self, BinaryArrayOfDetectedPixels):
         
         BinaryArrayOfDetectedPixels.dtype = 'uint8'
         BinaryArrayOfDetectedPixels[BinaryArrayOfDetectedPixels > 0] = 255
-        cv2.imwrite('/media/pi/9E401DB5401D94DD/test/detected_plastic_{}.png'.format(self.ImageNumber), BinaryArrayOfDetectedPixels)
+        cv2.imwrite('C:\\Users\\tom_l\\color-detection-data\\testresults\\binaryimage_{}.png'.format(self.ImageNumber), BinaryArrayOfDetectedPixels)
         
 
+    def WriteDataToTXTfile():
 
-        
+        DataFile = open('C:\\Users\\tom_l\\color-detection-data\\testresults\\data.txt', 'w')
+    
+        DataFile.write('Analysed all pictures in folder\n')
+        DataFile.write('{} % is white \n{} % is grey \n{} % is black \n\n'.format(detection.PercentageWhite, detection.PercentageGrey, detection.PercentageBlack))
+    
+        for CurrentColor in color.AllColors:
+             DataFile.write('{} % is {} \n'.format(CurrentColor.Percentage, CurrentColor.name))
 
-        
-
-
-
-
-
-
-       
