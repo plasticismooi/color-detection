@@ -1,7 +1,7 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
 # company: Polytential B.V.
-# date : 12-1-2018
+# date : 16-1-2018
 
 #----------------------------------------Import needed librarys------------------------------------
 
@@ -17,10 +17,13 @@ from functools import partial
 import gc
 import datetime
 
+
+
 #project .py files
 from detection import detection
 from color import color
 from wait import wait
+
 
 
 #-----------------------------------Functions----------------------------------- 
@@ -737,15 +740,17 @@ class TakingPicturesScreenLayout(BoxLayout):
         self.add_widget(self.StartCalculationButton)
         self.add_widget(self.GoToStartScreenButton)
 
+    def StartTakingPictures(self):
 
-        self.camera = cv2.VideoCapture(0)
+        self.camera = cv2.VideoCapture(1)
 
-        self.camera.set(3,1920)
-        self.camera.set(4,1080)
+        self.camera.set(3,1920) # width
+        self.camera.set(4,1080) # height
+
+        self.camera.set(10, 50) # brightness
+       
 
         self.PictureNumber = 0
-
-    def StartTakingPictures(self):
 
         detection.RemoveAllImages()
         wait.CalculateWaitingTime()
@@ -774,7 +779,9 @@ class TakingPicturesScreenLayout(BoxLayout):
         except NameError:
             pass
 
+        detection.ImageNumber = 0
         ColorDetectionInterface.switch_to(StartScreen())
+        
 
     def StartCalculation(self, interval):
 
@@ -833,7 +840,7 @@ class LayoutResultScreen(BoxLayout):
         self.ShowPercentages()
 
         self.ReturnToStartButton = Button(text = 'Return to home', size_hint = (1, 0.1))
-        self.ReturnToStartButton.bind(on_press = self.ToStartScreen)
+        self.ReturnToStartButton.bind(on_press = self.GoToStartScreen)
 
         self.add_widget(self.ReturnToStartButton)
 
@@ -860,9 +867,11 @@ class LayoutResultScreen(BoxLayout):
         self.AllPercentages = ShowAllPercentages(size_hint = (1, 0.9))
         self.add_widget(self.AllPercentages)
 
-    def ToStartScreen(self, instance):
+    def GoToStartScreen(self, instance):
 
+        detection.ImageNumber = 0
         ColorDetectionInterface.switch_to(StartScreen())
+        
 
 class LabelsResultScreen(BoxLayout):
 

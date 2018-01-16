@@ -30,7 +30,7 @@ class detection:
     
     BeltValue = 0.4
 
-    WhiteValue = 0.75
+    WhiteValue = 0.65
     BlackValue = 0.2
     MaxSaturation = 0.25
     
@@ -70,7 +70,7 @@ class detection:
         DirectoryOfAllImages = detection.__PathToAllImages()
     
         for BGR_image in DirectoryOfAllImages:
-        
+
             BGR_image = cv2.imread(BGR_image)
             BGRImage = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
 
@@ -78,6 +78,12 @@ class detection:
 
             if detection.SaveBilateralfilterImage == True:
                 cv2.imwrite('C:\\Users\\tom_l\\color-detection-data\\testresults\\bilateralfilter_{}.png'.format(detection.ImageNumber), BGR_image)
+ 
+        for image in detection.ListOfAllImages:
+
+            if image.ImageNumber == 0:
+
+                detection.ListOfAllImages.remove(image)
 
     def __PathToAllImages():
     

@@ -1,16 +1,12 @@
-red 340 15
+red 340 12
+orange 13 39
+yellow 40 66
 
 
-orange 16 40
-
-yellow 41 70
+green 67 150
 
 
-green 71 160
-
-
-light-blue 161 190
-
+light-blue 151 190
 
 dark-blue 191 270
 
