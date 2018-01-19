@@ -1,7 +1,7 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
 # company: Polytential B.V.
-# date : 16-1-2018
+# date : 19-1-2018
 
 #----------------------------------------Import needed librarys------------------------------------
 
@@ -24,8 +24,6 @@ from detection import detection
 from color import color
 from wait import wait
 
-
-
 #-----------------------------------Functions----------------------------------- 
 def LoadPreSetColors():
 
@@ -44,7 +42,6 @@ def LoadPreSetColors():
 
 
 #----------------------------------------INTERFACE----------------------------------------
-
 
 import kivy.event
 
@@ -237,7 +234,7 @@ class LayoutSettingsScreen(GridLayout):
 
     def SetBeltSpeedSetting(self, instance, value):
 
-       wait.BeltSetting = int(value)
+       wait.SetBeltSetting(value)
        wait.CalculateWaitingTime()
 
     def SetMaxSaturation(self, instance, value):
@@ -747,9 +744,10 @@ class TakingPicturesScreenLayout(BoxLayout):
         self.camera.set(3,1920) # width
         self.camera.set(4,1080) # height
 
-        self.camera.set(10, 50) # brightness
-       
-
+        self.camera.set(10, 150) # brightness
+        self.camera.set(cv2.CAP_PROP_EXPOSURE, -2)
+        
+      
         self.PictureNumber = 0
 
         detection.RemoveAllImages()
@@ -872,7 +870,6 @@ class LayoutResultScreen(BoxLayout):
         detection.ImageNumber = 0
         ColorDetectionInterface.switch_to(StartScreen())
         
-
 class LabelsResultScreen(BoxLayout):
 
     def __init__(self, *args, **kwargs):

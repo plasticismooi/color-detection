@@ -30,7 +30,7 @@ class detection:
     
     BeltValue = 0.4
 
-    WhiteValue = 0.65
+    WhiteValue = 0.7
     BlackValue = 0.2
     MaxSaturation = 0.25
     

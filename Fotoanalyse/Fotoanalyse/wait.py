@@ -1,13 +1,13 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
 # company: Polytential B.V.
-# date : 12-1-2018
+# date : 19-1-2018
 
 class wait:
 
-    BeltSetting = 0
-    BeltSpeed = 0.054
-    PictureWidth = 0.1
+    BeltSetting = 3
+    BeltSpeed = 0.09
+    PictureWidth = 0.13
     PictureInterval = 1
 
     def __init__(self):
@@ -16,9 +16,11 @@ class wait:
 
     def SetBeltSetting(BeltSetting):
 
-        BeltspeedDict = {0: 0.054, 1: 0.065, 2: 0.078, 3: 0.091, 4: 0.104, 5: 0.120, 6: 0.135}
+        BeltSetting = int(BeltSetting)
 
-        wait.BeltSpeed = BeltspeedDict[BeltSetting] 
+        BeltSpeedDict = {0: 0.053, 1: 0.065, 2: 0.078, 3: 0.09, 4: 0.104, 5: 0.120, 6: 0.135}
+
+        wait.BeltSpeed = BeltSpeedDict.get(BeltSetting)
 
     def PrintBeltSpeed():
 
@@ -32,6 +34,7 @@ class wait:
 
         try:
             wait.PictureInterval =   wait.PictureWidth / wait.BeltSpeed
+            print(wait.PictureInterval)
 
         except TypeError:
 
