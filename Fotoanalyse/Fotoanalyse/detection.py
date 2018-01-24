@@ -79,7 +79,7 @@ class detection:
         for BGR_image in detection.ListOfAllImages:
 
             if detection.SaveBilateralfilterImage == True:
-                cv2.imwrite('C:\\Users\\tom_l\\color-detection-data\\testresults\\bilateralfilter_{}.png'.format(BGR_image.ImageNumber), BGR_image.BGR_image)
+                cv2.imwrite('C:\\Development Files\\color-detection-files\\bilateral-filter-images-{}.png'.format(BGR_image.ImageNumber), BGR_image.BGR_image)
  
         for image in detection.ListOfAllImages:
 
@@ -89,7 +89,7 @@ class detection:
 
     def __PathToAllImages():
     
-        path = 'C:\\Users\\tom_l\\color-detection-data\\images\\*.png'
+        path = 'C:\\Development Files\\color-detection-files\\scan-images\\*.png'
         DirectoryOfAllImages = glob.glob(path)
 
         return DirectoryOfAllImages
@@ -347,12 +347,12 @@ class detection:
         print(2073600 - np.size(ding))
 
 
-        cv2.imwrite('C:\\Users\\tom_l\\color-detection-data\\testresults\\binaryimage_{}.png'.format(self.ImageNumber), BinaryArrayOfDetectedPixels)
+        cv2.imwrite('C:\\Development Files\\color-detection-files\\detected-flakes\\flake-image_{}.png'.format(self.ImageNumber), BinaryArrayOfDetectedPixels)
         
 
     def WriteDataToTXTfile():
 
-        DataFile = open('C:\\Users\\tom_l\\color-detection-data\\testresults\\data.txt', 'w')
+        DataFile = open('C:\\Development Files\\color-detection-files\\scan-images\\data.txt', 'w')
     
         DataFile.write('Analysed all pictures in folder\n')
         DataFile.write('{} % is white \n{} % is grey \n{} % is black \n\n'.format(detection.PercentageWhite, detection.PercentageGrey, detection.PercentageBlack))

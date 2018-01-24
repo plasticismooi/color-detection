@@ -1,7 +1,7 @@
 # Tom Landzaat student @ EE THUAS
 # student ID : 14073595
 # company: Polytential B.V.
-# date : 19-1-2018
+# date : 24-1-2018
 
 #----------------------------------------Import needed librarys------------------------------------
 
@@ -16,8 +16,6 @@ import glob
 from functools import partial
 import gc
 import datetime
-
-
 
 #project .py files
 from detection import detection
@@ -39,9 +37,8 @@ def LoadPreSetColors():
 
                     color(Name, int(LeftAngle), int(RightAngle))
 
-
-
 #----------------------------------------INTERFACE----------------------------------------
+
 
 import kivy.event
 
@@ -761,7 +758,7 @@ class TakingPicturesScreenLayout(BoxLayout):
 
             return
            
-        ImageName = 'C:\\Users\\tom_l\\color-detection-data\\images\\image_{}.png'.format(self.PictureNumber)
+        ImageName = 'C:\\Development Files\\color-detection-files\\scan-images\\image_{}'.format(self.PictureNumber)
         cv2.imwrite(ImageName, frame)
 
         print("{} saved".format(ImageName))
@@ -889,6 +886,7 @@ class ShowAllPercentages(GridLayout):
         self.cols = 2
         self.rows = 3
 
+        
         self.BlackLabel = Label(text = 'black')
         self.PercentageBlackLabel = Label(text = '{}%'.format(detection.PercentageBlack))
 
@@ -906,7 +904,7 @@ class ShowAllPercentages(GridLayout):
 
         self.add_widget(self.WhiteLabel)
         self.add_widget(self.PercentageWhiteLabel)
-        
+
         for CurrentColor in color.AllColors:
 
             self.rows += 1
