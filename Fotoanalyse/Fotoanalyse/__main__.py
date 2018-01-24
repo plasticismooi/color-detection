@@ -150,7 +150,7 @@ class LayoutSettingsScreen(GridLayout):
         self.SaveDetectedPlasticImageSwitch.bind(active = self.TurnSaveDetectedPlasticImageOn)
 
         self.SaveBilateralfilterImageSwitchLabel = Label(text = 'Save image with bilateral filter for each picture: ')
-        self.SaveBilateralfilterImageSwitch = Switch()
+        self.SaveBilateralfilterImageSwitch = Switch(active = True)
         self.SaveBilateralfilterImageSwitch.bind(active = self.TurnSaveBilateralfilterImageOn)
 
         self.WriteDataToTXTfileSwitchLabel = Label(text = 'Write data to .txt file: ')
@@ -741,13 +741,12 @@ class TakingPicturesScreenLayout(BoxLayout):
 
         self.camera = cv2.VideoCapture(1)
 
-        self.camera.set(3,1920) # width
-        self.camera.set(4,1080) # height
+        self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1920) 
+        self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
-        self.camera.set(10, 150) # brightness
-        self.camera.set(cv2.CAP_PROP_EXPOSURE, -2)
+        #self.camera.set(cv2.CAP_PROP_BRIGHTNESS, 150) 
+        self.camera.set(cv2.CAP_PROP_EXPOSURE, -1)
         
-      
         self.PictureNumber = 0
 
         detection.RemoveAllImages()
@@ -868,6 +867,8 @@ class LayoutResultScreen(BoxLayout):
     def GoToStartScreen(self, instance):
 
         detection.ImageNumber = 0
+        detection.ListOfAllImages[:] = []
+
         ColorDetectionInterface.switch_to(StartScreen())
         
 class LabelsResultScreen(BoxLayout):

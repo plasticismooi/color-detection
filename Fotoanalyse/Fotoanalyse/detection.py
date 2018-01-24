@@ -25,16 +25,16 @@ class detection:
     NumberOfDecimals = 2
     
     SaveDetectedPlasticImage = True
-    SaveBilateralfilterImage = None
+    SaveBilateralfilterImage = True
     EnableWriteDataToTXTfile = True
     
-    BeltValue = 0.4
+    BeltValue = 0.3
 
-    WhiteValue = 0.7
+    WhiteValue = 0.6
     BlackValue = 0.2
     MaxSaturation = 0.25
     
-    TotalAmountPlasticPixels= 0
+    TotalAmountPlasticPixels = 0
 
     TotalAmountWhitePixels = 0
     TotalAmountBlackPixels = 0
@@ -72,12 +72,14 @@ class detection:
         for BGR_image in DirectoryOfAllImages:
 
             BGR_image = cv2.imread(BGR_image)
-            BGRImage = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
+            BGRImageBilateral = cv2.bilateralFilter(BGR_image, 9, 200 ,75)
 
-            detection(BGR_image)
+            detection(BGRImageBilateral)
+
+        for BGR_image in detection.ListOfAllImages:
 
             if detection.SaveBilateralfilterImage == True:
-                cv2.imwrite('C:\\Users\\tom_l\\color-detection-data\\testresults\\bilateralfilter_{}.png'.format(detection.ImageNumber), BGR_image)
+                cv2.imwrite('C:\\Users\\tom_l\\color-detection-data\\testresults\\bilateralfilter_{}.png'.format(BGR_image.ImageNumber), BGR_image.BGR_image)
  
         for image in detection.ListOfAllImages:
 
@@ -241,7 +243,6 @@ class detection:
         for CurrentColor in color.AllColors:
             print(CurrentColor.Percentage, '% is ', CurrentColor.name)
         
-
     def __CalcWhitePercentage():
 
         return ((detection.TotalAmountWhitePixels / detection.TotalAmountPlasticPixels) * 100)
@@ -340,6 +341,12 @@ class detection:
         
         BinaryArrayOfDetectedPixels.dtype = 'uint8'
         BinaryArrayOfDetectedPixels[BinaryArrayOfDetectedPixels > 0] = 255
+        
+        ding = np.flatnonzero(BinaryArrayOfDetectedPixels)
+        print("pixels detected in image {} : ".format(self.ImageNumber))
+        print(2073600 - np.size(ding))
+
+
         cv2.imwrite('C:\\Users\\tom_l\\color-detection-data\\testresults\\binaryimage_{}.png'.format(self.ImageNumber), BinaryArrayOfDetectedPixels)
         
 
